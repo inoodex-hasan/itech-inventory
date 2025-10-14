@@ -114,46 +114,46 @@
                             <div class="group-item" data-itemnumber="1" id="form-group-item1"
                                 style="background:#198754; color:#fff !important; padding: 10px 5px;">
                                 <!-- <table>
-                                                                                                                     <tr>
-                                                                                                                      <td><label style="color:#fff !important;">Product Name</label></td>
-                                                                                                                      <td><label style="color:#fff !important;">Warranty</label></td>
-                                                                                                                      <td><label style="color:#fff !important;"> Purchase Price</label></td>
-                                                                                                                      <td><label style="color:#fff !important;"> Unit Price</label></td>
-                                                                                                                      <td><label style="color:#fff !important;">Qty</label></td>
-                                                                                                                      <td><label style="color:#fff !important;">Total</label></td>
-                                                                                                                      <td></td>
-                                                                                                                     </tr>
-                                                                                                                     <tr>
-                                                                                                                      <td>
-                                                                                                                       <select onchange="selectProduct(1)" id="product1" class="form-control js-example-basic-single" style="height: 30px;" required>
-                                                                                                                        <option value=""></option>
-                                                                                                                        @foreach ($products as $product)
+                                                                                                                                     <tr>
+                                                                                                                                      <td><label style="color:#fff !important;">Product Name</label></td>
+                                                                                                                                      <td><label style="color:#fff !important;">Warranty</label></td>
+                                                                                                                                      <td><label style="color:#fff !important;"> Purchase Price</label></td>
+                                                                                                                                      <td><label style="color:#fff !important;"> Unit Price</label></td>
+                                                                                                                                      <td><label style="color:#fff !important;">Qty</label></td>
+                                                                                                                                      <td><label style="color:#fff !important;">Total</label></td>
+                                                                                                                                      <td></td>
+                                                                                                                                     </tr>
+                                                                                                                                     <tr>
+                                                                                                                                      <td>
+                                                                                                                                       <select onchange="selectProduct(1)" id="product1" class="form-control js-example-basic-single" style="height: 30px;" required>
+                                                                                                                                        <option value=""></option>
+                                                                                                                                        @foreach ($products as $product)
     <option value="{{ $product->id }}" data-name="{{ $product->name }}({{ $product->model }})" data-price="{{ $product->latestPurchase->unit_price ?? 0 }}">
-                                                                                                                          {{ $product->name }}({{ $product->model }})
-                                                                                                                         </option>
+                                                                                                                                          {{ $product->name }}({{ $product->model }})
+                                                                                                                                         </option>
     @endforeach
-                                                                                                                       </select>
-                                                                                                                      </td>
-                                                                                                                      <td>
-                                                                                                                       <input type="number" id="Warranty" style="height: 30px;" class="form-control Warranty" >
-                                                                                                                      </td>
-                                                                                                                      <td>
-                                                                                                                       <input type="number" id="purchase_price1" style="height: 30px;" class="form-control" readonly>
-                                                                                                                      </td>
-                                                                                                                      <td>
-                                                                                                                       <input onchange="calculateTotal()" type="number" id="unit_price1" style="height: 30px;" class="form-control unit-price" >
-                                                                                                                      </td>
-                                                                                                                      <td>
-                                                                                                                       <input onchange="calculateTotal()" type="number" id="qty1" style="height: 30px;" class="form-control qty" min="0">
-                                                                                                                      </td>
-                                                                                                                      <td>
-                                                                                                                       <input type="number" id="total1" style="height: 30px;" class="form-control total" readonly>
-                                                                                                                      </td>
-                                                                                                                      <td>
-                                                                                                                       <button onclick="addItem()"  type="button" class=" btn btn-primary addItemBtn">Add</button>
-                                                                                                                      </td>
-                                                                                                                     </tr>
-                                                                                                                    </table> -->
+                                                                                                                                       </select>
+                                                                                                                                      </td>
+                                                                                                                                      <td>
+                                                                                                                                       <input type="number" id="Warranty" style="height: 30px;" class="form-control Warranty" >
+                                                                                                                                      </td>
+                                                                                                                                      <td>
+                                                                                                                                       <input type="number" id="purchase_price1" style="height: 30px;" class="form-control" readonly>
+                                                                                                                                      </td>
+                                                                                                                                      <td>
+                                                                                                                                       <input onchange="calculateTotal()" type="number" id="unit_price1" style="height: 30px;" class="form-control unit-price" >
+                                                                                                                                      </td>
+                                                                                                                                      <td>
+                                                                                                                                       <input onchange="calculateTotal()" type="number" id="qty1" style="height: 30px;" class="form-control qty" min="0">
+                                                                                                                                      </td>
+                                                                                                                                      <td>
+                                                                                                                                       <input type="number" id="total1" style="height: 30px;" class="form-control total" readonly>
+                                                                                                                                      </td>
+                                                                                                                                      <td>
+                                                                                                                                       <button onclick="addItem()"  type="button" class=" btn btn-primary addItemBtn">Add</button>
+                                                                                                                                      </td>
+                                                                                                                                     </tr>
+                                                                                                                                    </table> -->
 
                                 <style>
                                     @media (min-width: 768px) {
