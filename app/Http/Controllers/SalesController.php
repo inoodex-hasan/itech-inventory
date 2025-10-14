@@ -1,0 +1,834 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Input;
+use Validator;
+use Carbon\Carbon;
+use App\Models\Sale;
+use App\Models\SalesItem;
+use App\Models\User;
+use App\Models\Payment;
+use App\Models\Product;
+use App\Models\Inventory;
+use App\Models\Service;
+use Twilio\Rest\Client;
+use App\Models\Customer;
+use App\Models\DailySale;
+use Illuminate\Http\Request;
+use App\Mail\CreateSalesMail;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class SalesController extends Controller
+{
+    public function index(Request $request)
+    {
+
+        $services = Sale::join('customers', 'customers.id', 'sales.customer_id')->leftjoin('users', 'users.id', '=', 'sales.sales_by');
+
+        $defaultFilter = true;
+
+        if ($request->from != "" && $request->to != "") {
+            $from = date('Y-m-d 00:00:00', strtotime($request->from));
+            $to = date('Y-m-d 23:59:59', strtotime($request->to));
+            $services = $services->whereBetween('sales.created_at', [$from, $to]);
+            $defaultFilter = false;
+        }
+
+
+
+        if ($request->search_by == 'order_no' && $request->key != "") {
+            $services = $services->where('sales.order_no', 'like', '%' . $request->key . '%');
+            $defaultFilter = false;
+        }
+
+        if (in_array($request->search_by, ['name', 'phone', 'email']) && $request->key != "") {
+            $services = $services->where('customers.' . $request->search_by, 'like', '%' . $request->key . '%');
+            $defaultFilter = false;
+        }
+
+        if ($defaultFilter) {
+            $startOfMonth = date('Y-m-01 00:00:00');
+            $endOfMonth = date('Y-m-t 23:59:59');
+            $services = $services->whereBetween('sales.created_at', [$startOfMonth, $endOfMonth]);
+        }
+
+        $services = $services->select('sales.*', 'users.name as sales_by', 'customers.name', 'customers.phone', 'customers.address')
+            ->orderBy('id', 'desc')->get();
+
+        $users = lib_salesMan();
+        if ($request->search_for == 'pdf') {
+            // return view('pdf.sales',compact('services','request'));
+            $pdf = Pdf::loadView('pdf.sales', compact('services', 'request'))
+                ->setPaper('A4', 'portrait');
+            return $pdf->download('Sales.pdf');
+        }
+
+
+        //Report
+        $todaysRevenue = Service::whereDate('created_at', Carbon::today())->where('status', '1')->sum('bill');
+        $thisWeeksRevenue = Service::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status', '1')->sum('bill');
+        $thisMonthsRevenue = Service::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->where('status', '1')->sum('bill');
+        $thisYearsRevenue = Service::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('status', '1')->sum('bill');
+        $totalServiceDues = Service::where('status', '1')->where('due_amount', '>', 0)->sum('due_amount');
+
+        $todaysSalesRevenue = Sale::whereDate('created_at', Carbon::today())->where('status', '1')->sum('bill');
+        $thisWeeksSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status', '1')->sum('bill');
+        $thisMonthsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->where('status', '1')->sum('bill');
+        $thisYearsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('status', '1')->sum('bill');
+        $totalSalesDues = 0;
+
+        $todaysDailySalesRevenue = DailySale::whereDate('date', Carbon::today())->where('status', '1')->sum('total_amount');
+        $thisWeeksDailySalesRevenue = DailySale::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status', '1')->sum('total_amount');
+        $thisMonthsDailySalesRevenue = DailySale::whereBetween('date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->where('status', '1')->sum('total_amount');
+        $thisYearsDailySalesRevenue = DailySale::whereBetween('date', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('status', '1')->sum('total_amount');
+
+        $monthlyRevenue = Service::selectRaw('MONTH(created_at) as month, SUM(bill) as total')
+            ->whereYear('created_at', Carbon::now()->year)
+            ->where('status', '1')
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->mapWithKeys(function ($total, $month) {
+                $monthName = Carbon::createFromFormat('m', $month)->format('M');
+                return [$monthName => $total];
+            });
+
+        $yearlyRevenue = Service::selectRaw('YEAR(created_at) as year, SUM(bill) as total')
+            ->whereRaw('YEAR(created_at) >= YEAR(CURDATE()) - 9')
+            ->where('status', '1')
+            ->groupBy('year')
+            ->pluck('total', 'year');
+
+
+        return view('frontend.pages.sales.index', compact('services', 'request', 'users', 'todaysRevenue', 'thisWeeksRevenue', 'thisMonthsRevenue', 'thisYearsRevenue', 'monthlyRevenue', 'yearlyRevenue', 'todaysSalesRevenue', 'thisWeeksSalesRevenue', 'thisMonthsSalesRevenue', 'thisYearsSalesRevenue', 'totalServiceDues', 'totalSalesDues', 'todaysDailySalesRevenue', 'thisWeeksDailySalesRevenue', 'thisMonthsDailySalesRevenue', 'thisYearsDailySalesRevenue'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $users  = User::get();
+        $products = Product::with('latestPurchase')->where('status', '1')->get();
+        return view('frontend.pages.sales.create', compact('products', 'users'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'phone' => 'required|string',
+            'address' => 'nullable|string',
+            'product' => 'required|array',
+            'product.*' => 'required|integer|exists:products,id',
+            'qty' => 'required|array',
+            'qty.*' => 'required|numeric|min:1',
+            'unit_price' => 'required|array',
+            'unit_price.*' => 'required|numeric|min:1',
+            'discount' => 'required|numeric',
+            'advanced_payment' => 'nullable|numeric|min:0',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Create or find customer
+            $customer = Customer::firstOrCreate(
+                ['name' => $validated['name'], 'phone' => $validated['phone']],
+                ['address' => $validated['address'] ?? null]
+            );
+
+            $totalBill = 0;
+            $warranties = Product::whereIn('id', $validated['product'])->pluck('warranty', 'id');
+
+            // Calculate totals first
+            foreach ($validated['product'] as $index => $productId) {
+                $qty = $validated['qty'][$index];
+                $unitPrice = $validated['unit_price'][$index];
+                $total = $unitPrice * $qty;
+                $totalBill += $total;
+            }
+
+            // Calculate payments and determine status
+            $discount = $validated['discount'];
+            if ($discount > $totalBill) $discount = $totalBill;
+            $payble = $totalBill - $discount;
+
+            $advancedPayment = $validated['advanced_payment'] ?? 0;
+            if ($advancedPayment > $payble) $advancedPayment = $payble;
+            $duePayment = $payble - $advancedPayment;
+
+            // Determine status based on payment
+            if ($duePayment <= 0) {
+                $status = 'paid';
+            } elseif ($advancedPayment > 0) {
+                $status = 'partial';
+            } else {
+                $status = 'unpaid';
+            }
+
+            // Create sale with actual totals
+            $sale = Sale::create([
+                'order_no' => 'INV-' . strtoupper(uniqid()),
+                'customer_id' => $customer->id,
+                'product_id' => $validated['product'][0], // First product as main product
+                // 'price' => $validated['unit_price'][0] ?? 0, // First product price
+                'qty' => array_sum($validated['qty']), // Total quantity
+                'total' => $totalBill,
+                'payble' => $payble,
+                'bill' => $totalBill,
+                'discount' => $discount,
+                'advanced_payment' => $advancedPayment,
+                'due_payment' => $duePayment,
+                'sales_by' => auth()->id(),
+                'status' => $status, // Dynamic status
+            ]);
+
+            // Create sale items and update inventory
+            foreach ($validated['product'] as $index => $productId) {
+                $qty = $validated['qty'][$index];
+                $unitPrice = $validated['unit_price'][$index];
+                $total = $unitPrice * $qty;
+
+                // Create Sale Item
+                SalesItem::create([
+                    'order_id' => $sale->id,
+                    'product_id' => $productId,
+                    'unit_price' => $unitPrice,
+                    'qty' => $qty,
+                    'total_price' => $total,
+                    'warranty' => $warranties[$productId] ?? 0,
+                ]);
+
+                // Update inventory
+                $inventory = Inventory::where('product_id', $productId)->first();
+                if ($inventory) {
+                    $inventory->decrement('current_stock', $qty);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('sales.invoice', $sale->id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with(['error' => $e->getMessage()]);
+        }
+    }
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'name' => 'required|string',
+    //         'phone' => 'required|string',
+    //         'address' => 'nullable|string',
+    //         'product' => 'required|array',
+    //         'product.*' => 'required|integer|exists:products,id',
+    //         'qty' => 'required|array',
+    //         'qty.*' => 'required|numeric|min:1',
+    //         'unit_price' => 'required|array',
+    //         'unit_price.*' => 'required|numeric|min:1',
+    //         'discount' => 'required|numeric',
+    //         'advanced_payment' => 'nullable|numeric|min:0', // added
+    //     ]);
+
+    //     DB::beginTransaction();
+
+    //     try {
+    //         // Create or find customer
+    //         $customer = Customer::firstOrCreate(
+    //             ['name' => $validated['name'], 'phone' => $validated['phone']],
+    //             ['address' => $validated['address'] ?? null]
+    //         );
+    //         $product = Product::firstOrCreate(
+    //             ['name' => $validated['name']],
+    //             [
+    //                 'model' => $validated['model'] ?? 'N/A',
+    //                 'status' => $validated['status'],
+    //                 'warranty' => $validated['warranty'] ?? 0,
+    //                 'brand_id' => $validated['brand_id'] ?? 1,
+    //             ]
+    //         );
+    //         // Create initial sale with zero totals
+    //         $sale = Sale::create([
+    //             'order_no' => 'INV-' . strtoupper(uniqid()),
+    //             'customer_id' => $customer->id,
+    //             'product_id' => $product->id,
+    //             'qty' => 0,
+    //             'bill' => 0,
+    //             'total' => 0,
+    //             'discount' => 0,
+    //             'payble' => 0,
+    //             'advanced_payment' => 0, // initially 0
+    //             'due_payment' => 0,      // initially 0
+    //             'sales_by' => auth()->id(),
+    //             'status' => 'unpaid',
+    //         ]);
+
+    //         $totalBill = 0;
+    //         $warranties = Product::whereIn('id', $validated['product'])->pluck('warranty', 'id');
+
+    //         foreach ($validated['product'] as $index => $productId) {
+    //             $qty = $validated['qty'][$index];
+    //             $unitPrice = $validated['unit_price'][$index];
+    //             $total = $unitPrice * $qty;
+    //             $totalBill += $total;
+
+    //             // Create Sale Item
+    //             SalesItem::create([
+    //                 'order_id' => $sale->id,
+    //                 'product_id' => $productId,
+    //                 'unit_price' => $unitPrice,
+    //                 'qty' => $qty,
+    //                 'total_price' => $total,
+    //                 'warranty' => $warranties[$productId] ?? 0,
+    //             ]);
+
+    //             // Update inventory
+    //             $inventory = Inventory::where('product_id', $productId)->first();
+    //             if ($inventory) {
+    //                 $inventory->decrement('current_stock', $qty);
+    //             }
+    //         }
+
+    //         // Calculate totals
+    //         $discount = $validated['discount'];
+    //         if ($discount > $totalBill) $discount = $totalBill; // ensure discount ≤ subtotal
+    //         $payble = $totalBill - $discount;
+
+    //         $advancedPayment = $validated['advanced_payment'] ?? 0;
+    //         if ($advancedPayment > $payble) $advancedPayment = $payble; // optional safeguard
+    //         $duePayment = $payble - $advancedPayment;
+
+    //         // Update sale with totals & payments
+    //         $sale->update([
+    //             'bill' => $totalBill,
+    //             'discount' => $discount,
+    //             'payble' => $payble,
+    //             'advanced_payment' => $advancedPayment,
+    //             'due_payment' => $duePayment,
+    //         ]);
+
+    //         DB::commit();
+
+    //         return redirect()->route('sales.invoice', $sale->id);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return redirect()->back()->with(['error' => $e->getMessage()]);
+    //     }
+    // }
+
+
+    private function getPaymentStatus($advancedPayment, $payble)
+    {
+        if ($advancedPayment == 0) {
+            return 'pending';
+        } elseif ($advancedPayment > 0 && $advancedPayment < $payble) {
+            return 'partial';
+        } elseif ($advancedPayment >= $payble) {
+            return 'paid';
+        }
+
+        return 'pending';
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id) {}
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $sales = Sale::join('customers', 'customers.id', '=', 'sales.customer_id')
+            ->where('sales.id', $id)
+            ->select('sales.*')
+            ->first();
+        if (!$sales) abort(404);
+        $users  = User::get();
+        $products = Product::where('status', '1')->get();
+
+        $customer = Customer::where('id', $sales->customer_id)->first();
+        if (!$customer) abort(404);
+
+        $items = SalesItem::where('order_id',  $sales->id)->get();
+
+        return view('frontend.pages.sales.edit', compact('sales', 'products', 'items', 'customer'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    // public function update(Request $request, string $id)
+    // {
+
+    //     // return $request->all();
+
+
+    //     $validated = $request->validate([
+    //         'name' => 'required|string',
+    //         'phone' => 'required|string',
+    //         'address' => 'nullable|string',
+    //         'product' => 'required|array',
+    //         'product.*' => 'required|integer|exists:products,id',
+    //         'qty' => 'required|array',
+    //         'qty.*' => 'required|numeric|min:1',
+    //         'unit_price' => 'required|array',
+    //         'unit_price.*' => 'required|numeric|min:1',
+    //         'discount' => 'required|numeric|min:0',
+    //     ]);
+
+    //     DB::beginTransaction();
+
+    //     try {
+
+    //         $customer = Customer::firstOrCreate(
+    //             ['name' => $validated['name'], 'phone' => $validated['phone']],
+    //             ['address' => $validated['address'] ?? null]
+    //         );
+
+    //         $sale = Sale::where('id', $id)->first();
+    //         if (!$sale) return 'Sales not found.';
+
+
+    //         $oldItems = SalesItem::where('order_id', $sale->id)->get();
+    //         foreach ($oldItems as $item) {
+    //             $inventory = Inventory::where('product_id', $item->product_id)->first();
+    //             if ($inventory) {
+    //                 $inventory->current_stock += $item->qty;
+    //                 $inventory->update();
+    //             }
+    //         }
+
+    //         SalesItem::where('order_id', $sale->id)->delete();
+
+    //         $totalBill = 0;
+    //         $warranties = Product::wherein('id', $validated['product'])->pluck('warranty', 'id');
+
+    //         foreach ($validated['product'] as $index => $productId) {
+    //             $qty = $validated['qty'][$index];
+    //             $unitPrice = $validated['unit_price'][$index];
+
+    //             $total = $unitPrice * $qty;
+    //             $totalBill += $total;
+
+    //             SalesItem::create([
+    //                 'order_id' => $sale->id,
+    //                 'product_id' => $productId,
+    //                 'unit_price' => $unitPrice,
+    //                 'qty' => $qty,
+    //                 'total_price' => $total,
+    //                 'warranty' => isset($warranties[$productId]) ? $warranties[$productId] : 0,
+    //             ]);
+
+    //             $inventory = Inventory::where('product_id', $productId)->first();
+    //             if ($inventory) {
+    //                 $inventory->current_stock -= $qty;
+    //                 $inventory->update();
+    //             }
+    //         }
+
+    //         $discount = $validated['discount'];
+    //         $payble = $totalBill - $discount;
+
+    //         $sale->update([
+    //             'bill' => $totalBill,
+    //             'discount' => $discount,
+    //             'payble' => $payble,
+    //         ]);
+
+    //         DB::commit();
+
+
+
+    //         return redirect()->route('sales.invoice', $sale->id);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         // return $e->getMessage();
+    //         return redirect()->back()->with(['error' =>  $e->getMessage()]);
+    //     }
+    // }
+    public function update(Request $request, string $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'phone' => 'required|string',
+            'address' => 'nullable|string',
+            'product' => 'required|array',
+            'product.*' => 'required|integer|exists:products,id',
+            'qty' => 'required|array',
+            'qty.*' => 'required|numeric|min:1',
+            'unit_price' => 'required|array',
+            'unit_price.*' => 'required|numeric|min:1',
+            'discount' => 'nullable|numeric|min:0',
+            'advanced_payment' => 'nullable|numeric|min:0',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            // FirstOrCreate customer
+            $customer = Customer::firstOrCreate(
+                ['name' => $validated['name'], 'phone' => $validated['phone']],
+                ['address' => $validated['address'] ?? null]
+            );
+
+            // Fetch sale
+            $sale = Sale::where('id', $id)->first();
+            if (!$sale) return redirect()->back()->with(['error' => 'Sale not found.']);
+
+            // Restore old inventory
+            $oldItems = SalesItem::where('order_id', $sale->id)->get();
+            foreach ($oldItems as $item) {
+                $inventory = Inventory::where('product_id', $item->product_id)->first();
+                if ($inventory) {
+                    $inventory->current_stock += $item->qty;
+                    $inventory->save();
+                }
+            }
+
+            // Delete old sale items
+            SalesItem::where('order_id', $sale->id)->delete();
+
+            // Create new sale items
+            $totalBill = 0;
+            $warranties = Product::whereIn('id', $validated['product'])->pluck('warranty', 'id');
+
+            foreach ($validated['product'] as $index => $productId) {
+                $qty = $validated['qty'][$index];
+                $unitPrice = $validated['unit_price'][$index];
+
+                $total = $unitPrice * $qty;
+                $totalBill += $total;
+
+                SalesItem::create([
+                    'order_id' => $sale->id,
+                    'product_id' => $productId,
+                    'unit_price' => $unitPrice,
+                    'qty' => $qty,
+                    'total_price' => $total,
+                    'warranty' => $warranties[$productId] ?? 0,
+                ]);
+
+                // Deduct new inventory
+                $inventory = Inventory::where('product_id', $productId)->first();
+                if ($inventory) {
+                    $inventory->current_stock -= $qty;
+                    $inventory->save();
+                }
+            }
+
+            // Calculate totals
+            $discount = $validated['discount'] ?? 0;
+            if ($discount > $totalBill) $discount = $totalBill;
+
+            $advancedPayment = $request->advanced_payment ?? 0;
+            if ($advancedPayment > ($totalBill - $discount)) $advancedPayment = $totalBill - $discount;
+
+            $payble = $totalBill - $discount;
+            $duePayment = $payble - $advancedPayment;
+
+            // Update sale
+            $sale->update([
+                'bill' => $totalBill,
+                'discount' => $discount,
+                'payble' => $payble,
+                'advanced_payment' => $advancedPayment,
+                'due_payment' => $duePayment,
+                'customer_id' => $customer->id,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('sales.index', $sale->id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with(['error' => $e->getMessage()]);
+        }
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $service = Sale::where('id', $id)->first();
+        if (!$service) abort(404);
+        $service->delete();
+
+        return redirect()->back()->with(['success' => getNotify(3)]);
+    }
+
+    public function makeInvoice(Request $request, $serviceId)
+    {
+        $sales = Sale::where('id', $serviceId)->first();
+        if (!$sales) abort(404);
+        $customer = Customer::where('id', $sales->customer_id)->first();
+        if (!$customer) abort(404);
+        $items = SalesItem::join('products', 'products.id', 'sales_items.product_id')
+            ->where('order_id',  $sales->id)
+            ->select('sales_items.*', 'products.name', 'products.model')
+            ->get();
+
+
+
+        return view('frontend.pages.sales.invoice', compact('sales', 'items', 'customer'));
+    }
+
+    // public function payments(Request $request)
+    // {
+
+    //     $payments = Payment::where('payment_for', 2);
+
+    //     $defaultFilter = true;
+
+    //     if ($request->from != "" && $request->to != "") {
+    //         $from = date('Y-m-d 00:00:00', strtotime($request->from));
+    //         $to = date('Y-m-d 23:59:59', strtotime($request->to));
+    //         $payments = $payments->whereBetween('payments.created_at', [$from, $to]);
+    //         $defaultFilter = false;
+    //     }
+
+    //     if ($request->payments_method != "") {
+    //         $payments = $payments->where('payments.payment_method_id', $request->payments_method);
+    //         $defaultFilter = false;
+    //     }
+
+    //     if ($defaultFilter) {
+    //         $startOfMonth = date('Y-m-01 00:00:00');
+    //         $endOfMonth = date('Y-m-t 23:59:59');
+    //         $payments = $payments->whereBetween('payments.created_at', [$startOfMonth, $endOfMonth]);
+    //     }
+
+    //     $payments = $payments->get();
+
+    //     if ($request->search_for == 'pdf') {
+    //         $pdf = Pdf::loadView('pdf.service_payments', compact('payments', 'request'))
+    //             ->setPaper('A4', 'portrait');
+    //         return $pdf->download('service Payments.pdf');
+    //     }
+
+    //     return view('frontend.pages.sales.payments', compact('payments', 'request'));
+    // }
+
+
+    public function payments(Request $request, $saleId = null)
+    {
+        // Base query: only service payments
+        $paymentsQuery = Payment::where('payment_for', 2);
+
+        $sale = null;
+        if ($saleId) {
+            $paymentsQuery->where('sale_id', $saleId);
+            $sale = Sale::with('customer')->findOrFail($saleId);
+        }
+
+        $defaultFilter = true;
+
+        // Filter by date
+        if (!empty($request->from) && !empty($request->to)) {
+            $from = date('Y-m-d 00:00:00', strtotime($request->from));
+            $to = date('Y-m-d 23:59:59', strtotime($request->to));
+            $paymentsQuery->whereBetween('payments.created_at', [$from, $to]);
+            $defaultFilter = false;
+        }
+
+        // Filter by payment method
+        if (!empty($request->payments_method)) {
+            $paymentsQuery->where('payments.payment_method_id', $request->payments_method);
+            $defaultFilter = false;
+        }
+
+        // Default filter: current month if no filters and no sale selected
+        if ($defaultFilter && !$saleId) {
+            $startOfMonth = date('Y-m-01 00:00:00');
+            $endOfMonth = date('Y-m-t 23:59:59');
+            $paymentsQuery->whereBetween('payments.created_at', [$startOfMonth, $endOfMonth]);
+        }
+
+        $payments = $paymentsQuery->get();
+
+        // PDF export
+        // if ($request->search_for === 'pdf') {
+        //     $pdf = Pdf::loadView('pdf.service_payments', compact('payments', 'request'))
+        //         ->setPaper('A4', 'portrait');
+        //     return $pdf->download('service_payments.pdf');
+        // }
+
+        return view('frontend.pages.sales.payments', compact('payments', 'request', 'saleId', 'sale'));
+    }
+
+    public function report(Request $request)
+    {
+        $salesQuery = DB::table('sales_items')
+            ->join('sales', 'sales.id', '=', 'sales_items.order_id')
+            ->join('products', 'products.id', '=', 'sales_items.product_id')
+            ->select(
+                'products.name as product_name',
+                'sales.created_at as sale_date',
+                'sales_items.qty',
+                'sales_items.unit_price',
+                'sales_items.total_price',
+            );
+
+        $hasFilters = false;
+
+        if ($request->filled('item_name')) {
+            $salesQuery->where('sales_items.product_id', $request->item_name);
+            $hasFilters = true;
+        }
+
+        if ($request->filled('from')) {
+            $salesQuery->whereDate('sales.created_at', '>=', $request->from);
+            $hasFilters = true;
+        }
+
+        if ($request->filled('to')) {
+            $salesQuery->whereDate('sales.created_at', '<=', $request->to);
+            $hasFilters = true;
+        }
+
+        if (!$hasFilters) {
+            $salesQuery->whereBetween('sales.created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ]);
+        }
+
+        $salesReport = $salesQuery->orderBy('sales.created_at', 'desc')->get();
+
+        $products = DB::table('products')->select('id', 'name')->get();
+
+        return view('frontend.pages.report.sales.index', [
+            'salesReport' => $salesReport,
+            'products' => $products,
+            'request' => $request
+        ]);
+    }
+
+    public function getSaleDetails($id)
+    {
+        // Get sale info with customer info
+        $sale = Sale::select(
+            'sales.*',
+            'customers.name',
+            'customers.phone',
+            'customers.address'
+        )
+            ->join('customers', 'customers.id', '=', 'sales.customer_id')
+            ->where('sales.id', $id)
+            ->firstOrFail();
+
+        // Get items for this sale with warranty info
+        $items = \DB::table('sales_items')
+            ->select(
+                'sales_items.*',
+                'products.name',
+                'products.model',
+                'sales_items.warranty',
+                'sales_items.unit_price',
+                'sales_items.qty',
+                'sales_items.total_price'
+            )
+            ->join('products', 'products.id', '=', 'sales_items.product_id')
+            ->where('sales_items.order_id', $id)
+            ->get()
+            ->map(function ($item) use ($sale) {
+                $warrantyStart = \Carbon\Carbon::parse($sale->created_at);
+                $warrantyEnd = $warrantyStart->copy()->addDays($item->warranty);
+                $daysLeft = $warrantyEnd->isFuture() ? now()->diffInDays($warrantyEnd) : 0;
+
+                $item->warranty_days_left = $daysLeft;
+                return $item;
+            });
+
+        return response()->json([
+            'sale' => $sale,
+            'items' => $items,
+        ]);
+    }
+
+    public function processPayment(Request $request)
+    {
+        $request->validate([
+            'sale_id' => 'required|exists:sales,id',
+            'payment_amount' => 'required|numeric|min:0.01',
+            'payment_method' => 'required|string',
+            'payment_date' => 'nullable|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $sale = Sale::findOrFail($request->sale_id);
+            $paymentAmount = $request->payment_amount;
+
+            // Check if payment amount exceeds due amount
+            if ($paymentAmount > $sale->due_payment) {
+                return redirect()->back()->with('error', 'Payment amount cannot exceed due amount!');
+            }
+
+            // Store due before payment for record
+            $dueBeforePayment = $sale->due_payment;
+
+            // Update sale payment information
+            $newAdvancedPayment = $sale->advanced_payment + $paymentAmount;
+            $newDuePayment = $sale->payble - $newAdvancedPayment;
+
+            // Determine new payment status
+            $paymentStatus = $this->getPaymentStatus($newAdvancedPayment, $sale->payble);
+
+            // Update the sale
+            $sale->update([
+                'advanced_payment' => $newAdvancedPayment,
+                'due_payment' => $newDuePayment,
+                'payment_status' => 1,
+            ]);
+
+            // Create payment record
+            Payment::create([
+                'customer_id' => $sale->customer_id,
+                'sale_id' => $sale->id,
+                'amount' => $paymentAmount,
+                'due_before_payment' => $dueBeforePayment,
+                'due_after_payment' => $newDuePayment,
+                'payment_method' => $request->payment_method,
+                'payment_date' => $request->payment_date ?: now(),
+                'notes' => $request->notes,
+                'payment_for' => 2, // Sales
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Payment of ৳' . number_format($paymentAmount, 2) . ' processed successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error processing payment: ' . $e->getMessage());
+        }
+    }
+
+
+    // private function getPaymentStatus($advancedPayment, $payble)
+    // {
+    //     if ($advancedPayment == 0) {
+    //         return 'pending';
+    //     } elseif ($advancedPayment > 0 && $advancedPayment < $payble) {
+    //         return 'partial';
+    //     } elseif ($advancedPayment >= $payble) {
+    //         return 'paid';
+    //     }
+
+    //     return 'pending';
+    // }
+}
