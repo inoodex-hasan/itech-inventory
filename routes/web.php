@@ -25,6 +25,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\RevenueController;
 
 
 Route::middleware(['auth'])->group(function () {
@@ -113,6 +114,14 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::resource('dailySales', DailySaleController::class);
     Route::resource('salesTarget', SalesTargetController::class);
+
+    Route::get('/revenues', [RevenueController::class, 'index'])->name('revenues.index');
+    Route::post('/revenues/generate', [RevenueController::class, 'generate'])->name('revenues.generate');
+    Route::get('/revenues/export/{id}', [RevenueController::class, 'export'])->name('revenues.export');
+
+
+    Route::get('/due-payments', [SalesController::class, 'duePayments'])->name('due-payments.index');
+
 
 
     // Route::group(['middleware' => ['permission:Service Management|Sales Management']], function () {

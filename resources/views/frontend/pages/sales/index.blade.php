@@ -103,7 +103,7 @@
         <div class="col-sm-12">
             <div class="card-table">
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <div class="table-fluid p-3">
                         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <table class="table table-center table-hover no-footer" id="DataTables_Table_0" role="grid"
                                 aria-describedby="DataTables_Table_0_info">

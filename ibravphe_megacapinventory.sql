@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 14, 2025 at 12:59 PM
+-- Generation Time: Nov 03, 2025 at 02:13 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -114,6 +114,16 @@ CREATE TABLE `brands` (
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `brands`
+--
+
+INSERT INTO `brands` (`id`, `name`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(2, 'HP', 1, '2025-11-02 18:37:35', '2025-11-02 18:37:35', NULL),
+(3, 'Canon', 1, '2025-11-02 18:38:06', '2025-11-02 18:38:06', NULL),
+(4, 'Epson', 1, '2025-11-02 18:38:12', '2025-11-02 18:38:12', NULL),
+(5, 'Brother', 1, '2025-11-02 18:38:25', '2025-11-02 18:38:25', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -139,6 +149,17 @@ CREATE TABLE `customers` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_verified_at`, `address`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 'Customer 1', NULL, '01234567890', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-10-14 23:06:04', '2025-11-02 18:46:01'),
+(2, 'Hasan', NULL, '01326598470', NULL, NULL, 'Mirpur', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-02 19:18:55', '2025-11-02 19:18:55'),
+(9, 'Test', NULL, '01195674368', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 00:22:32', '2025-11-03 00:22:32'),
+(10, 'Md Hasan', NULL, '01123695847', NULL, NULL, 'Banani', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 01:26:05', '2025-11-03 01:26:05'),
+(11, 'Md Juel', NULL, '01213986745', NULL, NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-03 02:06:48');
+
 -- --------------------------------------------------------
 
 --
@@ -155,6 +176,14 @@ CREATE TABLE `daily_expenses` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `daily_expenses`
+--
+
+INSERT INTO `daily_expenses` (`id`, `date`, `expense_category_id`, `amount`, `spend_method`, `remarks`, `created_at`, `updated_at`) VALUES
+(1, '2025-11-03', 1, 100.00, 'cash', 'other', '2025-11-03 00:27:57', '2025-11-03 00:27:57'),
+(2, '2025-11-04', 1, 250.00, 'cash', 'Eating', '2025-11-03 00:29:06', '2025-11-03 00:29:06');
 
 -- --------------------------------------------------------
 
@@ -204,6 +233,13 @@ CREATE TABLE `expense_categories` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `expense_categories`
+--
+
+INSERT INTO `expense_categories` (`id`, `name`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Other', 1, '2025-11-03 00:27:27', '2025-11-03 00:27:27');
+
 -- --------------------------------------------------------
 
 --
@@ -251,6 +287,16 @@ CREATE TABLE `inventories` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `inventories`
+--
+
+INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`, `notes`, `created_at`, `updated_at`) VALUES
+(1, 4, 10, 1, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-03 00:22:32'),
+(2, 2, 15, 10, 'Opening stock entry', '2025-11-03 01:24:55', '2025-11-03 02:06:48'),
+(3, 5, 20, 12, 'Opening stock entry', '2025-11-03 02:05:12', '2025-11-03 02:06:48'),
+(4, 3, 12, 12, 'Opening stock entry', '2025-11-03 02:11:45', '2025-11-03 02:11:45');
+
 -- --------------------------------------------------------
 
 --
@@ -295,7 +341,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (25, '2025_10_14_002056_create_daily_expenses_table', 1),
 (26, '2025_10_14_015809_create_sale_items_table', 1),
 (27, 'add_teams_fields', 1),
-(28, 'create_permission_tables', 1);
+(28, 'create_permission_tables', 1),
+(29, '2025_11_03_045711_create_revenues_table', 2),
+(30, '2025_11_03_045713_create_revenues_table', 3);
 
 -- --------------------------------------------------------
 
@@ -387,6 +435,14 @@ CREATE TABLE `payments` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `payments`
+--
+
+INSERT INTO `payments` (`id`, `payment_for`, `customer_id`, `sale_id`, `payment_method`, `amount`, `status`, `created_at`, `updated_at`) VALUES
+(1, 2, 9, 9, 'cash', 10000, '1', '2025-11-03 01:06:11', '2025-11-03 01:06:11'),
+(2, 2, 10, 10, 'cash', 21500, '1', '2025-11-03 01:27:52', '2025-11-03 01:27:52');
+
 -- --------------------------------------------------------
 
 --
@@ -406,18 +462,19 @@ CREATE TABLE `permissions` (
 --
 
 INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'Administration', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(2, 'Booking', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(3, 'Service Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(4, 'Sales Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(5, 'Settings', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(6, 'Product Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(7, 'Customer Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(8, 'Vendor Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(9, 'Purchase Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(10, 'Inventory Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(11, 'Expense Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48'),
-(12, 'Report Management', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48');
+(1, 'Administration', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(2, 'Booking', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(3, 'Service Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(4, 'Sales Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(5, 'Settings', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(6, 'Product Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(7, 'Customer Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(8, 'Vendor Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(9, 'Purchase Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(10, 'Inventory Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(11, 'Expense Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(12, 'Report Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(13, 'Payment Management', 'web', '2025-11-03 00:47:54', '2025-11-03 00:47:54');
 
 -- --------------------------------------------------------
 
@@ -455,6 +512,16 @@ CREATE TABLE `products` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `brand_id`, `model`, `status`, `warranty`, `created_at`, `updated_at`) VALUES
+(2, 'HP DeskJet Ink Advantage 2336 All-in-One Color Printer', 2, 'DeskJet Ink Advantage 2336', '1', 365, '2025-11-02 18:39:24', '2025-11-02 18:39:24'),
+(3, 'Brother HL-L2320D Auto Duplex Laser Printer (30 PPM)', 5, 'Brother HL-L2320D', '1', 365, '2025-11-02 18:39:59', '2025-11-02 18:39:59'),
+(4, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 4, 'EcoTank L3250', '1', 365, '2025-11-02 18:40:49', '2025-11-02 18:40:49'),
+(5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '1', 365, '2025-11-02 18:41:22', '2025-11-02 18:41:22');
+
 -- --------------------------------------------------------
 
 --
@@ -477,6 +544,42 @@ CREATE TABLE `purchases` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `purchases`
+--
+
+INSERT INTO `purchases` (`id`, `product_id`, `vendor_id`, `quantity`, `unit_price`, `sub_price`, `total_price`, `payment`, `due`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 4, 2, 10, 15500.00, 155000.00, 14000.00, 10000.00, 4000.00, 1, NULL, '2025-11-02 19:31:34', '2025-11-02 19:31:34'),
+(2, 2, 1, 15, 15000.00, 225000.00, 220000.00, 150000.00, 70000.00, 1, NULL, '2025-11-03 01:24:55', '2025-11-03 01:24:55'),
+(3, 5, 1, 20, 25000.00, 500000.00, 480000.00, 400000.00, 80000.00, 1, NULL, '2025-11-03 02:05:12', '2025-11-03 02:05:12'),
+(4, 3, 3, 12, 13500.00, 162000.00, 160000.00, 80000.00, 80000.00, 1, NULL, '2025-11-03 02:11:45', '2025-11-03 02:11:45');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `revenues`
+--
+
+CREATE TABLE `revenues` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `year` int(11) NOT NULL,
+  `month` int(11) NOT NULL,
+  `total_sales` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total_purchases` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total_expenses` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `net_profit` decimal(15,2) GENERATED ALWAYS AS (`total_sales` - `total_purchases` - `total_expenses`) VIRTUAL,
+  `remarks` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `revenues`
+--
+
+INSERT INTO `revenues` (`id`, `year`, `month`, `total_sales`, `total_purchases`, `total_expenses`, `remarks`, `created_at`, `updated_at`) VALUES
+(1, 2025, 11, 331500.00, 714000.00, 350.00, NULL, '2025-11-03 00:06:23', '2025-11-03 02:07:44');
+
 -- --------------------------------------------------------
 
 --
@@ -496,7 +599,7 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'Super Admin', 'web', '2025-10-13 22:49:48', '2025-10-13 22:49:48');
+(1, 'Super Admin', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22');
 
 -- --------------------------------------------------------
 
@@ -525,7 +628,8 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (9, 1),
 (10, 1),
 (11, 1),
-(12, 1);
+(12, 1),
+(13, 1);
 
 -- --------------------------------------------------------
 
@@ -568,6 +672,15 @@ CREATE TABLE `sales` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `sales`
+--
+
+INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `product_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
+(9, 'INV-690890789E034', 9, 4, 2, 36000, 35000, 36000, 35000.00, 0.00, 1000, '1', 'partial', '2025-11-03 00:22:32', '2025-11-03 01:06:11'),
+(10, 'INV-69089F5D03AFA', 10, 2, 3, 48000, 46500, 48000, 46500.00, 0.00, 1500, '1', 'partial', '2025-11-03 01:26:05', '2025-11-03 01:27:52'),
+(11, 'INV-6908A8E856C9D', 11, 5, 10, 256000, 250000, 256000, 150000.00, 100000.00, 6000, '1', 'partial', '2025-11-03 02:06:48', '2025-11-03 02:06:48');
+
 -- --------------------------------------------------------
 
 --
@@ -585,6 +698,26 @@ CREATE TABLE `sales_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `sales_items`
+--
+
+INSERT INTO `sales_items` (`id`, `order_id`, `product_id`, `unit_price`, `warranty`, `qty`, `total_price`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 2500, 365, 2, 5000, '2025-10-14 23:06:04', '2025-10-14 23:06:04'),
+(2, 2, 2, 1200, 365, 5, 6000, '2025-11-02 19:18:55', '2025-11-02 19:18:55'),
+(3, 3, 2, 10000, 365, 12, 120000, '2025-11-02 20:01:39', '2025-11-02 20:01:39'),
+(4, 4, 3, 100, 365, 10, 1000, '2025-11-02 20:03:14', '2025-11-02 20:03:14'),
+(5, 5, 2, 100, 365, 10, 1000, '2025-11-02 20:13:01', '2025-11-02 20:13:01'),
+(6, 6, 2, 1000, 365, 5, 5000, '2025-11-02 20:57:52', '2025-11-02 20:57:52'),
+(7, 6, 3, 1500, 365, 3, 4500, '2025-11-02 20:57:52', '2025-11-02 20:57:52'),
+(8, 7, 2, 100, 365, 5, 500, '2025-11-02 21:22:29', '2025-11-02 21:22:29'),
+(9, 7, 4, 16000, 365, 2, 32000, '2025-11-02 21:22:29', '2025-11-02 21:22:29'),
+(10, 8, 4, 16000, 365, 5, 80000, '2025-11-02 22:12:36', '2025-11-02 22:12:36'),
+(11, 9, 4, 18000, 365, 2, 36000, '2025-11-03 00:22:32', '2025-11-03 00:22:32'),
+(12, 10, 2, 16000, 365, 3, 48000, '2025-11-03 01:26:05', '2025-11-03 01:26:05'),
+(13, 11, 5, 28000, 365, 8, 224000, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
+(14, 11, 2, 16000, 365, 2, 32000, '2025-11-03 02:06:48', '2025-11-03 02:06:48');
 
 -- --------------------------------------------------------
 
@@ -647,7 +780,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `email_verified_at`, `password`, `role_id`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `is_guest`, `status`, `type`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Super Admin', 'info@quickphonefixandmore.com', NULL, NULL, '$2y$12$2YiPkKqvOoW2WmFQQNXSRun8cxB5Ct0P7ng7Ue1OkEnMq86NNYXAW', 1, NULL, NULL, 0, NULL, NULL, '0', '1', '1', NULL, NULL, NULL);
+(1, 'Super Admin', 'info@quickphonefixandmore.com', NULL, NULL, '$2y$12$KWIVx/4asS.TLUkXRveAwu6BmURg1M4CtaaPhCtvRQvLmJEgxM1EW', 1, NULL, NULL, 0, NULL, NULL, '0', '1', '1', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -665,6 +798,15 @@ CREATE TABLE `vendors` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `vendors`
+--
+
+INSERT INTO `vendors` (`id`, `name`, `phone`, `email`, `address`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Vendor 1', '01364829570', 'vendor1@exmaple.com', 'Dhaka', '1', '2025-11-02 18:44:31', '2025-11-02 18:44:31'),
+(2, 'Vendor 2', '01195674368', 'vendor2@example.com', 'Gulshan', '1', '2025-11-02 18:45:07', '2025-11-02 18:45:07'),
+(3, 'Vendor 3', '01295876340', 'vendor3@example.com', 'Mirpur', '1', '2025-11-03 02:11:13', '2025-11-03 02:11:13');
 
 --
 -- Indexes for dumped tables
@@ -831,6 +973,15 @@ ALTER TABLE `purchases`
   ADD KEY `purchases_updated_by_foreign` (`updated_by`);
 
 --
+-- Indexes for table `revenues`
+--
+ALTER TABLE `revenues`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `revenues_year_month_unique` (`year`,`month`),
+  ADD KEY `revenues_year_index` (`year`),
+  ADD KEY `revenues_month_index` (`month`);
+
+--
 -- Indexes for table `roles`
 --
 ALTER TABLE `roles`
@@ -917,19 +1068,19 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `daily_expenses`
 --
 ALTER TABLE `daily_expenses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `daily_sales`
@@ -947,7 +1098,7 @@ ALTER TABLE `districts`
 -- AUTO_INCREMENT for table `expense_categories`
 --
 ALTER TABLE `expense_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `extras`
@@ -965,13 +1116,13 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `inventories`
 --
 ALTER TABLE `inventories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -983,13 +1134,13 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -1001,13 +1152,19 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `purchases`
 --
 ALTER TABLE `purchases`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `revenues`
+--
+ALTER TABLE `revenues`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -1025,13 +1182,13 @@ ALTER TABLE `salaries`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `sales_items`
 --
 ALTER TABLE `sales_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -1049,7 +1206,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `vendors`
 --
 ALTER TABLE `vendors`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

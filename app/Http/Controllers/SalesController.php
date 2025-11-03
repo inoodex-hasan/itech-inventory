@@ -818,6 +818,16 @@ class SalesController extends Controller
         }
     }
 
+    public function duePayments()
+{
+    $sales = Sale::where('due_payment', '>', 0)
+                ->latest()
+                ->get();
+
+    return view('frontend.pages.sales.due-payments', compact('sales'));
+}
+
+
 
     // private function getPaymentStatus($advancedPayment, $payble)
     // {

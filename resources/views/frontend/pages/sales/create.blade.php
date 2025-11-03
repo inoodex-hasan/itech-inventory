@@ -3,13 +3,15 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
+        /* Fix Select2 arrow alignment and remove unwanted triangle when open */
         .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
-            border-color: transparent transparent #888 transparent;
+            border-color: transparent transparent #888 transparent !important;
             border-width: 0 !important;
         }
 
+        /* Customize Select2 arrow (closed state) */
         .select2-container--default .select2-selection--single .select2-selection__arrow b {
-            border-color: #888 transparent transparent transparent;
+            border-color: #888 transparent transparent transparent !important;
             border-style: solid;
             border-width: 0 !important;
             height: 0;
@@ -21,22 +23,43 @@
             width: 0;
         }
 
+        /* Make all inputs and selects have a clean black border */
         select,
         input {
             border-color: #000 !important;
+            border-width: 1px;
+            box-shadow: none !important;
         }
 
+        /* Make labels black (you can remove this if using dark backgrounds) */
         label {
             color: #000 !important;
+            font-weight: 500;
         }
 
+        /* Customize Select2 box styling */
         .select2-container--default .select2-selection--single {
-            background-color: #fff;
-            border: 1px solid #aaa;
+            background-color: #fff !important;
+            border: 1px solid #000 !important;
             border-radius: 4px;
-            width: 55% !important;
+            height: 30px !important;
+            display: flex;
+            align-items: center;
+            width: 100% !important;
+            padding-left: 8px;
+        }
+
+        /* Align the Select2 text vertically */
+        .select2-selection__rendered {
+            line-height: 30px !important;
+        }
+
+        /* Fix the dropdown width to match input width */
+        .select2-container {
+            width: 100% !important;
         }
     </style>
+
     <form action="{{ route('sales.store') }}" method="post" target="_blank" onsubmit="reloadAfterSubmit()">
         @csrf
         <div class="content container-fluid pt-0">
@@ -105,57 +128,19 @@
                     <div class="row">
                         <div class="col-md-12">
 
-
-
-
-
-
-
                             <div class="group-item" data-itemnumber="1" id="form-group-item1"
                                 style="background:#198754; color:#fff !important; padding: 10px 5px;">
-                                <!-- <table>
-                                                                                                                                     <tr>
-                                                                                                                                      <td><label style="color:#fff !important;">Product Name</label></td>
-                                                                                                                                      <td><label style="color:#fff !important;">Warranty</label></td>
-                                                                                                                                      <td><label style="color:#fff !important;"> Purchase Price</label></td>
-                                                                                                                                      <td><label style="color:#fff !important;"> Unit Price</label></td>
-                                                                                                                                      <td><label style="color:#fff !important;">Qty</label></td>
-                                                                                                                                      <td><label style="color:#fff !important;">Total</label></td>
-                                                                                                                                      <td></td>
-                                                                                                                                     </tr>
-                                                                                                                                     <tr>
-                                                                                                                                      <td>
-                                                                                                                                       <select onchange="selectProduct(1)" id="product1" class="form-control js-example-basic-single" style="height: 30px;" required>
-                                                                                                                                        <option value=""></option>
-                                                                                                                                        @foreach ($products as $product)
-    <option value="{{ $product->id }}" data-name="{{ $product->name }}({{ $product->model }})" data-price="{{ $product->latestPurchase->unit_price ?? 0 }}">
-                                                                                                                                          {{ $product->name }}({{ $product->model }})
-                                                                                                                                         </option>
-    @endforeach
-                                                                                                                                       </select>
-                                                                                                                                      </td>
-                                                                                                                                      <td>
-                                                                                                                                       <input type="number" id="Warranty" style="height: 30px;" class="form-control Warranty" >
-                                                                                                                                      </td>
-                                                                                                                                      <td>
-                                                                                                                                       <input type="number" id="purchase_price1" style="height: 30px;" class="form-control" readonly>
-                                                                                                                                      </td>
-                                                                                                                                      <td>
-                                                                                                                                       <input onchange="calculateTotal()" type="number" id="unit_price1" style="height: 30px;" class="form-control unit-price" >
-                                                                                                                                      </td>
-                                                                                                                                      <td>
-                                                                                                                                       <input onchange="calculateTotal()" type="number" id="qty1" style="height: 30px;" class="form-control qty" min="0">
-                                                                                                                                      </td>
-                                                                                                                                      <td>
-                                                                                                                                       <input type="number" id="total1" style="height: 30px;" class="form-control total" readonly>
-                                                                                                                                      </td>
-                                                                                                                                      <td>
-                                                                                                                                       <button onclick="addItem()"  type="button" class=" btn btn-primary addItemBtn">Add</button>
-                                                                                                                                      </td>
-                                                                                                                                     </tr>
-                                                                                                                                    </table> -->
+                                {{-- 
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}"
+                                        data-name="{{ $product->name }}({{ $product->model }})"
+                                        data-price="{{ $product->latestPurchase->unit_price ?? 0 }}">
+                                        {{ $product->name }}({{ $product->model }})
+                                    </option>
+                                @endforeach --}}
 
-                                <style>
+
+                                {{-- <style>
                                     @media (min-width: 768px) {
                                         .col-md-2 {
                                             width: 13% !important;
@@ -163,10 +148,10 @@
                                             padding-right: 5px;
                                         }
                                     }
-                                </style>
+                                </style> --}}
 
                                 <div class="row align-items-end">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <label style="color:#fff !important;">Product Name</label>
                                         <select onchange="selectProduct(1)" id="product1"
                                             class="form-control js-example-basic-single" style="height: 30px;" required>
@@ -174,14 +159,19 @@
                                             @foreach ($products as $product)
                                                 <option value="{{ $product->id }}"
                                                     data-name="{{ $product->name }}({{ $product->model }})"
+                                                    data-stock="{{ $product->inventory->current_stock ?? 0 }}"
                                                     data-price="{{ $product->latestPurchase->unit_price ?? 0 }}"
                                                     data-warranty="{{ $product->warranty ?? 0 }}">
-                                                    {{ $product->name }}({{ $product->model }})
-                                                </option>
+                                                    {{ $product->name }}({{ $product->model }}) </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-1">
+                                        <label style="color:#fff !important;">Stock</label>
+                                        <input type="number" id="stock1" style="height: 30px;" class="form-control"
+                                            readonly>
+                                    </div>
+                                    <div class="col-md-1">
                                         <label style="color:#fff !important;"> Warranty (Days)</label>
                                         <input type="number" id="warranty1" style="height: 30px;" class="form-control"
                                             readonly>
@@ -196,7 +186,8 @@
                                         <input onchange="calculateTotal()" type="number" id="unit_price1"
                                             style="height: 30px;" class="form-control unit-price">
                                     </div>
-                                    <div class="col-md-2">
+
+                                    <div class="col-md-1">
                                         <label style="color:#fff !important;">Qty</label>
                                         <input onchange="calculateTotal()" type="number" id="qty1"
                                             style="height: 30px;" class="form-control qty" min="0">
@@ -240,54 +231,48 @@
                             <hr>
 
                             <br>
-                            <div id="summerySection" class="row d-flex justify-content-end align-items-end d-none">
-                                <div class="col-md-4"></div>
-
+                            <div id="summerySection" class="row align-items-end mt-3 d-none" style="color:#000;">
                                 <div class="col-md-2">
                                     <label>Sub Total</label>
                                     <input onchange="calculateTotal()" type="number" id="subTotal" name="subTotal"
-                                        style="height: 30px;" class="form-control total" readonly>
+                                        class="form-control total" style="height: 30px;" readonly>
                                 </div>
 
                                 <div class="col-md-2">
                                     <label>Discount</label>
                                     <input onchange="calculateTotal()" type="number" id="discount" name="discount"
-                                        style="height: 30px;" class="form-control total">
+                                        class="form-control total" style="height: 30px;">
                                 </div>
 
                                 <div class="col-md-2">
                                     <label>Grand Total</label>
-                                    <input type="number" id="grandTotal" name="grandTotal" style="height: 30px;"
-                                        class="form-control total" readonly>
+                                    <input type="number" id="grandTotal" name="grandTotal" class="form-control total"
+                                        style="height: 30px;" readonly>
                                 </div>
 
                                 <div class="col-md-2">
                                     <label>Advanced Payment</label>
                                     <input type="number" name="advanced_payment" id="advancedPayment"
-                                        style="height: 30px;"value="0" min="0" step="0.01">
+                                        class="form-control total" style="height: 30px;" value="0" min="0"
+                                        step="0.01">
                                 </div>
 
                                 <div class="col-md-2">
                                     <label>Due Payment</label>
-                                    <input type="number" id="duePayment" name="duePayment" style="height: 30px;"
-                                        class="form-control total" readonly>
+                                    <input type="number" id="duePayment" name="duePayment" class="form-control total"
+                                        style="height: 30px;" readonly>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="add-customer-btns text-right">
+                                        <button type="submit" class="btn customer-btn-save">Submit</button>
+                                    </div>
                                 </div>
 
-                                <div class="col-md-2 text-end btn-holder">
-                                    <!-- optional buttons here -->
-                                </div>
                             </div>
-
-
-                            <div class="add-customer-btns text-left">
-                                <button type="submit" class="btn customer-btn-save">Submit</button>
-                            </div>
-
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </form>
 
 
@@ -341,6 +326,12 @@
                 return;
             }
 
+            const stock = parseFloat(document.getElementById('stock1').value) || 0;
+            if (parseFloat(qty) > stock) {
+                alert("Quantity exceeds available stock!");
+                return;
+            }
+
 
             var eles = document.getElementsByClassName('item' + product);
             if (eles.length) {
@@ -351,7 +342,6 @@
                 }
 
             } else {
-
 
 
                 var html = `
@@ -402,58 +392,76 @@
             calculateTotal();
         }
 
-        function selectProduct(item) {
+        // function selectProduct(item) {
 
-            var selectedPrice = $('#product' + item + ' option:selected').data('price');
-            var selectedWarranty = $('#product' + item + ' option:selected').data('warranty');
+        //     var selectedPrice = $('#product' + item + ' option:selected').data('price');
+        //     var selectedWarranty = $('#product' + item + ' option:selected').data('warranty');
+        //     if (document.getElementById('purchase_price' + item))
+        //         document.getElementById('purchase_price' + item).value = selectedPrice;
+        //     if (document.getElementById('warranty' + item))
+        //         document.getElementById('warranty' + item).value = selectedWarranty;
+        //     calculateTotal();
+        // }
+
+        function selectProduct(item) {
+            var selected = $('#product' + item + ' option:selected');
+            var selectedPrice = selected.data('price') || 0;
+            var selectedWarranty = selected.data('warranty') || 0;
+            var selectedStock = selected.data('stock') || 0;
+
             if (document.getElementById('purchase_price' + item))
                 document.getElementById('purchase_price' + item).value = selectedPrice;
             if (document.getElementById('warranty' + item))
                 document.getElementById('warranty' + item).value = selectedWarranty;
+            if (document.getElementById('stock' + item))
+                document.getElementById('stock' + item).value = selectedStock;
+
             calculateTotal();
         }
 
 
         function calculateTotal() {
-            var eles = document.getElementsByClassName('group-item');
+            let subTotal = 0;
 
-            var subTotal = 0;
-            for (var i = 0; i < eles.length; i++) {
-                var itemNumber = eles[i].dataset.itemnumber;
+            const eles = document.getElementsByClassName('group-item');
+            for (let i = 0; i < eles.length; i++) {
+                const itemNumber = eles[i].dataset.itemnumber;
 
-                var unit_price = parseFloat(document.getElementById('unit_price' + itemNumber).value) || 0;
-                var qty = parseFloat(document.getElementById('qty' + itemNumber).value) || 0;
-                var totalEle = document.getElementById('total' + itemNumber);
+                if (itemNumber == 1) continue;
 
-                var total = qty * unit_price;
-                totalEle.value = total;
+                const unit_price = parseFloat(document.getElementById('unit_price' + itemNumber)?.value) || 0;
+                const qty = parseFloat(document.getElementById('qty' + itemNumber)?.value) || 0;
+                const totalEle = document.getElementById('total' + itemNumber);
+
+                const total = qty * unit_price;
+                if (totalEle) totalEle.value = total.toFixed(2);
 
                 subTotal += total;
             }
 
-            // Handle discount
-            var discount = parseFloat(document.getElementById('discount').value) || 0;
+            const previewUnitPrice = parseFloat(document.getElementById('unit_price1')?.value) || 0;
+            const previewQty = parseFloat(document.getElementById('qty1')?.value) || 0;
+            const previewTotal = previewUnitPrice * previewQty;
+            const previewTotalInput = document.getElementById('total1');
+            if (previewTotalInput) previewTotalInput.value = previewTotal.toFixed(2);
+
+            let discount = parseFloat(document.getElementById('discount').value) || 0;
             if (discount > subTotal) discount = subTotal;
-            document.getElementById('discount').value = discount;
+            document.getElementById('discount').value = discount.toFixed(2);
 
-            // Update Sub Total and Grand Total
-            var grandTotal = subTotal - discount;
-            document.getElementById('subTotal').value = subTotal;
-            document.getElementById('grandTotal').value = grandTotal;
+            const grandTotal = subTotal - discount;
+            document.getElementById('subTotal').value = subTotal.toFixed(2);
+            document.getElementById('grandTotal').value = grandTotal.toFixed(2);
 
-            // Calculate Due Payment
-            var advanced = parseFloat(document.getElementById('advancedPayment').value) || 0;
-            var due = grandTotal - advanced;
+            const advanced = parseFloat(document.getElementById('advancedPayment').value) || 0;
+            const due = grandTotal - advanced;
             document.getElementById('duePayment').value = due.toFixed(2);
 
-            // Show or hide summary section
-            var content = document.getElementById("item_container").innerHTML.trim();
-            if (content !== "") {
-                document.getElementById("summerySection").classList.remove('d-none');
-            } else {
-                document.getElementById("summerySection").classList.add('d-none');
-            }
+            const hasItems = document.querySelectorAll('.group-item[data-itemnumber]:not([data-itemnumber="1"])').length >
+                0;
+            document.getElementById("summerySection").classList.toggle('d-none', !hasItems);
         }
+
 
         // Optional: recalc Due Payment whenever Advanced Payment changes
         document.getElementById('advancedPayment').addEventListener('input', calculateTotal);

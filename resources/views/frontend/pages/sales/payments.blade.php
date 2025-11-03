@@ -46,7 +46,7 @@
                                                     <strong>Order No:</strong> {{ $sale->order_no }}
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <strong>Customer:</strong> {{ $sale->customer->name ?? 'N/A' }}
+                                                    <strong>Customer Name:</strong> {{ $sale->customer->name ?? 'N/A' }}
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Phone:</strong> {{ $sale->customer->phone ?? 'N/A' }}
@@ -112,8 +112,7 @@
                                                         max="{{ $sale->due_payment }}" min="0.01" step="0.01"
                                                         value="{{ $sale->due_payment }}" required
                                                         oninput="updateRemaining(this.value)">
-                                                    <small class="text-muted">Max:
-                                                        ৳{{ number_format($sale->due_payment, 2) }}</small>
+
                                                 </div>
 
                                                 <div class="col-md-4">

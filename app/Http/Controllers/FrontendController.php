@@ -38,10 +38,10 @@ class FrontendController extends Controller
         // $thisYearsRevenue = Service::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('status','1')->sum('bill');
         // $totalServiceDues = Service::where('status','1')->where('due_amount', '>', 0)->sum('due_amount');
 
-        $todaysSalesRevenue = Sale::whereDate('created_at', Carbon::today())->where('status','1')->sum('payble');
-        $thisWeeksSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status','1')->sum('payble');
-        $thisMonthsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->where('status','1')->sum('payble');
-        $thisYearsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('status','1')->sum('payble');
+        $todaysSalesRevenue = Sale::whereDate('created_at', Carbon::today())->sum('payble');
+        $thisWeeksSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek(),])->sum('payble');        
+        $thisMonthsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->sum('payble');
+        $thisYearsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->sum('payble');
 
         $todaysPurchaseRevenue = Purchase::whereDate('created_at', Carbon::today())
          

@@ -116,6 +116,14 @@
                     </li>
                 @endcan
 
+                @can('Payment Management')
+                    <li class="menu-title"><span>Payment Management</span></li>
+                    <li>
+                        <a href="{{ route('due-payments.index') }}"
+                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
+                            <span>Due Payment</span></a>
+                    </li>
+                @endcan
 
 
                 @can('Inventory Management')
@@ -148,6 +156,12 @@
                         <a href="{{ route('sales.report') }}"
                             class="{{ Route::currentRouteName() == 'sales.report' ? 'active' : '' }}"><i
                                 class="fe fe-package"></i> <span> Sales Report</span></a>
+                    </li>
+                    <li class="">
+                        <a href="{{ route('revenues.index') }}"
+                            class="{{ Route::currentRouteName() == 'revenues.index' ? 'active' : '' }}"><i
+                                class="fe fe-package"></i> <span> Revenue Report</span></a>
+                        </a>
                     </li>
                 @endcan
                 {{-- 			

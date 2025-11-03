@@ -17,7 +17,7 @@
         <div class="invoice-header">
             <div class="header__left">
                 <div class="logo">
-                    <img src="{{ asset('assets/invoice/logo.webp') }}" alt="" />
+                    <img src="{{ asset('assets/invoice/logo-transparent.webp') }}" alt="" />
                 </div>
                 <div class="company-info">
                     <h1>Intelligent Technology</h1>
@@ -121,7 +121,7 @@
                     <td class="text-right">{{ $sales->discount }} Tk</td>
                 </tr>
                 <tr>
-                    <td>Total Price:</td>
+                    <td>Total:</td>
                     <td class="text-right">{{ $sales->payble }} Tk</td>
                 </tr>
                 <tr>
@@ -131,14 +131,6 @@
                 <tr>
                     <td>Total Due:</td>
                     <td class="text-right">{{ $sales->due_payment }} Tk</td>
-                </tr>
-                <tr>
-                    <td>Previous Receivable:</td>
-                    <td class="text-right">0.00 Tk</td>
-                </tr>
-                <tr>
-                    <td>Current Receivable:</td>
-                    <td class="text-right">0.00 Tk</td>
                 </tr>
             </table>
         </div>
