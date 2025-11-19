@@ -28,7 +28,7 @@
                 <div class="list-btn">
                     <ul class="filter-list">
                         <li>
-                            <a class="btn btn-primary" href="{{ route('customers.create') }}">
+                            <a class="btn btn-primary" href="{{ route('vendors.create') }}">
                                 <i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Add Vendor </a>
                         </li>
                     </ul>

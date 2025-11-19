@@ -72,12 +72,13 @@
             <div class="col-12">
                 <div class="card-table">
                     <div class="card-body">
-                        <div class="table-responsive">
+                        <div class="table-fluid">
                             <table class="table table-center table-hover">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>#</th>
                                         <th>Date</th>
+                                        <th>Employee</th>
                                         <th>Category</th>
                                         <th>Amount</th>
                                         <th>Spend Method</th>
@@ -90,8 +91,9 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ \Carbon\Carbon::parse($item->date)->format('d M, Y') }}</td>
+                                            <td>{{ $item->employee->name ?? 'N/A' }}</td>
                                             <td>{{ $item->category_name }}</td>
-                                            <td>TK{{ number_format($item->amount, 2) }}</td>
+                                            <td>{{ number_format($item->amount, 2) }}</td>
                                             <td>{{ ucfirst(str_replace('_', ' ', $item->spend_method)) }}</td>
                                             <td>{{ $item->remarks }}</td>
                                             <td>

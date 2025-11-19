@@ -16,8 +16,8 @@
                 <tr>
                     <th>Year</th>
                     <th>Month</th>
-                    <th>Sales</th>
                     <th>Purchases</th>
+                    <th>Sales</th>
                     <th>Expenses</th>
                     <th>Net Profit</th>
                     <th>Action</th>
@@ -28,8 +28,8 @@
                     <tr>
                         <td>{{ $rev->year }}</td>
                         <td>{{ $rev->month_name }}</td>
-                        <td>{{ number_format($rev->total_sales, 2) }}</td>
                         <td>{{ number_format($rev->total_purchases, 2) }}</td>
+                        <td>{{ number_format($rev->total_sales, 2) }}</td>
                         <td>{{ number_format($rev->total_expenses, 2) }}</td>
                         <td><strong>{{ number_format($rev->net_profit, 2) }}</strong></td>
                         <td>

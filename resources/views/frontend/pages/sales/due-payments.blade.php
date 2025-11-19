@@ -14,49 +14,51 @@
                     </div>
 
                     @if ($sales->count())
-                        <table class="table table-bordered table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Invoice No</th>
-                                    <th>Customer</th>
-                                    <th>Total Amount</th>
-                                    <th>Paid</th>
-                                    <th>Due</th>
-                                    <th>Sale Date</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($sales as $sale)
+                        <div class="p-3">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $sale->order_no }}</td>
-                                        <td>{{ $sale->customer->name ?? 'Walk-in Customer' }}</td>
-                                        <td>{{ number_format($sale->payble, 2) }} Tk</td>
-                                        <td>{{ number_format($sale->advanced_payment, 2) }} Tk</td>
-                                        <td>
-                                            <strong class="text-danger">{{ number_format($sale->due_payment, 2) }}
-                                                Tk</strong>
-                                        </td>
-                                        <td>{{ $sale->created_at->format('d M, Y') }}</td>
-                                        <td>
-                                            {{-- <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-sm btn-info">
+                                        <th>#</th>
+                                        <th>Invoice No</th>
+                                        <th>Customer</th>
+                                        <th>Total Amount</th>
+                                        <th>Paid</th>
+                                        <th>Due</th>
+                                        <th>Sale Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($sales as $sale)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $sale->order_no }}</td>
+                                            <td>{{ $sale->customer->name ?? 'Walk-in Customer' }}</td>
+                                            <td>{{ number_format($sale->payble, 2) }} Tk</td>
+                                            <td>{{ number_format($sale->advanced_payment, 2) }} Tk</td>
+                                            <td>
+                                                <strong class="text-danger">{{ number_format($sale->due_payment, 2) }}
+                                                    Tk</strong>
+                                            </td>
+                                            <td>{{ $sale->created_at->format('d M, Y') }}</td>
+                                            <td>
+                                                {{-- <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-sm btn-info">
                                                 <i class="fa fa-eye"></i> View
                                             </a> --}}
-                                            {{-- Optional: add “Pay Due” button --}}
-                                            @if ($sale->due_payment > 0)
-                                                <a href="{{ route('sales.payments', $sale->id) }}"
-                                                    class="btn btn-sm btn-outline-success">
-                                                    <i class="fas fa-credit-card me-1"></i> Pay Now
-                                                </a>
-                                            @endif
+                                                {{-- Optional: add “Pay Due” button --}}
+                                                @if ($sale->due_payment > 0)
+                                                    <a href="{{ route('sales.payments', $sale->id) }}"
+                                                        class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-credit-card me-1"></i> Pay Now
+                                                    </a>
+                                                @endif
 
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     @else
                         <div class="alert alert-info text-center shadow-sm">
                             <i class="fas fa-check-circle me-2"></i>

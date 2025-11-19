@@ -91,7 +91,7 @@
                                 class="fe fe-plus-circle"></i> <span> Add Customer</span></a>
                         <a href="{{ route('customers.index') }}"
                             class="{{ Route::currentRouteName() == 'customers.index' ? 'active' : '' }}"><i
-                                class="fe fe-list"></i> <span>Customer List</span></a>
+                                class="fe fe-plus-circle"></i> <span>Customers List</span></a>
                     </li>
                 @endcan
 
@@ -125,7 +125,6 @@
                     </li>
                 @endcan
 
-
                 @can('Inventory Management')
                     <li class="menu-title "><span>Inventory Management</span></li>
                     <li class="">
@@ -134,8 +133,62 @@
                                 class="fe fe-package"></i> <span> Inventory List</span></a>
                     </li>
                 @endcan
-                @can('Expense Management')
-                    <li class="menu-title"><span>Expense Management</span></li>
+
+                @can('Client Management')
+                    <li class="menu-title "><span>Client Management</span></li>
+                    <li class="">
+                        <a href="{{ route('clients.index') }}"
+                            class="{{ Route::currentRouteName() == 'clients.index' ? 'active' : '' }}"><i
+                                class="fe fe-package"></i> <span> Clients List</span></a>
+                    </li>
+                @endcan
+
+                 @can('Cost Management')
+                    <li class="menu-title "><span>Cost Management</span></li>
+                    <li class="">
+                        <a href="{{ route('cost-categories.index') }}"
+                            class="{{ Route::currentRouteName() == 'cost-categories.index' ? 'active' : '' }}"><i
+                                class="fe fe-package"></i> <span> Cost-Category List</span></a>
+                                <a href="{{ route('cost-categories.create') }}"
+                            class="{{ Route::currentRouteName() == 'cost-categories.create' ? 'active' : '' }}"><i
+                                class="fe fe-package"></i> <span>Add Cost-Category</span></a>
+                    </li>
+                @endcan
+
+                @can('Employee Management')
+                    <li class="menu-title "><span>Employee Management</span></li>
+                    <li class="">
+                        <a href="{{ route('employee.tada.index') }}"
+                            class="{{ Route::currentRouteName() == 'employee.tada.index' ? 'active' : '' }}"><i
+                                class="fe fe-list"></i> <span>TA/DA List</span></a>
+                        <a href="{{ route('employee.tada.create') }}"
+                            class="{{ Route::currentRouteName() == 'employee.tada.create' ? 'active' : '' }}"><i
+                                class="fe fe-package"></i> <span>Submit TA/DA</span></a>
+                    </li>
+                @endcan
+
+                @can('Project Management')
+                    <li class="menu-title "><span>Project Management</span></li>
+                    <li class="">
+                        <a href="{{ route('projects.index') }}"
+                            class="{{ Route::currentRouteName() == 'projects.index' ? 'active' : '' }}"><i
+                                class="fe fe-list"></i> <span>Projects List</span></a>
+                                <a href="{{ route('project-items.index') }}"
+                                class="{{ Route::currentRouteName() == 'project-items.index' ? 'active' : '' }}">
+                                <i class="fe fe-list"></i> <span>Add Projects Items</span>
+                                </a>
+                               <a href="{{ route('project-costs.index') }}"
+                                class="{{ Route::currentRouteName() == 'project-costs.index' ? 'active' : '' }}">
+                                <i class="fe fe-list"></i> <span>Projects Cost List</span>
+                                </a>
+                        {{-- <a href="{{ route('employee.tada.create') }}"
+                            class="{{ Route::currentRouteName() == 'employee.tada.create' ? 'active' : '' }}"><i
+                                class="fe fe-package"></i> <span>Submit TA/DA</span></a> --}}
+                    </li>
+                @endcan
+
+                @can('Accounts Management')
+                    <li class="menu-title"><span>Accounts Management</span></li>
                     <li>
                         <a href="{{ route('expense-categories.index') }}"
                             class="{{ Route::currentRouteName() == 'expense-categories.index' ? 'active' : '' }}"><i
@@ -143,8 +196,22 @@
                         <a href="{{ route('dailyExpenses.index') }}"
                             class="{{ Route::currentRouteName() == 'dailyExpenses.index' ? 'active' : '' }}"><i
                                 class="fe fe-list"></i> <span>Expense List</span></a>
+                        {{-- <a href="{{ route('employees.create') }}"
+                            class="{{ Route::currentRouteName() == 'employees.create' ? 'active' : '' }}"><i
+                                class="fe fe-plus-circle"></i> <span>Add Employee</span></a> --}}
+                        <a href="{{ route('employees.index') }}"
+                            class="{{ Route::currentRouteName() == 'employees.index' ? 'active' : '' }}"><i
+                                class="fe fe-list"></i> <span>Employee List</span></a>
+                        <a href="{{ route('ta-da.index') }}"
+                            class="{{ Route::currentRouteName() == 'ta-da.index' ? 'active' : '' }}"><i
+                                class="fe fe-list"></i> <span>TA/DA List</span></a>
+                        <a href="{{ route('salary.index') }}"
+                            class="{{ Route::currentRouteName() == 'salary.index' ? 'active' : '' }}"><i
+                                class="fe fe-list"></i> <span>Salary Manage</span></a>
+
                     </li>
                 @endcan
+
                 @can('Report Management')
                     <li class="menu-title "><span>Report Management</span></li>
                     <li class="">

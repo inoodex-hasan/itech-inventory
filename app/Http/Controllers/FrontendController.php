@@ -31,6 +31,15 @@ class FrontendController extends Controller
 {
     public function index()
     { 
+        $user = auth()->user();
+
+    if ($user->hasRole('Employee')) {
+        // For Employees – show limited data
+        return view('frontend.pages.dashboard_employee', [
+            'title' => 'Employee Dashboard',
+            'data' => [], // empty or limited
+        ]);
+    }
         
         // $todaysRevenue = Service::whereDate('created_at', Carbon::today())->where('status','1')->sum('bill');
         // $thisWeeksRevenue = Service::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status','1')->sum('bill');

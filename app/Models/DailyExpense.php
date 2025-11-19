@@ -10,9 +10,23 @@ class DailyExpense extends Model
     use HasFactory;
     protected $fillable = [
         'date',
-        'purpose_of_expense',
+        'user_id', 
+        'employee_id',
+        'expense_category_id',   
+        'remarks',
         'amount',
         'spend_method',
-        'assign_person',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function employee()
+{
+    return $this->belongsTo(Employee::class, 'employee_id');
+}
+
+    
 }

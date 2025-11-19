@@ -7,6 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Salary extends Model
 {
-    use HasFactory;
-    protected $table = 'salaries';
+    protected $fillable = [
+        'employee_id',
+        'month',
+        'basic_salary',
+        'advance',
+        'allowance',
+        'deduction',
+        'net_salary',
+        'payment_status',
+        'payment_date',
+        'note',
+    ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 03, 2025 at 02:13 PM
+-- Generation Time: Nov 10, 2025 at 01:42 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,6 +39,23 @@ CREATE TABLE `addresses` (
   `address_details` text NOT NULL,
   `comment` text DEFAULT NULL,
   `address_type` enum('1','2') NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `advance_salaries`
+--
+
+CREATE TABLE `advance_salaries` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `request_date` date NOT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -154,9 +171,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_verified_at`, `address`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Customer 1', NULL, '01234567890', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-10-14 23:06:04', '2025-11-02 18:46:01'),
 (2, 'Hasan', NULL, '01326598470', NULL, NULL, 'Mirpur', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-02 19:18:55', '2025-11-02 19:18:55'),
-(9, 'Test', NULL, '01195674368', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 00:22:32', '2025-11-03 00:22:32'),
 (10, 'Md Hasan', NULL, '01123695847', NULL, NULL, 'Banani', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 01:26:05', '2025-11-03 01:26:05'),
 (11, 'Md Juel', NULL, '01213986745', NULL, NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-03 02:06:48');
 
@@ -168,6 +183,8 @@ INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_
 
 CREATE TABLE `daily_expenses` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `employee_id` bigint(20) UNSIGNED NOT NULL,
   `date` date NOT NULL,
   `expense_category_id` bigint(20) UNSIGNED NOT NULL,
   `amount` decimal(15,2) NOT NULL,
@@ -181,9 +198,8 @@ CREATE TABLE `daily_expenses` (
 -- Dumping data for table `daily_expenses`
 --
 
-INSERT INTO `daily_expenses` (`id`, `date`, `expense_category_id`, `amount`, `spend_method`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, '2025-11-03', 1, 100.00, 'cash', 'other', '2025-11-03 00:27:57', '2025-11-03 00:27:57'),
-(2, '2025-11-04', 1, 250.00, 'cash', 'Eating', '2025-11-03 00:29:06', '2025-11-03 00:29:06');
+INSERT INTO `daily_expenses` (`id`, `user_id`, `employee_id`, `date`, `expense_category_id`, `amount`, `spend_method`, `remarks`, `created_at`, `updated_at`) VALUES
+(1, 2, 4, '2025-11-10', 2, 3000.00, 'cash', 'yjth', '2025-11-09 20:49:47', '2025-11-09 21:14:52');
 
 -- --------------------------------------------------------
 
@@ -222,6 +238,35 @@ CREATE TABLE `districts` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `employees`
+--
+
+CREATE TABLE `employees` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `employee_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `designation` varchar(255) DEFAULT NULL,
+  `join_date` date DEFAULT NULL,
+  `salary` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `status` varchar(255) NOT NULL DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employees`
+--
+
+INSERT INTO `employees` (`id`, `user_id`, `employee_id`, `name`, `email`, `phone`, `image`, `designation`, `join_date`, `salary`, `status`, `created_at`, `updated_at`) VALUES
+(4, 5, 'EMP0005', 'Md Hasan', 'test2@example.com', '012398763542', NULL, 'Jr. Employee', '2025-11-05', 20000.00, 'active', '2025-11-09 18:30:52', '2025-11-09 19:45:21');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `expense_categories`
 --
 
@@ -238,7 +283,8 @@ CREATE TABLE `expense_categories` (
 --
 
 INSERT INTO `expense_categories` (`id`, `name`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Other', 1, '2025-11-03 00:27:27', '2025-11-03 00:27:27');
+(1, 'Other', 1, '2025-11-03 00:27:27', '2025-11-03 00:27:27'),
+(2, 'Advance Salary', 1, '2025-11-09 19:01:53', '2025-11-09 19:01:53');
 
 -- --------------------------------------------------------
 
@@ -343,7 +389,23 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (27, 'add_teams_fields', 1),
 (28, 'create_permission_tables', 1),
 (29, '2025_11_03_045711_create_revenues_table', 2),
-(30, '2025_11_03_045713_create_revenues_table', 3);
+(30, '2025_11_03_045713_create_revenues_table', 3),
+(31, '2025_11_05_004928_create_employees_table', 4),
+(32, '2025_11_05_051145_create_ta_das_table', 5),
+(33, '2025_11_06_063400_create_salaries_table', 6),
+(34, '2025_11_06_063401_create_salaries_table', 7),
+(35, '2025_11_06_063402_create_salaries_table', 8),
+(36, '2025_11_05_051146_create_ta_das_table', 9),
+(37, '2025_11_09_000043_create_salary_advances_table', 10),
+(38, '2025_11_09_065739_create_advance_salaries_table', 11),
+(39, '2025_11_09_074807_add_user_id_to_employees_table', 12),
+(40, '2025_11_09_074807_add_role_id_to_employees_table', 13),
+(41, '2025_11_09_066928_create_employees_table', 14),
+(42, '2025_11_10_051146_create_ta_das_table', 15),
+(43, '2025_11_10_051147_create_ta_das_table', 16),
+(44, '2025_11_10_052056_create_daily_expenses_table', 17),
+(45, '2025_11_10_052057_create_daily_expenses_table', 18),
+(46, '2025_11_10_052067_create_daily_expenses_table', 19);
 
 -- --------------------------------------------------------
 
@@ -374,7 +436,9 @@ CREATE TABLE `model_has_roles` (
 --
 
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
-(1, 'App\\Models\\User', 1);
+(1, 'App\\Models\\User', 1),
+(1, 'App\\Models\\User', 2),
+(2, 'App\\Models\\User', 5);
 
 -- --------------------------------------------------------
 
@@ -472,9 +536,10 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (8, 'Vendor Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
 (9, 'Purchase Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
 (10, 'Inventory Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
-(11, 'Expense Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(11, 'Accounts Management', 'web', '2025-10-14 23:04:22', '2025-11-04 18:46:45'),
 (12, 'Report Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
-(13, 'Payment Management', 'web', '2025-11-03 00:47:54', '2025-11-03 00:47:54');
+(13, 'Payment Management', 'web', '2025-11-03 00:47:54', '2025-11-03 00:47:54'),
+(16, 'Employee Management', 'web', '2025-11-09 01:21:40', '2025-11-09 01:21:40');
 
 -- --------------------------------------------------------
 
@@ -578,7 +643,7 @@ CREATE TABLE `revenues` (
 --
 
 INSERT INTO `revenues` (`id`, `year`, `month`, `total_sales`, `total_purchases`, `total_expenses`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, 2025, 11, 331500.00, 714000.00, 350.00, NULL, '2025-11-03 00:06:23', '2025-11-03 02:07:44');
+(1, 2025, 11, 296500.00, 874000.00, 350.00, NULL, '2025-11-03 00:06:23', '2025-11-09 18:44:14');
 
 -- --------------------------------------------------------
 
@@ -599,7 +664,8 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'Super Admin', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22');
+(1, 'Super Admin', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
+(2, 'Employee', 'web', '2025-11-05 19:06:09', '2025-11-09 01:20:37');
 
 -- --------------------------------------------------------
 
@@ -629,7 +695,8 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (10, 1),
 (11, 1),
 (12, 1),
-(13, 1);
+(13, 1),
+(16, 2);
 
 -- --------------------------------------------------------
 
@@ -639,11 +706,40 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 
 CREATE TABLE `salaries` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) NOT NULL,
-  `date` date NOT NULL,
-  `amount` double NOT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
-  `remarks` text DEFAULT NULL,
+  `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `month` varchar(255) NOT NULL,
+  `basic_salary` decimal(10,2) NOT NULL,
+  `advance` decimal(10,2) DEFAULT NULL,
+  `allowance` decimal(10,2) DEFAULT NULL,
+  `deduction` decimal(10,2) DEFAULT NULL,
+  `net_salary` decimal(10,2) NOT NULL,
+  `payment_status` enum('paid','unpaid') NOT NULL DEFAULT 'unpaid',
+  `payment_date` date DEFAULT NULL,
+  `note` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `salaries`
+--
+
+INSERT INTO `salaries` (`id`, `employee_id`, `month`, `basic_salary`, `advance`, `allowance`, `deduction`, `net_salary`, `payment_status`, `payment_date`, `note`, `created_at`, `updated_at`) VALUES
+(3, 4, '2025-01', 20000.00, 3000.00, 500.00, 0.00, 17500.00, 'paid', '2025-11-10', 'test', '2025-11-10 00:51:39', '2025-11-10 00:51:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `salary_advances`
+--
+
+CREATE TABLE `salary_advances` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `request_date` date NOT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -677,7 +773,6 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `product_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
-(9, 'INV-690890789E034', 9, 4, 2, 36000, 35000, 36000, 35000.00, 0.00, 1000, '1', 'partial', '2025-11-03 00:22:32', '2025-11-03 01:06:11'),
 (10, 'INV-69089F5D03AFA', 10, 2, 3, 48000, 46500, 48000, 46500.00, 0.00, 1500, '1', 'partial', '2025-11-03 01:26:05', '2025-11-03 01:27:52'),
 (11, 'INV-6908A8E856C9D', 11, 5, 10, 256000, 250000, 256000, 150000.00, 100000.00, 6000, '1', 'partial', '2025-11-03 02:06:48', '2025-11-03 02:06:48');
 
@@ -751,6 +846,32 @@ CREATE TABLE `services` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ta_das`
+--
+
+CREATE TABLE `ta_das` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `date` date NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `purpose` text DEFAULT NULL,
+  `type` enum('TA','DA') NOT NULL DEFAULT 'TA',
+  `payment_type` enum('Advance','Received') NOT NULL DEFAULT 'Received',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `ta_das`
+--
+
+INSERT INTO `ta_das` (`id`, `user_id`, `date`, `amount`, `purpose`, `type`, `payment_type`, `created_at`, `updated_at`) VALUES
+(2, 5, '2025-11-10', 100.00, 'Lunch', 'TA', 'Advance', '2025-11-09 18:41:01', '2025-11-09 18:41:01'),
+(3, 5, '2025-11-10', 50.00, NULL, 'DA', 'Advance', '2025-11-10 01:37:46', '2025-11-10 01:37:46');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -780,7 +901,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `email_verified_at`, `password`, `role_id`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `is_guest`, `status`, `type`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Super Admin', 'info@quickphonefixandmore.com', NULL, NULL, '$2y$12$KWIVx/4asS.TLUkXRveAwu6BmURg1M4CtaaPhCtvRQvLmJEgxM1EW', 1, NULL, NULL, 0, NULL, NULL, '0', '1', '1', NULL, NULL, NULL);
+(1, 'Super Admin', 'info@quickphonefixandmore.com', '01000000000', NULL, '$2y$12$KWIVx/4asS.TLUkXRveAwu6BmURg1M4CtaaPhCtvRQvLmJEgxM1EW', 1, NULL, NULL, 0, NULL, NULL, '0', '0', '1', NULL, NULL, '2025-11-09 01:26:04'),
+(2, 'Inoodex', 'hello@inoodex.com', '013268546970', NULL, '$2y$12$XX/aD1Jy7JoYjb64CfBEuOBTTyCk.X60uazJ/mjue4zvbrFbYHBau', 1, '', NULL, 0, NULL, NULL, '0', '1', '1', NULL, '2025-11-04 18:43:21', '2025-11-04 18:43:21'),
+(5, 'Md Hasan', 'test2@example.com', '012398763542', NULL, '$2y$12$L6PfuXrm52J5sLsRKMBtv.ZmBX07JumeLi.TanaM3yBLR4U.u5rhq', 2, '', NULL, 0, NULL, NULL, '0', '1', '1', NULL, '2025-11-09 18:30:52', '2025-11-09 18:35:52');
 
 -- --------------------------------------------------------
 
@@ -804,9 +927,10 @@ CREATE TABLE `vendors` (
 --
 
 INSERT INTO `vendors` (`id`, `name`, `phone`, `email`, `address`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Vendor 1', '01364829570', 'vendor1@exmaple.com', 'Dhaka', '1', '2025-11-02 18:44:31', '2025-11-02 18:44:31'),
-(2, 'Vendor 2', '01195674368', 'vendor2@example.com', 'Gulshan', '1', '2025-11-02 18:45:07', '2025-11-02 18:45:07'),
-(3, 'Vendor 3', '01295876340', 'vendor3@example.com', 'Mirpur', '1', '2025-11-03 02:11:13', '2025-11-03 02:11:13');
+(1, 'Tech Land', '01364829570', 'techland@example.com', 'Banani', '1', '2025-11-02 18:44:31', '2025-11-09 18:52:33'),
+(2, 'Ryans', '01195674368', 'ryans@example.com', 'Gulshan', '1', '2025-11-02 18:45:07', '2025-11-09 18:48:08'),
+(3, 'Star Tech', '01295876340', 'startech@example.com', 'Multiplan', '1', '2025-11-03 02:11:13', '2025-11-09 18:52:45'),
+(4, 'Global Brand', '01129367145', 'globalbrand@example.com', 'Uttara', '1', '2025-11-09 18:51:46', '2025-11-09 18:52:18');
 
 --
 -- Indexes for dumped tables
@@ -817,6 +941,13 @@ INSERT INTO `vendors` (`id`, `name`, `phone`, `email`, `address`, `status`, `cre
 --
 ALTER TABLE `addresses`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `advance_salaries`
+--
+ALTER TABLE `advance_salaries`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `advance_salaries_employee_id_foreign` (`employee_id`);
 
 --
 -- Indexes for table `areas`
@@ -855,8 +986,9 @@ ALTER TABLE `customers`
 --
 ALTER TABLE `daily_expenses`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `daily_expenses_date_index` (`date`),
-  ADD KEY `daily_expenses_expense_category_id_index` (`expense_category_id`);
+  ADD KEY `daily_expenses_user_id_foreign` (`user_id`),
+  ADD KEY `daily_expenses_employee_id_foreign` (`employee_id`),
+  ADD KEY `daily_expenses_expense_category_id_foreign` (`expense_category_id`);
 
 --
 -- Indexes for table `daily_sales`
@@ -869,6 +1001,15 @@ ALTER TABLE `daily_sales`
 --
 ALTER TABLE `districts`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `employees`
+--
+ALTER TABLE `employees`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `employees_employee_id_unique` (`employee_id`),
+  ADD UNIQUE KEY `employees_email_unique` (`email`),
+  ADD KEY `employees_user_id_foreign` (`user_id`);
 
 --
 -- Indexes for table `expense_categories`
@@ -1000,7 +1141,14 @@ ALTER TABLE `role_has_permissions`
 --
 ALTER TABLE `salaries`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `salaries_date_index` (`date`);
+  ADD KEY `salaries_employee_id_foreign` (`employee_id`);
+
+--
+-- Indexes for table `salary_advances`
+--
+ALTER TABLE `salary_advances`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `salary_advances_employee_id_foreign` (`employee_id`);
 
 --
 -- Indexes for table `sales`
@@ -1024,6 +1172,13 @@ ALTER TABLE `services`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `ta_das`
+--
+ALTER TABLE `ta_das`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ta_das_user_id_foreign` (`user_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -1044,6 +1199,12 @@ ALTER TABLE `vendors`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `advance_salaries`
+--
+ALTER TABLE `advance_salaries`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -1074,13 +1235,13 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `daily_expenses`
 --
 ALTER TABLE `daily_expenses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `daily_sales`
@@ -1095,10 +1256,16 @@ ALTER TABLE `districts`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `employees`
+--
+ALTER TABLE `employees`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `expense_categories`
 --
 ALTER TABLE `expense_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `extras`
@@ -1122,7 +1289,7 @@ ALTER TABLE `inventories`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1140,7 +1307,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -1170,12 +1337,18 @@ ALTER TABLE `revenues`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `salaries`
 --
 ALTER TABLE `salaries`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `salary_advances`
+--
+ALTER TABLE `salary_advances`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -1197,26 +1370,46 @@ ALTER TABLE `services`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `ta_das`
+--
+ALTER TABLE `ta_das`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `vendors`
 --
 ALTER TABLE `vendors`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
 --
 
 --
+-- Constraints for table `advance_salaries`
+--
+ALTER TABLE `advance_salaries`
+  ADD CONSTRAINT `advance_salaries_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `daily_expenses`
 --
 ALTER TABLE `daily_expenses`
-  ADD CONSTRAINT `daily_expenses_expense_category_id_foreign` FOREIGN KEY (`expense_category_id`) REFERENCES `expense_categories` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `daily_expenses_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `daily_expenses_expense_category_id_foreign` FOREIGN KEY (`expense_category_id`) REFERENCES `expense_categories` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `daily_expenses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `employees`
+--
+ALTER TABLE `employees`
+  ADD CONSTRAINT `employees_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `model_has_permissions`
@@ -1253,11 +1446,29 @@ ALTER TABLE `role_has_permissions`
   ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `salaries`
+--
+ALTER TABLE `salaries`
+  ADD CONSTRAINT `salaries_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `salary_advances`
+--
+ALTER TABLE `salary_advances`
+  ADD CONSTRAINT `salary_advances_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `sales`
 --
 ALTER TABLE `sales`
   ADD CONSTRAINT `sales_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `sales_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `ta_das`
+--
+ALTER TABLE `ta_das`
+  ADD CONSTRAINT `ta_das_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

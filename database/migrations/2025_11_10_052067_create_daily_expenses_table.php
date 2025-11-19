@@ -13,16 +13,15 @@ return new class extends Migration
     {
         Schema::create('daily_expenses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
             $table->date('date')->nullable(false);
-            $table->foreignId('expense_category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('expense_category_id')->constrained('')->onDelete('cascade');
             $table->decimal('amount', 15, 2)->nullable(false);
             $table->enum('spend_method', ['cash', 'card', 'bank_transfer'])->nullable(false);
             $table->text('remarks')->nullable();
             $table->timestamps();
 
-            // Optional: Add index for better performance
-            $table->index('date');
-            $table->index('expense_category_id');
         });
     }
 

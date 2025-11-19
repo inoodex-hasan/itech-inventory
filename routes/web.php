@@ -1,38 +1,49 @@
 <?php
 
-use App\Models\Extra;
-use Illuminate\Http\Request;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CostCategoryController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeTaDaController;
+use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaytrailController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProductContoller;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectCostController;
+use App\Http\Controllers\ProjectItemController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\RevenueController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\SalesController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\TaDaController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendorController;
 use App\Mail\VerificationMail;
 use App\Models\Admin\DelivaryCharge;
+use App\Models\Extra;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\SalesController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ProductContoller;
-use App\Http\Controllers\VendorController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\PaytrailController;
-use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\ExpenseCategoryController;
-use App\Http\Controllers\RevenueController;
+
+
 
 
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [FrontendController::class, 'index'])->name('index');
 
-    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    // Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     //Product Management
     Route::group(['middleware' => ['permission:Product Management']], function () {
         Route::prefix('product')->middleware(['auth'])->group(function () {
@@ -71,17 +82,17 @@ Route::middleware(['auth'])->group(function () {
     });
 
     //Order Management
-    Route::group(['middleware' => ['permission:content-management']], function () {
-        Route::resource('slider', SliderController::class);
-        Route::resource('home-ad', AdsController::class);
-    });
+    // Route::group(['middleware' => ['permission:content-management']], function () {
+    //     Route::resource('slider', SliderController::class);
+    //     Route::resource('home-ad', AdsController::class);
+    // });
 
 
     Route::group(['middleware' => ['permission:Administration']], function () {
         Route::resource('users', UserController::class);
         Route::resource('role', RoleController::class);
         Route::resource('permission', PermissionController::class);
-        Route::resource('attendance', AttendanceController::class);
+        // Route::resource('attendance', AttendanceController::class);
 
         Route::get('/user/pin', [UserController::class, 'pin'])->name('users.pin');
         Route::post('/user/pin', [UserController::class, 'pinStore'])->name('users.pin_store');
@@ -111,9 +122,11 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['middleware' => ['permission:Report Management']], function () {
         Route::resource('expense-categories', ExpenseCategoryController::class);
         Route::resource('dailyExpenses', ExpenseController::class);
+        Route::get('/employee/{id}/advance-sum', [ExpenseController::class, 'getAdvanceSum']);
+
     });
-    Route::resource('dailySales', DailySaleController::class);
-    Route::resource('salesTarget', SalesTargetController::class);
+    // Route::resource('dailySales', DailySaleController::class);
+    // Route::resource('salesTarget', SalesTargetController::class);
 
     Route::get('/revenues', [RevenueController::class, 'index'])->name('revenues.index');
     Route::post('/revenues/generate', [RevenueController::class, 'generate'])->name('revenues.generate');
@@ -122,7 +135,41 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/due-payments', [SalesController::class, 'duePayments'])->name('due-payments.index');
 
+    Route::resource('employees', EmployeeController::class);
+    Route::get('employees/{id}', [EmployeeController::class, 'show'])->name('employees.view');
 
+
+    Route::resource('ta-da', TaDaController::class);
+
+    Route::resource('salary', SalaryController::class);
+
+    Route::resource('projects', ProjectController::class);
+
+    Route::resource('clients', ClientController::class);
+
+    Route::resource('cost-categories', CostCategoryController::class);
+
+    Route::resource('project-costs', ProjectCostController::class);
+
+    Route::resource('project-items', ProjectItemController::class);
+
+// Route::prefix('projects/{project}')->group(function () {
+//     Route::get('/items', [ProjectItemController::class, 'index'])->name('project-items.index');
+//     Route::get('/items/create', [ProjectItemController::class, 'create'])->name('project-items.create');
+//     Route::post('/items', [ProjectItemController::class, 'store'])->name('project-items.store');
+//     Route::get('/items/{item}/edit', [ProjectItemController::class, 'edit'])->name('project-items.edit');
+//     Route::put('/items/{item}', [ProjectItemController::class, 'update'])->name('project-items.update');
+//     Route::delete('/items/{item}', [ProjectItemController::class, 'destroy'])->name('project-items.destroy');
+// });
+
+// Route::prefix('projects/{project}')->group(function () {
+//     Route::get('/costs', [ProjectCostController::class, 'index'])->name('project-costs.index');
+//     Route::get('/costs/create', [ProjectCostController::class, 'create'])->name('project-costs.create');
+//     Route::post('/costs', [ProjectCostController::class, 'store'])->name('project-costs.store');
+//     Route::get('/costs/{cost}/edit', [ProjectCostController::class, 'edit'])->name('project-costs.edit');
+//     Route::put('/costs/{cost}', [ProjectCostController::class, 'update'])->name('project-costs.update');
+//     Route::delete('/costs/{cost}', [ProjectCostController::class, 'destroy'])->name('project-costs.destroy');
+// });
 
     // Route::group(['middleware' => ['permission:Service Management|Sales Management']], function () {
     //     Route::get('payments/{id}/{payment_for}', [PaymentController::class, 'payments'])->name('payments');
@@ -142,6 +189,16 @@ Route::middleware(['web'])->group(
     }
 );
 
+Route::prefix('employee')->middleware(['auth', 'role:Employee'])->group(function () {
+    Route::get('tada', [EmployeeTaDaController::class, 'index'])->name('employee.tada.index');
+    Route::get('tada/create', [EmployeeTaDaController::class, 'create'])->name('employee.tada.create');
+    Route::post('tada/store', [EmployeeTaDaController::class, 'store'])->name('employee.tada.store');
+    Route::get('tada/{id}/edit', [EmployeeTaDaController::class, 'edit'])->name('employee.tada.edit');
+    Route::put('tada/{id}', [EmployeeTaDaController::class, 'update'])->name('employee.tada.update');
+});
+
+Route::post('/salary/get-tada-data-ajax', [SalaryController::class, 'getTaDaDataAjax'])->name('salary.get-tada-data-ajax');
+Route::get('/employee/{id}/advance-sum-by-month', [EmployeeController::class, 'getAdvanceSumByMonth']);
 
 Auth::routes([
     'register' => false,

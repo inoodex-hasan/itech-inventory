@@ -51,7 +51,6 @@
 
             $('.js-example-basic-single-no-new-value').select2({});
 
-
         });
     </script>
 @endsection

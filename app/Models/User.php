@@ -48,4 +48,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function employee()
+{
+    return $this->hasOne(Employee::class, 'user_id');
+}
+
+// public function employee()
+// {
+//     return $this->hasOne(Employee::class, 'employee_id', 'employee_id');
+// }
+
+public function taDas()
+{
+    return $this->hasMany(TaDa::class);
+}
+
+
 }

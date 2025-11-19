@@ -251,7 +251,7 @@
                                 </div>
 
                                 <div class="col-md-2">
-                                    <label>Advanced Payment</label>
+                                    <label>Current Payment</label>
                                     <input type="number" name="advanced_payment" id="advancedPayment"
                                         class="form-control total" style="height: 30px;" value="0" min="0"
                                         step="0.01">
