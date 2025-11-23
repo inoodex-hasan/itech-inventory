@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('due_payment', 15, 2)->nullable();
             $table->double('discount')->nullable();
             $table->string('sales_by')->nullable();
-            $table->enum('status', ['paid', 'unpaid', 'partial', 'overdue'])->default('unpaid');
+            $table->enum('status', ['paid', 'partial', 'credit'])->default('credit');
             $table->timestamps();
         });
     }

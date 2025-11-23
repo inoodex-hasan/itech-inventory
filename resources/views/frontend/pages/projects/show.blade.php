@@ -82,32 +82,12 @@
             font-weight: bold;
         }
 
-        /* .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
+        .sidebar-menu a,
+        .nav-sidebar a,
+        .sidebar-nav a,
+        [class*="sidebar"] a {
+            text-decoration: none !important;
         }
-
-        .status-in_progress {
-            background-color: #cce7ff;
-            color: #004085;
-        }
-
-        .status-completed {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .status-cancelled {
-            background-color: #f8d7da;
-            color: #721c24;
-        } */
-
-         .sidebar-menu a,
-    .nav-sidebar a,
-    .sidebar-nav a,
-    [class*="sidebar"] a {
-        text-decoration: none !important;
-    }
     </style>
 
     <div class="content container-fluid pt-0">
@@ -116,7 +96,17 @@
             <div class="col-md-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4>Project Details</h4>
+
+                    <!-- Optional: Download as PDF -->
+                    {{-- <a href="{{ route('projects.bill.download', $project->id) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Download PDF
+                        </a> --}}
+
                     <div class="d-flex gap-2">
+                        {{-- <a href="{{ route('projects.bills.create', $project->id) }}" class="btn btn-success btn-m"
+                            target="_blank">
+                            Generate Bill
+                        </a> --}}
                         <a href="{{ route('projects.edit', $project->id) }}" class="btn btn-info btn-m">
                             Edit
                         </a>
@@ -245,16 +235,16 @@
                                 </div>
                             </div> --}}
 
-<div class="col-lg-4 col-md-6 col-sm-12">
-    <div class="info-block mb-3">
-        <label class="info-label">Status</label>
-        <div class="info-value">
-            <span class="client status-{{ $project->status }}">
-                {{ $project->status_text }}
-            </span>
-        </div>
-    </div>
-</div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="info-block mb-3">
+                                    <label class="info-label">Status</label>
+                                    <div class="info-value">
+                                        <span class="client status-{{ $project->status }}">
+                                            {{ $project->status_text }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="col-lg-8 col-md-6 col-sm-12">
                                 <div class="info-block mb-3">
@@ -270,6 +260,60 @@
             </div>
         </div>
 
+        {{-- <div class="card mb-0">
+            <div class="card-body">
+                <div class="page-header mb-3">
+                    <div class="content-page-header mb-3">
+                        <h6>Project Items</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        @if ($project->items->count() > 0)
+                            <div class="table-responsive">
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Unit Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($project->items as $item)
+                                            <tr>
+                                                <td>{{ $item->product->name }}({{ $item->product->model }})</td>
+                                                <td>{{ number_format($item->unit_price, 2) }}</td>
+                                                <td>{{ $item->quantity }}</td>
+                                                <td>{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" style="text-align: right; font-weight: bold;">Sub Total:</td>
+                                            <td style="font-weight: bold;">{{ number_format($project->sub_total, 2) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" style="text-align: right; font-weight: bold;">Grand Total:
+                                            </td>
+                                            <td style="font-weight: bold;">{{ number_format($project->grand_total, 2) }}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-4">
+                                <p class="text-muted">No items added to this project.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+
         <div class="card mb-0">
             <div class="card-body">
                 <div class="page-header mb-3">
@@ -279,43 +323,65 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        @if($project->items->count() > 0)
-                        <div class="table-responsive">
-                            <table class="items-table">
-                                <thead>
-                                    <tr>
-                                        <th>Product Name</th>
-                                        <th>Unit Price</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($project->items as $item)
-                                    <tr>
-                                        <td>{{ $item->product->name }}({{ $item->product->model }})</td>
-                                        <td>{{ number_format($item->unit_price, 2) }}</td>
-                                        <td>{{ $item->quantity }}</td>
-                                        <td>{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="3" style="text-align: right; font-weight: bold;">Sub Total:</td>
-                                        <td style="font-weight: bold;">{{ number_format($project->sub_total, 2) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" style="text-align: right; font-weight: bold;">Grand Total:</td>
-                                        <td style="font-weight: bold;">{{ number_format($project->grand_total, 2) }}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                        @if ($project->items->count() > 0)
+                            @php
+                                $itemsSubTotal = $project->items->sum(function ($item) {
+                                    return $item->unit_price * $item->quantity;
+                                });
+                                $totalCosts = $project->costs->sum('amount');
+                                $grandTotal = $itemsSubTotal + $totalCosts;
+                            @endphp
+
+                            <div class="table-responsive">
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Unit Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($project->items as $item)
+                                            <tr>
+                                                <td>{{ $item->product->name }}({{ $item->product->model }})</td>
+                                                <td>{{ number_format($item->unit_price, 2) }}</td>
+                                                <td>{{ $item->quantity }}</td>
+                                                <td>{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" style="text-align: right; font-weight: bold;">Sub Total:</td>
+                                            <td style="font-weight: bold;">{{ number_format($itemsSubTotal, 2) }}</td>
+                                        </tr>
+
+                                        <!-- Costs below Sub Total -->
+                                        @foreach ($project->costs as $cost)
+                                            <tr>
+                                                {{-- <td>{{ $cost->costCategory->name ?? 'Additional Cost' }}</td> --}}
+                                                <td>{{ $cost->category->name ?? ($cost->costCategory->title ?? 'No Category') }}
+                                                </td>
+                                                <td>{{ number_format($cost->amount, 2) }}</td>
+                                                <td>1</td>
+                                                <td>{{ number_format($cost->amount, 2) }}</td>
+                                            </tr>
+                                        @endforeach
+
+                                        <tr>
+                                            <td colspan="3" style="text-align: right; font-weight: bold;">Grand Total:
+                                            </td>
+                                            <td style="font-weight: bold;">{{ number_format($grandTotal, 2) }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         @else
-                        <div class="text-center py-4">
-                            <p class="text-muted">No items added to this project.</p>
-                        </div>
+                            <div class="text-center py-4">
+                                <p class="text-muted">No items added to this project.</p>
+                            </div>
                         @endif
                     </div>
                 </div>

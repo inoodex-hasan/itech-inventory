@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\BillController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ChallanController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CostCategoryController;
 use App\Http\Controllers\CustomerController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaytrailController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductContoller;
+use App\Http\Controllers\ProjectBillController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCostController;
 use App\Http\Controllers\ProjectItemController;
@@ -35,6 +38,9 @@ use App\Models\Extra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+
+
+
 
 
 
@@ -152,6 +158,43 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('project-costs', ProjectCostController::class);
 
     Route::resource('project-items', ProjectItemController::class);
+
+Route::prefix('bills')->group(function () {
+    Route::get('/', [BillController::class, 'index'])->name('bills.index');
+    Route::get('/create', [BillController::class, 'create'])->name('bills.create');
+    Route::get('/get-sales', [BillController::class, 'getSales'])->name('api.sales');
+    Route::get('/get-projects', [BillController::class, 'getProjects'])->name('api.projects');
+    Route::post('/', [BillController::class, 'store'])->name('bills.store');
+    Route::get('/{bill}', [BillController::class, 'show'])->name('bills.show');
+    Route::get('/{bill}/preview', [BillController::class, 'preview'])->name('bills.preview');
+    Route::get('/{bill}/download', [BillController::class, 'download'])->name('bills.download');
+    Route::post('/{bill}/status', [BillController::class, 'updateStatus'])->name('bills.status.update');
+
+});
+
+Route::resource('challans', ChallanController::class);
+Route::get('/challans/{challan}/download', [ChallanController::class, 'download'])->name('challans.download');
+Route::get('/get-sales-challan', [ChallanController::class, 'getSales'])->name('challans.get-sales');
+Route::get('/get-projects-challan', [ChallanController::class, 'getProjects'])->name('challans.get-projects');
+
+Route::get('/get-sales', [BillController::class, 'getSales'])->name('sales.get');
+Route::get('/get-projects', [BillController::class, 'getProjects'])->name('projects.get');
+    
+
+//     Route::prefix('projects/{project}')->group(function () {
+//     Route::get('/bills', [ProjectBillController::class, 'index'])->name('projects.bills.index');
+//     Route::get('/bills/create', [ProjectBillController::class, 'create'])->name('projects.bills.create');
+//     Route::post('/bills', [ProjectBillController::class, 'store'])->name('projects.bills.store');
+//     Route::post('/bills/generate-from-items', [ProjectBillController::class, 'generateFromItems'])->name('projects.bills.generate-from-items');
+// });
+
+// Bill generation routes
+Route::get('/projects/{project}/bills/create', [ProjectBillController::class, 'createBill'])->name('projects.bills.create');
+Route::post('/projects/{project}/bills/', [ProjectBillController::class, 'storeBill'])->name('projects.bills.store');
+
+// Route::get('/bills/{bill}', [ProjectBillController::class, 'show'])->name('projects.bills.show');
+// Route::get('/bills/{bill}/download', [ProjectBillController::class, 'download'])->name('projects.bills.download');
+// Route::get('/bills/{bill}/preview', [ProjectBillController::class, 'preview'])->name('projects.bills.preview');
 
 // Route::prefix('projects/{project}')->group(function () {
 //     Route::get('/items', [ProjectItemController::class, 'index'])->name('project-items.index');

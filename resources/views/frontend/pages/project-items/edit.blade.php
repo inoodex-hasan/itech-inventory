@@ -68,297 +68,289 @@
         }
     </style>
 
-{{-- Debug info --}}
+    {{-- Debug info
 <div class="alert alert-info">
     <strong>Debug Info:</strong><br>
     Project Item ID: {{ $projectItem->id }}<br>
     Current Product ID: {{ $projectItem->product_id }}<br>
     Current Product Name: {{ $projectItem->product->name ?? 'N/A' }}<br>
     Form Action: {{ route('project-items.update', $projectItem->id) }}
-</div>
+</div> --}}
 
-<div class="content container-fluid">
-    <div class="page-header">
-        <div class="row align-items-center">
-            <div class="col">
-                <h3 class="page-title">Edit Project Items</h3>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('project-items.index') }}" class="btn btn-secondary">Back</a>
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Edit Project Items</h3>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ route('project-items.index') }}" class="btn btn-secondary">Back</a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <form action="{{ route('project-items.update', $projectItem->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{{ route('project-items.update', $projectItem->id) }}" method="POST"
+                            id="projectItemForm">
+                            @csrf
+                            @method('PUT')
 
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <label class="form-label">Project *</label>
-                                <select name="project_id" class="form-control" required>
-                                    <option value="">Select Project</option>
-                                    @foreach($projects as $project)
-                                        <option value="{{ $project->id }}" 
-                                            {{ $projectItem->project_id == $project->id ? 'selected' : '' }}>
-                                            {{ $project->project_name }}
+                            <div class="row mb-4">
+                                <div class="col-md-2">
+                                    <label class="form-label">Project *</label>
+                                    <input type="hidden" name="project_id" value="{{ $projectItem->project_id }}">
+                                    <select class="form-control" disabled readonly>
+                                        <option value="{{ $projectItem->project_id }}" selected>
+                                            {{ $projectItem->project->project_name ?? 'N/A' }}
                                         </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                                    </select>
 
-                        <!-- Current Items -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-success text-white">
-                                <h6 class="mb-0">Current Items</h6>
+                                </div>
+
+                                <!-- Add hidden product_id field -->
+                                <input type="hidden" name="product_id" value="{{ $projectItem->product_id }}">
                             </div>
-                            <div class="card-body">
-                                <!-- Items Header -->
-                                <div class="mb-3">
+
+                            <!-- Rest of your form remains the same -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">Edit Item</h6>
+                                </div>
+                                <div class="card-body">
                                     <div class="row align-items-end">
                                         <div class="col-md-4">
-                                            <label>Product Name</label>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label>Unit Price</label>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label>Qty</label>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label>Total</label>
-                                        </div>
-                                       
-                                    </div>
-                                </div>
+                                            <label>Product Details</label>
+                                            <p class="mb-1"><strong>{{ $projectItem->product->name ?? 'N/A' }}</strong>
+                                            </p>
+                                            <p class="mb-1 text-muted small">Model:
+                                                {{ $projectItem->product->model ?? 'N/A' }}</p>
 
-                                <!-- Existing Items Container -->
-                                {{-- <div id="item_container">
-                                    @if($project->items && $project->items->count() > 0)
-                                        @foreach($project->items as $index => $item)
-                                        <div class="group-item mt-2" data-itemnumber="{{ $index + 2 }}" id="form-group-item{{ $index + 2 }}">
-                                            <div class="row align-items-end">
-                                                <div class="col-md-4">
-                                                    <input type="hidden" name="items[{{ $item->id }}][product_id]" value="{{ $item->product_id }}">
-                                                    <p><strong>{{ $item->product->name }}({{ $item->product->model }})</strong></p>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <input onchange="calculateTotal()" type="number" name="items[{{ $item->id }}][unit_price]" id="unit_price{{ $index + 2 }}" class="form-control unit-price" value="{{ $item->unit_price }}" step="0.01">
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <input onchange="calculateTotal()" type="number" name="items[{{ $item->id }}][quantity]" id="qty{{ $index + 2 }}" class="form-control qty" min="1" value="{{ $item->quantity }}">
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <input type="number" name="items[{{ $item->id }}][total_price]" id="total{{ $index + 2 }}" class="form-control total" readonly value="{{ $item->total_price }}" step="0.01">
-                                                </div>
-                                                
-                                            </div>
                                         </div>
-                                        @endforeach
-                                    @endif
-                                </div> --}}
-                                <div id="item_container">
-    @if($project->items && $project->items->count() > 0)
-        @foreach($project->items as $item)
-<div class="group-item mt-3 border rounded p-3 bg-light">
-    <div class="row align-items-center">
-        <div class="col-md-4">
-            <input type="hidden" name="items[{{ $item->id }}][product_id]" value="{{ $item->product_id }}">
-            <strong>{{ $item->product->name }}</strong>
-            @if($item->product->model)
-                <br><small class="text-muted">{{ $item->product->model }}</small>
-            @endif
-        </div>
-        <div class="col-md-2">
-            <input type="number" step="0.01"
-                   name="items[{{ $item->id }}][unit_price]"
-                   class="form-control unit-price"
-                   value="{{ $item->unit_price }}"
-                   onchange="calculateTotal()" required>
-        </div>
-        <div class="col-md-2">
-            <input type="number" min="1"
-                   name="items[{{ $item->id }}][quantity]"
-                   class="form-control qty"
-                   value="{{ $item->quantity }}"
-                   onchange="calculateTotal()" required>
-        </div>
-        <div class="col-md-2">
-            <input type="text"
-                   class="form-control total text-end fw-bold bg-white"
-                   value="{{ number_format($item->total_price, 2) }}"
-                   readonly>
-        </div>
-        <div class="col-md-2 text-center">
-            <button type="button" onclick="this.closest('.group-item').remove(); calculateTotal()"
-                    class="btn btn-danger btn-sm">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    </div>
-</div>
-@endforeach
-    @endif
-</div>
-                            </div>
-                        </div>
 
-                        <!-- Summary Section -->
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row justify-content-end">
-                                    <div class="col-md-3">
-                                        <label>Sub Total</label>
-                                        <input type="number" id="subTotal" name="subTotal" class="form-control" readonly>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label>Grand Total</label>
-                                        <input type="number" id="grandTotal" name="grandTotal" class="form-control" readonly>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label>&nbsp;</label>
-                                        <button type="submit" class="btn btn-success w-100">Update</button>
+                                        <div class="col-md-2">
+                                            <label>Unit Price *</label>
+                                            <input type="number" name="unit_price" id="unit_price"
+                                                class="form-control calculation-input"
+                                                value="{{ number_format($projectItem->unit_price, 2, '.', '') }}"
+                                                step="0.01" min="0" required>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label>Quantity *</label>
+                                            <input type="number" name="quantity" id="quantity"
+                                                class="form-control calculation-input" value="{{ $projectItem->quantity }}"
+                                                min="1" required>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label>Total Price</label>
+                                            <input type="number" name="total_price" id="total_price" class="form-control"
+                                                value="{{ number_format($projectItem->total_price, 2, '.', '') }}"
+                                                step="0.01" readonly>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label>&nbsp;</label>
+                                            <button type="submit" class="btn btn-success w-100">Update Item</button>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Initialize Select2 on the product dropdown
-        $('.js-example-basic-single').select2({
-            placeholder: "Select Product",
-            allowClear: true
-        });
-
-        // Re-calculate totals on page load (for existing items)
-        calculateTotal();
+$(document).ready(function() {
+    console.log('Document ready - initializing auto-calculation...');
+    
+    // Initialize Select2 if needed
+    $('.js-example-basic-single').select2({
+        placeholder: "Select Product",
+        allowClear: true
     });
 
-    let itemCounter = {{ $project->items->count() + 1 ?? 1 }}; // Start counter after existing items
+    // Initialize auto-calculation
+    initializeAutoCalculation();
+    
+    // Calculate initial total on page load
+    setTimeout(function() {
+        calculateTotal();
+    }, 100);
+});
 
-    function selectProduct(rowNum) {
-        const select = $('#product' + rowNum);
-        const selectedOption = select.find('option:selected');
-
-        const stock = selectedOption.data('stock') || 0;
-        const price = selectedOption.data('price') || 0;
-        const warranty = selectedOption.data('warranty') || 0;
-
-        $('#stock' + rowNum).val(stock);
-        $('#purchase_price' + rowNum).val(price);
-        $('#warranty' + rowNum).val(warranty);
-        $('#unit_price' + rowNum).val(price.toFixed(2)); // Pre-fill unit price with purchase price
-
-        calculateTotal(); // Update totals when product changes
+function initializeAutoCalculation() {
+    console.log('Initializing auto-calculation event listeners...');
+    
+    // Get the input fields
+    const unitPriceInput = document.getElementById('unit_price');
+    const quantityInput = document.getElementById('quantity');
+    
+    if (!unitPriceInput || !quantityInput) {
+        console.error('Required input fields not found!');
+        return;
     }
+    
+    console.log('Unit Price Input:', unitPriceInput);
+    console.log('Quantity Input:', quantityInput);
+    
+    // Remove any existing event listeners first
+    unitPriceInput.removeEventListener('input', calculateTotal);
+    quantityInput.removeEventListener('input', calculateTotal);
+    unitPriceInput.removeEventListener('change', calculateTotal);
+    quantityInput.removeEventListener('change', calculateTotal);
+    unitPriceInput.removeEventListener('keyup', calculateTotal);
+    quantityInput.removeEventListener('keyup', calculateTotal);
+    
+    // Add multiple event listeners to ensure it triggers
+    unitPriceInput.addEventListener('input', calculateTotal);
+    quantityInput.addEventListener('input', calculateTotal);
+    unitPriceInput.addEventListener('change', calculateTotal);
+    quantityInput.addEventListener('change', calculateTotal);
+    unitPriceInput.addEventListener('keyup', calculateTotal);
+    quantityInput.addEventListener('keyup', calculateTotal);
+    
+    // Also trigger on paste events
+    unitPriceInput.addEventListener('paste', function() {
+        setTimeout(calculateTotal, 100);
+    });
+    quantityInput.addEventListener('paste', function() {
+        setTimeout(calculateTotal, 100);
+    });
+    
+    console.log('Event listeners attached successfully');
+}
 
-    function addItem() {
-        const select = $('#product1');
-        if (!select.val()) {
-            alert('Please select a product first!');
-            return;
+function calculateTotal() {
+    console.log('calculateTotal function called');
+    
+    try {
+        // Get current values
+        const unitPrice = parseFloat(document.getElementById('unit_price').value) || 0;
+        const quantity = parseInt(document.getElementById('quantity').value) || 0;
+        
+        console.log('Unit Price:', unitPrice, 'Quantity:', quantity);
+        
+        // Calculate total
+        const total = unitPrice * quantity;
+        console.log('Calculated Total:', total);
+        
+        // Update total price field
+        const totalPriceInput = document.getElementById('total_price');
+        if (totalPriceInput) {
+            totalPriceInput.value = total.toFixed(2);
+            console.log('Total price field updated to:', total.toFixed(2));
+        }
+        
+        // Update summary fields
+        const subTotalInput = document.getElementById('subTotal');
+        const grandTotalInput = document.getElementById('grandTotal');
+        
+        if (subTotalInput) {
+            subTotalInput.value = total.toFixed(2);
+            console.log('SubTotal updated to:', total.toFixed(2));
+        }
+        
+        if (grandTotalInput) {
+            grandTotalInput.value = total.toFixed(2);
+            console.log('GrandTotal updated to:', total.toFixed(2));
+        }
+        
+        // Highlight changes
+        highlightTotalChange(total);
+        
+    } catch (error) {
+        console.error('Error in calculateTotal:', error);
+    }
+}
+
+function highlightTotalChange(newTotal) {
+    const originalTotal = {{ $projectItem->total_price }};
+    const totalInput = document.getElementById('total_price');
+    
+    if (totalInput && Math.abs(newTotal - originalTotal) > 0.01) {
+        totalInput.classList.add('calculation-highlight');
+        console.log('Total changed - highlighting');
+    } else if (totalInput) {
+        totalInput.classList.remove('calculation-highlight');
+    }
+}
+
+// Manual test function (can be removed in production)
+function testCalculation() {
+    console.log('=== MANUAL TEST ===');
+    console.log('Unit Price value:', document.getElementById('unit_price').value);
+    console.log('Quantity value:', document.getElementById('quantity').value);
+    calculateTotal();
+}
+
+// Add test button for debugging
+setTimeout(function() {
+    const testButton = document.createElement('button');
+    testButton.type = 'button';
+    testButton.className = 'btn btn-warning btn-sm mb-3';
+    testButton.innerHTML = '🔧 Test Calculation';
+    testButton.onclick = testCalculation;
+    document.querySelector('.card-body').prepend(testButton);
+}, 500);
+</script> --}}
+
+    <script>
+        // Simple auto-calculation that definitely works
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Simple calculator loaded');
+
+            const unitPrice = document.getElementById('unit_price');
+            const quantity = document.getElementById('quantity');
+            const totalPrice = document.getElementById('total_price');
+            const subTotal = document.getElementById('subTotal');
+            const grandTotal = document.getElementById('grandTotal');
+
+            function simpleCalculate() {
+                const up = parseFloat(unitPrice.value) || 0;
+                const qty = parseInt(quantity.value) || 0;
+                const total = up * qty;
+
+                console.log('Simple Calc:', up, 'x', qty, '=', total);
+
+                if (totalPrice) totalPrice.value = total.toFixed(2);
+                if (subTotal) subTotal.value = total.toFixed(2);
+                if (grandTotal) grandTotal.value = total.toFixed(2);
+            }
+
+            // Add event listeners
+            if (unitPrice && quantity) {
+                unitPrice.addEventListener('input', simpleCalculate);
+                quantity.addEventListener('input', simpleCalculate);
+                unitPrice.addEventListener('change', simpleCalculate);
+                quantity.addEventListener('change', simpleCalculate);
+
+                // Initial calculation
+                setTimeout(simpleCalculate, 100);
+            }
+        });
+    </script>
+
+    <style>
+        .calculation-highlight {
+            background-color: #fff3cd !important;
+            border-color: #ffc107 !important;
+            font-weight: bold;
         }
 
-        const selectedOption = select.find('option:selected');
-        const productId = select.val();
-        const productName = selectedOption.text();
-        const stock = selectedOption.data('stock') || 0;
-        const warranty = selectedOption.data('warranty') || 0;
-        const purchasePrice = selectedOption.data('price') || 0;
-        const unitPrice = $('#unit_price1').val() || purchasePrice;
-        const qty = $('#qty1').val() || 1;
-        const total = (unitPrice * qty).toFixed(2);
-
-        // Check if product already exists
-        let exists = false;
-        $('#item_container .group-item').each(function() {
-            if ($(this).find('input[name*="product_id"]').val() == productId) {
-                alert('This product has already been added!');
-                exists = true;
-                return false;
-            }
-        });
-
-        if (exists) return;
-
-        const newRow = `
-            <div class="group-item mt-2" data-itemnumber="${itemCounter}" id="form-group-item${itemCounter}">
-                <div class="row align-items-end">
-                    <div class="col-md-4">
-                        <input type="hidden" name="items[new_${itemCounter}][product_id]" value="${productId}">
-                        <p><strong>${productName}</strong></p>
-                        <small class="text-muted">Stock: ${stock} | Warranty: ${warranty} days</small>
-                    </div>
-                    <div class="col-md-2">
-                        <input onchange="calculateTotal()" type="number" name="items[new_${itemCounter}][unit_price]" 
-                               id="unit_price${itemCounter}" class="form-control unit-price" value="${parseFloat(unitPrice).toFixed(2)}" step="0.01">
-                    </div>
-                    <div class="col-md-2">
-                        <input onchange="calculateTotal()" type="number" name="items[new_${itemCounter}][quantity]" 
-                               id="qty${itemCounter}" class="form-control qty" min="1" value="${qty}">
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" name="items[new_${itemCounter}][total_price]" 
-                               id="total${itemCounter}" class="form-control total" readonly value="${total}" step="0.01">
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <button type="button" onclick="removeItem(${itemCounter})" class="btn btn-danger btn-sm">×</button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        $('#item_container').append(newRow);
-        itemCounter++;
-
-        // Reset the "Add New Item" section
-        $('#product1').val('').trigger('change');
-        $('#stock1, #warranty1, #purchase_price1, #unit_price1').val('');
-        $('#qty1').val(1);
-
-        calculateTotal();
-    }
-
-    function removeItem(rowNum) {
-        $(`#form-group-item${rowNum}`).remove();
-        calculateTotal();
-    }
-
-    function calculateTotal() {
-        let subTotal = 0;
-
-        $('.group-item').each(function() {
-            const unitPriceInput = $(this).find('.unit-price');
-            const qtyInput = $(this).find('.qty');
-            const totalInput = $(this).find('.total');
-
-            if (unitPriceInput.length && qtyInput.length && totalInput.length) {
-                const unitPrice = parseFloat(unitPriceInput.val()) || 0;
-                const qty = parseFloat(qtyInput.val()) || 0;
-                const total = unitPrice * qty;
-
-                totalInput.val(total.toFixed(2));
-                subTotal += total;
-            }
-        });
-
-        $('#subTotal').val(subTotal.toFixed(2));
-        $('#grandTotal').val(subTotal.toFixed(2)); // You can add discount/tax later here
-    }
-</script>
-
+        /* Make readonly fields visually distinct */
+        .form-control[disabled] {
+            background-color: #f8f9fa !important;
+            cursor: not-allowed;
+        }
+    </style>
 @endsection

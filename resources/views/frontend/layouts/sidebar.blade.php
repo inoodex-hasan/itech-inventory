@@ -123,6 +123,21 @@
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
                             <span>Due Payment</span></a>
                     </li>
+                    <li>
+                        <a href="{{ route('bills.index') }}"
+                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
+                            <span>Bill Generate</span></a>
+                    </li>
+                    <li>
+                        <a href="{{ route('challans.index') }}"
+                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
+                            <span>Challan Generate</span></a>
+                    </li>
+                    {{-- <li>
+                        <a href="{{ route('due-payments.index') }}"
+                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
+                            <span>Due Payment</span></a>
+                    </li> --}}
                 @endcan
 
                 @can('Inventory Management')
@@ -143,13 +158,13 @@
                     </li>
                 @endcan
 
-                 @can('Cost Management')
+                @can('Cost Management')
                     <li class="menu-title "><span>Cost Management</span></li>
                     <li class="">
                         <a href="{{ route('cost-categories.index') }}"
                             class="{{ Route::currentRouteName() == 'cost-categories.index' ? 'active' : '' }}"><i
                                 class="fe fe-package"></i> <span> Cost-Category List</span></a>
-                                <a href="{{ route('cost-categories.create') }}"
+                        <a href="{{ route('cost-categories.create') }}"
                             class="{{ Route::currentRouteName() == 'cost-categories.create' ? 'active' : '' }}"><i
                                 class="fe fe-package"></i> <span>Add Cost-Category</span></a>
                     </li>
@@ -173,14 +188,14 @@
                         <a href="{{ route('projects.index') }}"
                             class="{{ Route::currentRouteName() == 'projects.index' ? 'active' : '' }}"><i
                                 class="fe fe-list"></i> <span>Projects List</span></a>
-                                <a href="{{ route('project-items.index') }}"
-                                class="{{ Route::currentRouteName() == 'project-items.index' ? 'active' : '' }}">
-                                <i class="fe fe-list"></i> <span>Add Projects Items</span>
-                                </a>
-                               <a href="{{ route('project-costs.index') }}"
-                                class="{{ Route::currentRouteName() == 'project-costs.index' ? 'active' : '' }}">
-                                <i class="fe fe-list"></i> <span>Projects Cost List</span>
-                                </a>
+                        <a href="{{ route('project-items.index') }}"
+                            class="{{ Route::currentRouteName() == 'project-items.index' ? 'active' : '' }}">
+                            <i class="fe fe-list"></i> <span>Add Projects Items</span>
+                        </a>
+                        <a href="{{ route('project-costs.index') }}"
+                            class="{{ Route::currentRouteName() == 'project-costs.index' ? 'active' : '' }}">
+                            <i class="fe fe-list"></i> <span>Projects Cost List</span>
+                        </a>
                         {{-- <a href="{{ route('employee.tada.create') }}"
                             class="{{ Route::currentRouteName() == 'employee.tada.create' ? 'active' : '' }}"><i
                                 class="fe fe-package"></i> <span>Submit TA/DA</span></a> --}}

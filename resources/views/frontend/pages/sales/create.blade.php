@@ -262,6 +262,7 @@
                                     <input type="number" id="duePayment" name="duePayment" class="form-control total"
                                         style="height: 30px;" readonly>
                                 </div>
+
                                 <div class="col-md-2">
                                     <div class="add-customer-btns text-right">
                                         <button type="submit" class="btn customer-btn-save">Submit</button>

@@ -224,10 +224,26 @@ public function edit($id)
     return view('frontend.pages.projects.edit', compact('project', 'existingClients', 'products'));
 }
 
+// public function show($id)
+// {
+//     $project = Project::with(['client', 'items.product'])->findOrFail($id);
+//     return view('frontend.pages.projects.show', compact('project'));
+// }
+
 public function show($id)
 {
-    $project = Project::with(['client', 'items.product'])->findOrFail($id);
-    return view('frontend.pages.projects.show', compact('project'));
+    $project = Project::with(['items.product', 'costs'])->findOrFail($id);
+    
+    // Calculate sub total from project items
+    $subTotal = $project->items->sum('total_price');
+    
+    // Calculate total costs from project_costs table
+    $totalCosts = $project->costs->sum('amount');
+    
+    // Calculate grand total (sub total + total costs)
+    $grandTotal = $subTotal + $totalCosts;
+    
+    return view('frontend.pages.projects.show', compact('project', 'subTotal', 'totalCosts', 'grandTotal'));
 }
 
 public function update(Request $request, $id)
@@ -425,4 +441,41 @@ public function update(Request $request, $id)
         return redirect()->route('projects.index')
             ->with('success', 'Project deleted successfully.');
     }
+
+    public function generateBill($id)
+{
+    $project = Project::with([
+        'items.product', 
+        'costs.costCategory',
+        'client' // if you have client relationship
+    ])->findOrFail($id);
+
+    // Calculate totals
+    $itemsSubTotal = $project->items->sum(function($item) {
+        return $item->unit_price * $item->quantity;
+    });
+    
+    $totalCosts = $project->costs->sum('amount');
+    $grandTotal = $itemsSubTotal + $totalCosts;
+
+    return view('frontend.pages.projects.bills.create', compact('project', 'itemsSubTotal', 'totalCosts', 'grandTotal'));
+}
+
+public function downloadBill($id)
+{
+    $project = Project::with([
+        'items.product', 
+        'costs.costCategory',
+        'client'
+    ])->findOrFail($id);
+
+    $itemsSubTotal = $project->items->sum(function($item) {
+        return $item->unit_price * $item->quantity;
+    });
+    
+    $totalCosts = $project->costs->sum('amount');
+    $grandTotal = $itemsSubTotal + $totalCosts;
+
+    return view('bills.pdf', compact('project', 'itemsSubTotal', 'totalCosts', 'grandTotal'));
+}
 }

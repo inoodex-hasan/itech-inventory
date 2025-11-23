@@ -99,10 +99,10 @@ public function items()
     return $this->hasMany(ProjectItem::class, 'project_id');
 }
 
-    // public function items()
-    // {
-    //     return $this->hasMany(ProjectItem::class);
-    // }
+ public function projectItems()
+{
+    return $this->hasMany(ProjectItem::class); 
+}
 
     public function costs()
 {

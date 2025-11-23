@@ -171,7 +171,7 @@ class SalesController extends Controller
             } elseif ($advancedPayment > 0) {
                 $status = 'partial';
             } else {
-                $status = 'unpaid';
+                $status = 'credit';
             }
 
             // Create sale with actual totals

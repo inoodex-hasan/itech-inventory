@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2025 at 01:42 PM
+-- Generation Time: Nov 23, 2025 at 01:51 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -97,6 +97,62 @@ CREATE TABLE `attendances` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `bills`
+--
+
+CREATE TABLE `bills` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `bill_number` varchar(255) NOT NULL,
+  `reference_number` varchar(255) DEFAULT NULL,
+  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `sale_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `purchase_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `work_order_number` varchar(255) DEFAULT NULL,
+  `bill_date` date NOT NULL,
+  `subtotal` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `bills`
+--
+
+INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `client_id`, `sale_id`, `project_id`, `purchase_id`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`) VALUES
+(95, 'BILL-20251123-0001', 'BIL-20251123-180120', NULL, NULL, NULL, NULL, NULL, '2025-11-23', 48000.00, 48000.00, NULL, '2025-11-23 12:01:25', '2025-11-23 12:01:25'),
+(96, 'BILL-20251123-0002', 'BIL-20251123-181011', 2, NULL, 4, NULL, 'Test/1297/23-24-0480', '2025-11-23', 130000.00, 130000.00, NULL, '2025-11-23 12:10:35', '2025-11-23 12:10:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bill_items`
+--
+
+CREATE TABLE `bill_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `bill_id` bigint(20) UNSIGNED NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `total` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `bill_items`
+--
+
+INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
+(67, 95, 'HP DeskJet Ink Advantage 2336 All-in-One Color Printer', 3, 16000.00, 48000.00, '2025-11-23 12:01:25', '2025-11-23 12:01:25'),
+(68, 96, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 5, 26000.00, 130000.00, '2025-11-23 12:10:35', '2025-11-23 12:10:35');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `bookings`
 --
 
@@ -144,6 +200,99 @@ INSERT INTO `brands` (`id`, `name`, `status`, `created_at`, `updated_at`, `delet
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `challans`
+--
+
+CREATE TABLE `challans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `challan_number` varchar(255) NOT NULL,
+  `reference_number` varchar(255) NOT NULL,
+  `challan_date` date NOT NULL,
+  `type` enum('sale','project') NOT NULL,
+  `sale_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `recipient_organization` varchar(255) NOT NULL,
+  `recipient_designation` varchar(255) NOT NULL DEFAULT 'The Managing Director',
+  `recipient_address` text NOT NULL,
+  `attention_to` varchar(255) DEFAULT NULL,
+  `subject` varchar(255) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `company_name` varchar(255) NOT NULL DEFAULT 'Intelligent Technology',
+  `signatory_name` varchar(255) NOT NULL DEFAULT 'Engr. Shamsul Alam',
+  `signatory_designation` varchar(255) NOT NULL DEFAULT 'Director (Technical)',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `challan_items`
+--
+
+CREATE TABLE `challan_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `challan_id` bigint(20) UNSIGNED NOT NULL,
+  `description` text NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
+  `unit` varchar(255) NOT NULL DEFAULT 'Piece',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `clients`
+--
+
+CREATE TABLE `clients` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `phone` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `address` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `clients`
+--
+
+INSERT INTO `clients` (`id`, `name`, `phone`, `email`, `address`, `created_at`, `updated_at`) VALUES
+(2, 'Md Hasan', '01234567890', 'hasan@inoodex.com', 'Dhaka', '2025-11-14 20:08:22', '2025-11-14 20:08:22'),
+(5, 'Mr Rahim', '012304569870', 'rahim@example.com', 'Mirpur', '2025-11-19 11:10:03', '2025-11-19 11:10:03'),
+(6, 'Mr Rahim', '012304569870', 'rahim@example.com', 'Mirpur', '2025-11-19 12:28:57', '2025-11-19 12:28:57');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cost_categories`
+--
+
+CREATE TABLE `cost_categories` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cost_categories`
+--
+
+INSERT INTO `cost_categories` (`id`, `name`, `description`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'Transport Cost', NULL, 1, '2025-11-18 00:24:51', '2025-11-18 00:24:51'),
+(2, 'Installation Charge', NULL, 1, '2025-11-18 00:28:24', '2025-11-18 17:02:00');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `customers`
 --
 
@@ -173,7 +322,8 @@ CREATE TABLE `customers` (
 INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_verified_at`, `address`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
 (2, 'Hasan', NULL, '01326598470', NULL, NULL, 'Mirpur', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-02 19:18:55', '2025-11-02 19:18:55'),
 (10, 'Md Hasan', NULL, '01123695847', NULL, NULL, 'Banani', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 01:26:05', '2025-11-03 01:26:05'),
-(11, 'Md Juel', NULL, '01213986745', NULL, NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-03 02:06:48');
+(11, 'Md Juel', NULL, '01213986745', NULL, NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
+(15, 'Md', NULL, '01195674368', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-23 06:05:15', '2025-11-23 06:05:15');
 
 -- --------------------------------------------------------
 
@@ -199,7 +349,7 @@ CREATE TABLE `daily_expenses` (
 --
 
 INSERT INTO `daily_expenses` (`id`, `user_id`, `employee_id`, `date`, `expense_category_id`, `amount`, `spend_method`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, 2, 4, '2025-11-10', 2, 3000.00, 'cash', 'yjth', '2025-11-09 20:49:47', '2025-11-09 21:14:52');
+(2, 2, 5, '2025-11-12', 2, 5000.00, 'cash', 'advance salary', '2025-11-11 18:10:46', '2025-11-13 00:59:25');
 
 -- --------------------------------------------------------
 
@@ -262,7 +412,8 @@ CREATE TABLE `employees` (
 --
 
 INSERT INTO `employees` (`id`, `user_id`, `employee_id`, `name`, `email`, `phone`, `image`, `designation`, `join_date`, `salary`, `status`, `created_at`, `updated_at`) VALUES
-(4, 5, 'EMP0005', 'Md Hasan', 'test2@example.com', '012398763542', NULL, 'Jr. Employee', '2025-11-05', 20000.00, 'active', '2025-11-09 18:30:52', '2025-11-09 19:45:21');
+(4, 5, 'EMP0005', 'Md Hasan', 'test2@example.com', '012398763542', NULL, 'Jr. Employee', '2025-11-05', 20000.00, 'active', '2025-11-09 18:30:52', '2025-11-09 19:45:21'),
+(5, 6, 'EMP0006', 'Md Karim', 'karim@example.com', '012306050408', NULL, 'Sr. Employee', NULL, 25000.00, 'active', '2025-11-11 18:05:35', '2025-11-11 18:08:24');
 
 -- --------------------------------------------------------
 
@@ -338,10 +489,10 @@ CREATE TABLE `inventories` (
 --
 
 INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 4, 10, 1, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-03 00:22:32'),
+(1, 4, 10, 16, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-20 05:14:42'),
 (2, 2, 15, 10, 'Opening stock entry', '2025-11-03 01:24:55', '2025-11-03 02:06:48'),
 (3, 5, 20, 12, 'Opening stock entry', '2025-11-03 02:05:12', '2025-11-03 02:06:48'),
-(4, 3, 12, 12, 'Opening stock entry', '2025-11-03 02:11:45', '2025-11-03 02:11:45');
+(4, 3, 12, 10, 'Opening stock entry', '2025-11-03 02:11:45', '2025-11-23 06:05:15');
 
 -- --------------------------------------------------------
 
@@ -405,7 +556,33 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (43, '2025_11_10_051147_create_ta_das_table', 16),
 (44, '2025_11_10_052056_create_daily_expenses_table', 17),
 (45, '2025_11_10_052057_create_daily_expenses_table', 18),
-(46, '2025_11_10_052067_create_daily_expenses_table', 19);
+(46, '2025_11_10_052067_create_daily_expenses_table', 19),
+(47, '2025_11_11_051147_create_ta_das_table', 20),
+(48, '2025_11_11_051148_create_ta_das_table', 21),
+(49, '2025_11_11_051149_create_ta_das_table', 22),
+(50, '2025_11_12_010102_create_projects_table', 23),
+(51, '2025_11_12_010132_create_projects_table', 24),
+(52, '2025_11_11_051150_create_ta_das_table', 25),
+(53, '2025_11_11_051152_create_ta_das_table', 26),
+(54, '2025_11_12_010133_create_projects_table', 27),
+(55, '2025_11_12_010134_create_projects_table', 28),
+(56, '2025_11_15_013858_create_clients_table', 29),
+(57, '2025_11_12_010135_create_projects_table', 30),
+(58, '2025_11_18_014629_create_project_items_table', 31),
+(59, '2025_11_18_013135_create_projects_table', 32),
+(60, '2025_11_18_060953_create_cost_categories_table', 33),
+(61, '2025_11_18_065841_create_project_costs_table', 34),
+(62, '2025_11_18_065842_create_project_costs_table', 35),
+(63, '2025_11_20_143924_create_project_bills_table', 36),
+(64, '2025_11_20_144053_create_bill_items_table', 37),
+(65, '2025_11_20_143925_create_project_bills_table', 38),
+(66, '2025_11_20_144055_create_bill_items_table', 39),
+(67, '2025_11_20_175440_create_bills_table', 40),
+(68, '2025_11_20_175446_create_bills_table', 41),
+(69, '2025_11_20_175447_create_bills_table', 42),
+(70, '2025_11_21_144055_create_bill_items_table', 43),
+(71, '2025_11_21_144056_create_bill_items_table', 44),
+(72, '2025_11_23_183130_create_challans_table', 45);
 
 -- --------------------------------------------------------
 
@@ -438,7 +615,8 @@ CREATE TABLE `model_has_roles` (
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 (1, 'App\\Models\\User', 1),
 (1, 'App\\Models\\User', 2),
-(2, 'App\\Models\\User', 5);
+(2, 'App\\Models\\User', 5),
+(2, 'App\\Models\\User', 6);
 
 -- --------------------------------------------------------
 
@@ -539,7 +717,10 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (11, 'Accounts Management', 'web', '2025-10-14 23:04:22', '2025-11-04 18:46:45'),
 (12, 'Report Management', 'web', '2025-10-14 23:04:22', '2025-10-14 23:04:22'),
 (13, 'Payment Management', 'web', '2025-11-03 00:47:54', '2025-11-03 00:47:54'),
-(16, 'Employee Management', 'web', '2025-11-09 01:21:40', '2025-11-09 01:21:40');
+(16, 'Employee Management', 'web', '2025-11-09 01:21:40', '2025-11-09 01:21:40'),
+(17, 'Project Management', 'web', '2025-11-11 19:05:43', '2025-11-11 19:05:43'),
+(18, 'Client Management', 'web', '2025-11-17 23:16:07', '2025-11-17 23:16:07'),
+(19, 'Cost Management', 'web', '2025-11-18 00:22:52', '2025-11-18 00:22:52');
 
 -- --------------------------------------------------------
 
@@ -590,6 +771,112 @@ INSERT INTO `products` (`id`, `name`, `brand_id`, `model`, `status`, `warranty`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `projects`
+--
+
+CREATE TABLE `projects` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `project_name` varchar(255) NOT NULL,
+  `client_id` bigint(20) UNSIGNED NOT NULL,
+  `budget` decimal(12,2) DEFAULT NULL,
+  `sub_total` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `discount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `grand_total` decimal(12,2) NOT NULL,
+  `advanced_payment` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `due_payment` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `description` text DEFAULT NULL,
+  `status` enum('pending','in_progress','completed','cancelled') NOT NULL DEFAULT 'pending',
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `projects`
+--
+
+INSERT INTO `projects` (`id`, `project_name`, `client_id`, `budget`, `sub_total`, `discount`, `grand_total`, `advanced_payment`, `due_payment`, `description`, `status`, `start_date`, `end_date`, `created_at`, `updated_at`) VALUES
+(4, 'Project 1', 2, 500000.00, 0.00, 0.00, 0.00, 0.00, 0.00, NULL, 'pending', NULL, NULL, '2025-11-19 05:27:16', '2025-11-20 08:37:34'),
+(6, 'Project 2', 6, 520000.00, 0.00, 0.00, 0.00, 0.00, 0.00, NULL, 'pending', NULL, NULL, '2025-11-19 12:28:57', '2025-11-20 06:24:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project_bills`
+--
+
+CREATE TABLE `project_bills` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `project_id` bigint(20) UNSIGNED NOT NULL,
+  `bill_number` varchar(255) NOT NULL,
+  `reference_number` varchar(255) DEFAULT NULL,
+  `work_order_number` varchar(255) DEFAULT NULL,
+  `bill_date` date NOT NULL,
+  `due_date` date NOT NULL,
+  `subtotal` decimal(10,2) NOT NULL,
+  `tax_amount` decimal(10,2) NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `terms_conditions` text DEFAULT NULL,
+  `status` enum('draft','sent','paid','overdue') NOT NULL DEFAULT 'draft',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project_costs`
+--
+
+CREATE TABLE `project_costs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `project_id` bigint(20) UNSIGNED NOT NULL,
+  `cost_category_id` bigint(20) UNSIGNED NOT NULL,
+  `description` text DEFAULT NULL,
+  `amount` decimal(12,2) NOT NULL,
+  `cost_date` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `project_costs`
+--
+
+INSERT INTO `project_costs` (`id`, `project_id`, `cost_category_id`, `description`, `amount`, `cost_date`, `created_at`, `updated_at`) VALUES
+(4, 4, 1, NULL, 5000.00, '2025-11-19', '2025-11-19 07:21:30', '2025-11-19 07:21:30'),
+(5, 4, 2, NULL, 8000.00, '2025-11-20', '2025-11-20 08:14:17', '2025-11-20 08:14:17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project_items`
+--
+
+CREATE TABLE `project_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `project_id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `total` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `project_items`
+--
+
+INSERT INTO `project_items` (`id`, `project_id`, `product_id`, `unit_price`, `quantity`, `total`, `created_at`, `updated_at`) VALUES
+(36, 6, 3, 16000.00, 2, 32000.00, '2025-11-20 06:24:51', '2025-11-20 06:24:51'),
+(39, 4, 5, 26000.00, 5, 130000.00, '2025-11-20 08:23:23', '2025-11-20 08:37:34');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `purchases`
 --
 
@@ -617,7 +904,8 @@ INSERT INTO `purchases` (`id`, `product_id`, `vendor_id`, `quantity`, `unit_pric
 (1, 4, 2, 10, 15500.00, 155000.00, 14000.00, 10000.00, 4000.00, 1, NULL, '2025-11-02 19:31:34', '2025-11-02 19:31:34'),
 (2, 2, 1, 15, 15000.00, 225000.00, 220000.00, 150000.00, 70000.00, 1, NULL, '2025-11-03 01:24:55', '2025-11-03 01:24:55'),
 (3, 5, 1, 20, 25000.00, 500000.00, 480000.00, 400000.00, 80000.00, 1, NULL, '2025-11-03 02:05:12', '2025-11-03 02:05:12'),
-(4, 3, 3, 12, 13500.00, 162000.00, 160000.00, 80000.00, 80000.00, 1, NULL, '2025-11-03 02:11:45', '2025-11-03 02:11:45');
+(4, 3, 3, 12, 13500.00, 162000.00, 160000.00, 80000.00, 80000.00, 1, NULL, '2025-11-03 02:11:45', '2025-11-03 02:11:45'),
+(5, 4, 4, 15, 15500.00, 232500.00, 230000.00, 150000.00, 80000.00, 2, NULL, '2025-11-20 05:14:42', '2025-11-20 05:14:42');
 
 -- --------------------------------------------------------
 
@@ -643,7 +931,7 @@ CREATE TABLE `revenues` (
 --
 
 INSERT INTO `revenues` (`id`, `year`, `month`, `total_sales`, `total_purchases`, `total_expenses`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, 2025, 11, 296500.00, 874000.00, 350.00, NULL, '2025-11-03 00:06:23', '2025-11-09 18:44:14');
+(1, 2025, 11, 296500.00, 874000.00, 5000.00, NULL, '2025-11-03 00:06:23', '2025-11-14 20:04:38');
 
 -- --------------------------------------------------------
 
@@ -696,7 +984,10 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (11, 1),
 (12, 1),
 (13, 1),
-(16, 2);
+(16, 2),
+(17, 1),
+(18, 1),
+(19, 1);
 
 -- --------------------------------------------------------
 
@@ -719,13 +1010,6 @@ CREATE TABLE `salaries` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `salaries`
---
-
-INSERT INTO `salaries` (`id`, `employee_id`, `month`, `basic_salary`, `advance`, `allowance`, `deduction`, `net_salary`, `payment_status`, `payment_date`, `note`, `created_at`, `updated_at`) VALUES
-(3, 4, '2025-01', 20000.00, 3000.00, 500.00, 0.00, 17500.00, 'paid', '2025-11-10', 'test', '2025-11-10 00:51:39', '2025-11-10 00:51:39');
 
 -- --------------------------------------------------------
 
@@ -763,7 +1047,7 @@ CREATE TABLE `sales` (
   `due_payment` decimal(15,2) DEFAULT NULL,
   `discount` double DEFAULT NULL,
   `sales_by` varchar(255) DEFAULT NULL,
-  `status` enum('paid','unpaid','partial','overdue') NOT NULL DEFAULT 'unpaid',
+  `status` enum('paid','partial','credit') NOT NULL DEFAULT 'credit',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -774,7 +1058,8 @@ CREATE TABLE `sales` (
 
 INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `product_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
 (10, 'INV-69089F5D03AFA', 10, 2, 3, 48000, 46500, 48000, 46500.00, 0.00, 1500, '1', 'partial', '2025-11-03 01:26:05', '2025-11-03 01:27:52'),
-(11, 'INV-6908A8E856C9D', 11, 5, 10, 256000, 250000, 256000, 150000.00, 100000.00, 6000, '1', 'partial', '2025-11-03 02:06:48', '2025-11-03 02:06:48');
+(11, 'INV-6908A8E856C9D', 11, 5, 10, 256000, 250000, 256000, 150000.00, 100000.00, 6000, '1', 'partial', '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
+(12, 'INV-6922A41B60485', 15, 3, 2, 29000, 29000, 29000, 0.00, 29000.00, 0, '2', 'credit', '2025-11-23 06:05:15', '2025-11-23 06:05:15');
 
 -- --------------------------------------------------------
 
@@ -812,7 +1097,8 @@ INSERT INTO `sales_items` (`id`, `order_id`, `product_id`, `unit_price`, `warran
 (11, 9, 4, 18000, 365, 2, 36000, '2025-11-03 00:22:32', '2025-11-03 00:22:32'),
 (12, 10, 2, 16000, 365, 3, 48000, '2025-11-03 01:26:05', '2025-11-03 01:26:05'),
 (13, 11, 5, 28000, 365, 8, 224000, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
-(14, 11, 2, 16000, 365, 2, 32000, '2025-11-03 02:06:48', '2025-11-03 02:06:48');
+(14, 11, 2, 16000, 365, 2, 32000, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
+(15, 12, 3, 14500, 365, 2, 29000, '2025-11-23 06:05:15', '2025-11-23 06:05:15');
 
 -- --------------------------------------------------------
 
@@ -852,11 +1138,14 @@ CREATE TABLE `services` (
 CREATE TABLE `ta_das` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `employee_id` bigint(20) UNSIGNED NOT NULL,
   `date` date NOT NULL,
   `amount` decimal(10,2) NOT NULL,
+  `used_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `remaining_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
   `purpose` text DEFAULT NULL,
   `type` enum('TA','DA') NOT NULL DEFAULT 'TA',
-  `payment_type` enum('Advance','Received') NOT NULL DEFAULT 'Received',
+  `payment_type` enum('Advance','Claim') NOT NULL DEFAULT 'Advance',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -865,9 +1154,10 @@ CREATE TABLE `ta_das` (
 -- Dumping data for table `ta_das`
 --
 
-INSERT INTO `ta_das` (`id`, `user_id`, `date`, `amount`, `purpose`, `type`, `payment_type`, `created_at`, `updated_at`) VALUES
-(2, 5, '2025-11-10', 100.00, 'Lunch', 'TA', 'Advance', '2025-11-09 18:41:01', '2025-11-09 18:41:01'),
-(3, 5, '2025-11-10', 50.00, NULL, 'DA', 'Advance', '2025-11-10 01:37:46', '2025-11-10 01:37:46');
+INSERT INTO `ta_das` (`id`, `user_id`, `employee_id`, `date`, `amount`, `used_amount`, `remaining_amount`, `purpose`, `type`, `payment_type`, `created_at`, `updated_at`) VALUES
+(1, NULL, 5, '2025-11-12', 200.00, 150.00, 50.00, NULL, 'TA', 'Advance', '2025-11-12 00:04:30', '2025-11-13 00:18:33'),
+(2, 6, 5, '2025-11-12', 150.00, 0.00, 0.00, NULL, 'TA', 'Claim', '2025-11-12 00:10:08', '2025-11-12 00:10:08'),
+(3, 6, 5, '2025-11-13', 100.00, 0.00, 0.00, NULL, 'DA', 'Claim', '2025-11-13 00:18:56', '2025-11-13 00:18:56');
 
 -- --------------------------------------------------------
 
@@ -903,7 +1193,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `email_verified_at`, `password`, `role_id`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `is_guest`, `status`, `type`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Super Admin', 'info@quickphonefixandmore.com', '01000000000', NULL, '$2y$12$KWIVx/4asS.TLUkXRveAwu6BmURg1M4CtaaPhCtvRQvLmJEgxM1EW', 1, NULL, NULL, 0, NULL, NULL, '0', '0', '1', NULL, NULL, '2025-11-09 01:26:04'),
 (2, 'Inoodex', 'hello@inoodex.com', '013268546970', NULL, '$2y$12$XX/aD1Jy7JoYjb64CfBEuOBTTyCk.X60uazJ/mjue4zvbrFbYHBau', 1, '', NULL, 0, NULL, NULL, '0', '1', '1', NULL, '2025-11-04 18:43:21', '2025-11-04 18:43:21'),
-(5, 'Md Hasan', 'test2@example.com', '012398763542', NULL, '$2y$12$L6PfuXrm52J5sLsRKMBtv.ZmBX07JumeLi.TanaM3yBLR4U.u5rhq', 2, '', NULL, 0, NULL, NULL, '0', '1', '1', NULL, '2025-11-09 18:30:52', '2025-11-09 18:35:52');
+(5, 'Md Hasan', 'test2@example.com', '012398763542', NULL, '$2y$12$L6PfuXrm52J5sLsRKMBtv.ZmBX07JumeLi.TanaM3yBLR4U.u5rhq', 2, '', NULL, 0, NULL, NULL, '0', '1', '1', NULL, '2025-11-09 18:30:52', '2025-11-09 18:35:52'),
+(6, 'Md Karim', 'karim@example.com', '012306050408', NULL, '$2y$12$dcIPKb6RYCzeQbH6.k.QKOiEvS4bR6LVBM8evcnSOtN7F1C6x68h.', 2, '', NULL, 0, NULL, NULL, '0', '1', '1', NULL, '2025-11-11 18:05:35', '2025-11-11 18:05:35');
 
 -- --------------------------------------------------------
 
@@ -963,6 +1254,24 @@ ALTER TABLE `attendances`
   ADD KEY `attendances_date_index` (`date`);
 
 --
+-- Indexes for table `bills`
+--
+ALTER TABLE `bills`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `bills_bill_number_unique` (`bill_number`),
+  ADD KEY `bills_client_id_foreign` (`client_id`),
+  ADD KEY `bills_vendor_id_foreign` (`sale_id`),
+  ADD KEY `bills_project_id_foreign` (`project_id`),
+  ADD KEY `bills_purchase_id_foreign` (`purchase_id`);
+
+--
+-- Indexes for table `bill_items`
+--
+ALTER TABLE `bill_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bill_items_bill_id_foreign` (`bill_id`);
+
+--
 -- Indexes for table `bookings`
 --
 ALTER TABLE `bookings`
@@ -972,6 +1281,34 @@ ALTER TABLE `bookings`
 -- Indexes for table `brands`
 --
 ALTER TABLE `brands`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `challans`
+--
+ALTER TABLE `challans`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `challans_challan_number_unique` (`challan_number`),
+  ADD KEY `challans_sale_id_foreign` (`sale_id`),
+  ADD KEY `challans_project_id_foreign` (`project_id`);
+
+--
+-- Indexes for table `challan_items`
+--
+ALTER TABLE `challan_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `challan_items_challan_id_foreign` (`challan_id`);
+
+--
+-- Indexes for table `clients`
+--
+ALTER TABLE `clients`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `cost_categories`
+--
+ALTER TABLE `cost_categories`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1104,6 +1441,37 @@ ALTER TABLE `products`
   ADD KEY `products_brand_id_foreign` (`brand_id`);
 
 --
+-- Indexes for table `projects`
+--
+ALTER TABLE `projects`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `projects_client_id_foreign` (`client_id`);
+
+--
+-- Indexes for table `project_bills`
+--
+ALTER TABLE `project_bills`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `project_bills_bill_number_unique` (`bill_number`),
+  ADD KEY `project_bills_project_id_foreign` (`project_id`);
+
+--
+-- Indexes for table `project_costs`
+--
+ALTER TABLE `project_costs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `project_costs_project_id_foreign` (`project_id`),
+  ADD KEY `project_costs_cost_category_id_foreign` (`cost_category_id`);
+
+--
+-- Indexes for table `project_items`
+--
+ALTER TABLE `project_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `project_items_project_id_foreign` (`project_id`),
+  ADD KEY `project_items_product_id_foreign` (`product_id`);
+
+--
 -- Indexes for table `purchases`
 --
 ALTER TABLE `purchases`
@@ -1176,6 +1544,7 @@ ALTER TABLE `services`
 --
 ALTER TABLE `ta_das`
   ADD PRIMARY KEY (`id`),
+  ADD KEY `ta_das_employee_id_foreign` (`employee_id`),
   ADD KEY `ta_das_user_id_foreign` (`user_id`);
 
 --
@@ -1220,6 +1589,18 @@ ALTER TABLE `attendances`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `bills`
+--
+ALTER TABLE `bills`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+
+--
+-- AUTO_INCREMENT for table `bill_items`
+--
+ALTER TABLE `bill_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+
+--
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
@@ -1232,16 +1613,40 @@ ALTER TABLE `brands`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `challans`
+--
+ALTER TABLE `challans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `challan_items`
+--
+ALTER TABLE `challan_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `clients`
+--
+ALTER TABLE `clients`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `cost_categories`
+--
+ALTER TABLE `cost_categories`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `daily_expenses`
 --
 ALTER TABLE `daily_expenses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `daily_sales`
@@ -1259,7 +1664,7 @@ ALTER TABLE `districts`
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `expense_categories`
@@ -1289,7 +1694,7 @@ ALTER TABLE `inventories`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1307,7 +1712,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -1322,10 +1727,34 @@ ALTER TABLE `products`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `projects`
+--
+ALTER TABLE `projects`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `project_bills`
+--
+ALTER TABLE `project_bills`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
+-- AUTO_INCREMENT for table `project_costs`
+--
+ALTER TABLE `project_costs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `project_items`
+--
+ALTER TABLE `project_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+
+--
 -- AUTO_INCREMENT for table `purchases`
 --
 ALTER TABLE `purchases`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `revenues`
@@ -1343,7 +1772,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `salaries`
 --
 ALTER TABLE `salaries`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `salary_advances`
@@ -1355,13 +1784,13 @@ ALTER TABLE `salary_advances`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `sales_items`
 --
 ALTER TABLE `sales_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -1379,7 +1808,7 @@ ALTER TABLE `ta_das`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `vendors`
@@ -1396,6 +1825,34 @@ ALTER TABLE `vendors`
 --
 ALTER TABLE `advance_salaries`
   ADD CONSTRAINT `advance_salaries_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `bills`
+--
+ALTER TABLE `bills`
+  ADD CONSTRAINT `bills_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `bills_purchase_id_foreign` FOREIGN KEY (`purchase_id`) REFERENCES `purchases` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `bills_vendor_id_foreign` FOREIGN KEY (`sale_id`) REFERENCES `vendors` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `bill_items`
+--
+ALTER TABLE `bill_items`
+  ADD CONSTRAINT `bill_items_bill_id_foreign` FOREIGN KEY (`bill_id`) REFERENCES `bills` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `challans`
+--
+ALTER TABLE `challans`
+  ADD CONSTRAINT `challans_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `challans_sale_id_foreign` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `challan_items`
+--
+ALTER TABLE `challan_items`
+  ADD CONSTRAINT `challan_items_challan_id_foreign` FOREIGN KEY (`challan_id`) REFERENCES `challans` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `daily_expenses`
@@ -1428,6 +1885,32 @@ ALTER TABLE `model_has_roles`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_brand_id_foreign` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `projects`
+--
+ALTER TABLE `projects`
+  ADD CONSTRAINT `projects_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `project_bills`
+--
+ALTER TABLE `project_bills`
+  ADD CONSTRAINT `project_bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `project_costs`
+--
+ALTER TABLE `project_costs`
+  ADD CONSTRAINT `project_costs_cost_category_id_foreign` FOREIGN KEY (`cost_category_id`) REFERENCES `cost_categories` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `project_costs_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `project_items`
+--
+ALTER TABLE `project_items`
+  ADD CONSTRAINT `project_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `project_items_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `purchases`
@@ -1468,6 +1951,7 @@ ALTER TABLE `sales`
 -- Constraints for table `ta_das`
 --
 ALTER TABLE `ta_das`
+  ADD CONSTRAINT `ta_das_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `ta_das_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
