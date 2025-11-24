@@ -169,16 +169,16 @@ Route::prefix('bills')->group(function () {
     Route::get('/{bill}/preview', [BillController::class, 'preview'])->name('bills.preview');
     Route::get('/{bill}/download', [BillController::class, 'download'])->name('bills.download');
     Route::post('/{bill}/status', [BillController::class, 'updateStatus'])->name('bills.status.update');
-
+    Route::delete('/{bill}', [BillController::class, 'destroy'])->name('bills.destroy');
 });
 
 Route::resource('challans', ChallanController::class);
 Route::get('/challans/{challan}/download', [ChallanController::class, 'download'])->name('challans.download');
-Route::get('/get-sales-challan', [ChallanController::class, 'getSales'])->name('challans.get-sales');
-Route::get('/get-projects-challan', [ChallanController::class, 'getProjects'])->name('challans.get-projects');
+Route::get('/get-sales', [ChallanController::class, 'getSales'])->name('challans.get-sales');
+Route::get('/get-projects', [ChallanController::class, 'getProjects'])->name('challans.get-projects');
 
-Route::get('/get-sales', [BillController::class, 'getSales'])->name('sales.get');
-Route::get('/get-projects', [BillController::class, 'getProjects'])->name('projects.get');
+// Route::get('/get-sales', [BillController::class, 'getSales'])->name('sales.get');
+// Route::get('/get-projects', [BillController::class, 'getProjects'])->name('projects.get');
     
 
 //     Route::prefix('projects/{project}')->group(function () {

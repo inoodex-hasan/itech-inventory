@@ -12,9 +12,11 @@ return new class extends Migration
             $table->id();
             $table->string('bill_number')->unique();
             $table->string('reference_number')->nullable();
-            $table->foreignId('sales_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('vendor_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('project_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('sale_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('client_id')->nullable()->constrained()->onDelete('cascade');
+            $table->enum('type', ['sale', 'project']);
             
             $table->string('work_order_number')->nullable();
             

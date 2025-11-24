@@ -70,31 +70,37 @@
             margin: 20px 0;
         }
 
-        .signature-section {
-            margin-top: 60px;
-        }
-
-        .signature-content {
-            float: right;
-            text-align: center;
-            width: 300px;
-        }
-
-        .signature-line {
-            border-top: 1px solid #000;
-            width: 200px;
-            margin: 40px auto 5px auto;
-        }
-
-        .customer-signature {
+        /* Simple signature section */
+        .signature-wrapper {
             margin-top: 100px;
-            text-align: center;
         }
 
-        .dotted-line {
-            border-top: 1px dashed #000;
-            margin-top: 5px;
+        .signature-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
         }
+
+        .company-area {
+            width: 45%;
+        }
+
+        .customer-area {
+            width: 45%;
+            text-align: right;
+        }
+
+        /* .signature-line {
+            border-top: 1px dashed #000;
+            width: 200px;
+            margin: 40px 0 10px 0;
+        }
+
+        .customer-line {
+            border-top: 1px dashed #000;
+            width: 200px;
+            margin: 40px 0 10px auto;
+        } */
     </style>
 </head>
 
@@ -153,21 +159,27 @@
             </div>
         @endif
 
-        <!-- Signature Section -->
-        <div class="signature-section">
-            <div class="signature-content">
+        <!-- Replace your entire signature section with this -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 100px;">
+
+            <!-- Company Signature - Left -->
+            <div style="width: 45%;">
+                <p>We assure you that we provide our best service at all times.</p>
+                <p>Thank you once again.</p>
                 <p>Yours Sincerely,</p>
-                <div class="signature-line"></div>
+                <div style="border-top: 1px solid #000; width: 250px; margin-top: 40px; margin-bottom: 10px;"></div>
                 <p><strong>{{ $signatory_name }}</strong></p>
                 <p>{{ $signatory_designation }}</p>
                 <p>For, <strong>{{ $company_name }}</strong></p>
             </div>
-        </div>
 
-        <!-- Customer Signature -->
-        <div class="customer-signature">
-            <div class="dotted-line" style="width: 300px; margin: 0 auto;"></div>
-            <p>Customer's Signature</p>
+            <!-- Customer Signature - Right -->
+            <div style="width: 45%;">
+                <div
+                    style="border-top: 1px dashed #000; width: 250px; margin-left: auto; margin-top: 40px; margin-bottom: 10px;">
+                </div>
+                <p style="text-align: right;">Customer's Signature</p>
+            </div>
         </div>
     </div>
 </body>

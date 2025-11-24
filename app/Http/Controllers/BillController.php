@@ -20,35 +20,21 @@ class BillController extends Controller
 {
     $query = Bill::with(['client', 'vendor', 'project', 'purchase', 'items']);
 
-    // Filters
-    if ($request->has('type')) {
-        switch ($request->type) {
-            case 'projects':
-                $query->projectBills();
-                break;
-            case 'sales':
-                $query->saleBills();
-                break;
-            case 'purchases':
-                $query->purchaseBills();
-                break;
-        }
+    // Type filter
+    if ($request->has('type') && $request->type != '') {
+        $query->where('type', $request->type);
     }
-
-    if ($request->has('status')) {
-        $query->where('status', $request->status);
+    
+    // Date range filter
+    if ($request->has('date_from') && $request->date_from != '') {
+        $query->whereDate('challan_date', '>=', $request->date_from);
     }
-
-    if ($request->has('from_date')) {
-        $query->where('bill_date', '>=', $request->from_date);
+    
+    if ($request->has('date_to') && $request->date_to != '') {
+        $query->whereDate('challan_date', '<=', $request->date_to);
     }
-
-    if ($request->has('to_date')) {
-        $query->where('bill_date', '<=', $request->to_date);
-    }
-
-    $bills = $query->latest()->paginate(20);
-
+    
+    $bills = $query->latest()->paginate(10);
     // Statistics
     $totalAmount = Bill::sum('total_amount');
     // $paidCount = Bill::where('status', 'paid')->count();
@@ -121,87 +107,7 @@ class BillController extends Controller
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()], 500);
     }
-}
-
-// public function getSales()
-// {
-//     try {
-//         $sales = Sale::with(['customer'])
-//                     ->get()
-//                     ->map(function($sale) {
-//                         return [
-//                             'id' => $sale->id,
-//                             'order_no' => $sale->order_no,
-//                             'date' => $sale->created_at->format('Y-m-d'),
-//                             'total_amount' => $sale->payble ?? $sale->total,
-//                             'due_payment' => $sale->due_payment,
-//                             'status' => $sale->status,
-//                             'customer_id' => $sale->customer_id, // Add this
-//                             'customer' => $sale->customer ? [
-//                                 'id' => $sale->customer->id,
-//                                 'name' => $sale->customer->name ?? 'Unknown',
-//                                 'email' => $sale->customer->email ?? 'N/A',
-//                                 'phone' => $sale->customer->phone ?? 'N/A',
-//                                 'address' => $sale->customer->address ?? 'N/A',
-//                             ] : null,
-//                             'items' => [
-//                                 [
-//                                     'id' => $sale->id,
-//                                     'description' => 'Sale #' . $sale->order_no,
-//                                     'quantity' => $sale->qty ?? 1,
-//                                     'unit' => 'Piece',
-//                                     'unit_price' => $sale->qty ? ($sale->total / $sale->qty) : $sale->total,
-//                                     'total' => $sale->total,
-//                                 ]
-//                             ]
-//                         ];
-//                     });
-
-//         return response()->json(['sales' => $sales]);
-//     } catch (\Exception $e) {
-//         return response()->json(['error' => $e->getMessage()], 500);
-//     }
-// }
-
-// public function getProjects()
-// {
-//     try {
-//         $projects = Project::with(['client'])
-//                     ->get()
-//                     ->map(function($project) {
-//                         return [
-//                             'id' => $project->id,
-//                             'name' => $project->project_name,
-//                             'reference' => 'PROJ-' . $project->id,
-//                             'date' => $project->start_date ?? $project->created_at->format('Y-m-d'),
-//                             'total_amount' => $project->grand_total ?? $project->budget,
-//                             'due_payment' => $project->due_payment,
-//                             'status' => $project->status,
-//                             'client' => $project->client ? [
-//                                 'id' => $project->client->id,
-//                                 'name' => $project->client->name ?? 'Unknown',
-//                                 'email' => $project->client->email ?? 'N/A',
-//                                 'phone' => $project->client->phone ?? 'N/A',
-//                                 'address' => $project->client->address ?? 'N/A',
-//                             ] : null,
-//                             'items' => [
-//                                 [
-//                                     'id' => $project->id,
-//                                     'description' => $project->project_name,
-//                                     'quantity' => 1,
-//                                     'unit' => 'Project',
-//                                     'unit_price' => $project->grand_total ?? $project->budget,
-//                                     'total' => $project->grand_total ?? $project->budget,
-//                                 ]
-//                             ]
-//                         ];
-//                     });
-
-//         return response()->json(['projects' => $projects]);
-//     } catch (\Exception $e) {
-//         return response()->json(['error' => $e->getMessage()], 500);
-//     }
-// }   
+} 
 
 public function getProjects()
 {
@@ -259,8 +165,7 @@ public function store(Request $request)
         'work_order_number' => 'nullable|string|max:255',
         'items' => 'required|array',
         'total_amount' => 'required|numeric',
-        'client_name' => 'required|string|max:255',
-        'client_address' => 'required|string',
+        // Remove client_name and client_address from validation since they'll be auto-populated
         'attention_to' => 'nullable|string|max:255',
         'terms_conditions' => 'required|string',
         'bank_account_name' => 'required|string|max:255',
@@ -282,17 +187,23 @@ public function store(Request $request)
 
     $customerId = null;
     $clientId = null;
+    $clientName = null;
+    $clientAddress = null;
 
-    // Get customer_id and client_id from the selected sale/project
+    // Auto-populate client info from selected sale/project
     if ($request->bill_type === 'sale' && $request->selected_sale_id) {
-        $sale = Sale::find($request->selected_sale_id);
+        $sale = Sale::with('customer')->find($request->selected_sale_id);
         $customerId = $sale->customer_id ?? null;
+        $clientName = $sale->customer->name ?? null;
+        $clientAddress = $sale->customer->address ?? null;
     } elseif ($request->bill_type === 'project' && $request->selected_project_id) {
-        $project = Project::find($request->selected_project_id);
+        $project = Project::with('client')->find($request->selected_project_id);
         $clientId = $project->client_id ?? null;
+        $clientName = $project->client->name ?? null;
+        $clientAddress = $project->client->address ?? null;
     }
 
-    // Create the bill - WITHOUT client fields
+    // Create the bill
     $bill = Bill::create([
         'bill_number' => $billNumber, 
         'bill_type' => $request->bill_type,
@@ -301,12 +212,11 @@ public function store(Request $request)
         'sale_id' => $request->selected_sale_id,
         'project_id' => $request->selected_project_id,
         'customer_id' => $customerId,
-        'client_id' => $clientId,
+        'client_id' => $clientId, // Make sure this column exists
         'work_order_number' => $request->work_order_number,
         'subtotal' => $request->subtotal,
         'total_amount' => $request->total_amount,
         'notes' => $request->notes,
-        // Don't store client fields in database
     ]);
 
     // Add bill items
@@ -324,136 +234,37 @@ public function store(Request $request)
     // Load bill with relationships for PDF
     $billWithRelations = Bill::with(['billItems', 'sale.customer', 'project.client'])->find($bill->id);
     
-   // Prepare data for your PDF template
-$pdfData = [
-    'bill' => $billWithRelations,
-    'amount_in_words' => $this->convertToWords($billWithRelations->total_amount),
-    'subject' => $request->subject,
-    // Dynamic Bank Details from form
-    'bank_details' => [
-        'account_name' => $request->bank_account_name,
-        'bank_name' => $request->bank_name,
-        'branch' => $request->bank_branch,
-        'account_number' => $request->bank_account_number,
-        'account_type' => $request->bank_account_type,
-    ],
-    // Dynamic Company Details from form
-    'company' => [
-        'name' => $request->company_name,
-        'signatory_name' => $request->signatory_name,
-        'signatory_designation' => $request->signatory_designation,
-        'phone' => $request->company_phone,
-        'email' => $request->company_email,
-        'website' => $request->company_website,
-    ],
-    // Client data
-    'recipient_designation' => 'Director (IT)',
-    'recipient_organization' => $request->client_name,
-    'recipient_address' => $request->client_address,
-    'attention_to' => $request->attention_to,
-    'terms_conditions' => $request->terms_conditions,
-];
-    // Generate PDF using your existing template
+    // Prepare data for PDF
+    $pdfData = [
+        'bill' => $billWithRelations,
+        'amount_in_words' => $this->convertToWords($billWithRelations->total_amount),
+        'subject' => $request->subject,
+        'bank_details' => [
+            'account_name' => $request->bank_account_name,
+            'bank_name' => $request->bank_name,
+            'branch' => $request->bank_branch,
+            'account_number' => $request->bank_account_number,
+            'account_type' => $request->bank_account_type,
+        ],
+        'company' => [
+            'name' => $request->company_name,
+            'signatory_name' => $request->signatory_name,
+            'signatory_designation' => $request->signatory_designation,
+            'phone' => $request->company_phone,
+            'email' => $request->company_email,
+            'website' => $request->company_website,
+        ],
+        // Auto-populated client data
+        'recipient_designation' => 'Director (IT)',
+        'recipient_organization' => $clientName ?? $request->client_name, 
+        'recipient_address' => $clientAddress ?? $request->client_address, 
+        'attention_to' => $request->attention_to,
+        'terms_conditions' => $request->terms_conditions,
+    ];
+
     $pdf = Pdf::loadView('pdf.bill', $pdfData);
-   
-// $pdf->setOptions([
-//     'footer-center' => 'Corporate Office: 187(3rd Floor), Green Road, Dhanmondi Dhaka-1205, Bangladesh. Cell: +88 01904400202, +88 01904400203 | E-mail: info.itechbd@yahoo.com | Web: www.itechbd.net | Page [page]',
-//     'footer-font-size' => 7,
-//     'footer-font-family' => 'Arial',
-//     'footer-line' => true, // Add line above footer
-//     'margin-bottom' => 20, // Make space for footer
-//     'isHtml5ParserEnabled' => true,
-//     'isRemoteEnabled' => true,
-// ]);
-
-return $pdf->download('bill-' . $bill->bill_number . '.pdf');
-
+    return $pdf->download('bill-' . $bill->bill_number . '.pdf');
 }
-// public function store(Request $request)
-// {
-//     $request->validate([
-//         'bill_type' => 'required|in:sale,project',
-//         'reference_number' => 'required',
-//         'bill_date' => 'required|date',
-//         'selected_sale_id' => 'required_if:bill_type,sale',
-//         'selected_project_id' => 'required_if:bill_type,project',
-//         'work_order_number' => 'nullable|string|max:255',
-//         'items' => 'required|array',
-//         'total_amount' => 'required|numeric',
-//     ]);
-
-//     // Generate bill number
-//     $billNumber = 'BILL-' . date('Ymd') . '-' . str_pad(Bill::count() + 1, 4, '0', STR_PAD_LEFT);
-
-//     $customerId = null;
-//     $clientId = null;
-
-//     // Get customer_id and client_id from the selected sale/project
-//     if ($request->bill_type === 'sale' && $request->selected_sale_id) {
-//         $sale = Sale::find($request->selected_sale_id);
-//         $customerId = $sale->customer_id ?? null;
-//     } elseif ($request->bill_type === 'project' && $request->selected_project_id) {
-//         $project = Project::find($request->selected_project_id);
-//         $clientId = $project->client_id ?? null;
-//     }
-
-//     // Create the bill
-//     $bill = Bill::create([
-//         'bill_number' => $billNumber, 
-//         'bill_type' => $request->bill_type,
-//         'reference_number' => $request->reference_number,
-//         'bill_date' => $request->bill_date,
-//         'sale_id' => $request->selected_sale_id,
-//         'project_id' => $request->selected_project_id,
-//         'customer_id' => $customerId,
-//         'client_id' => $clientId,
-//         'work_order_number' => $request->work_order_number,
-//         'subtotal' => $request->subtotal,
-//         'total_amount' => $request->total_amount,
-//         'notes' => $request->notes,
-//     ]);
-
-//     // Add bill items
-//     foreach ($request->items as $item) {
-//         BillItem::create([
-//             'bill_id' => $bill->id,
-//             'description' => $item['description'],
-//             'quantity' => $item['quantity'],
-//             'unit' => $item['unit'],
-//             'unit_price' => $item['unit_price'],
-//             'total' => $item['total'],
-//         ]);
-//     }
-
-//     // Load bill with relationships for PDF
-//     $billWithRelations = Bill::with(['billItems', 'sale.customer', 'project.client'])->find($bill->id);
-    
-//     // Prepare data for your PDF template
-//     $pdfData = [
-//         'bill' => $billWithRelations,
-//         'amount_in_words' => $this->convertToWords($billWithRelations->total_amount),
-//         'bank_details' => [
-//             'account_name' => 'Intelligent Technology',
-//             'bank_name' => 'Bank Asia Ltd.',
-//             'branch' => 'Satmosjid Road',
-//             'account_number' => '06933000526',
-//             'account_type' => 'Current',
-//         ],
-//         'company' => [
-//             'name' => 'Intelligent Technology',
-//             'signatory_name' => 'Engr. Shamsul Alam',
-//             'signatory_designation' => 'Director (Technical)',
-//             'phone' => '+880 XXXX-XXXXXX',
-//             'email' => 'info@intelligenttech.com',
-//             'website' => 'www.intelligenttech.com'
-//         ]
-//     ];
-
-//     // Generate PDF using your existing template
-//     $pdf = Pdf::loadView('pdf.bill', $pdfData);
-    
-//     return $pdf->download('bill-' . $bill->bill_number . '.pdf');
-// }
 
 public function show($id)
 {
@@ -588,69 +399,6 @@ private function convertNumberToWords($number)
     return trim($words);
 }
 
-// public function store(Request $request)
-// {
-//     $request->validate([
-//         'bill_type' => 'required|in:sale,project',
-//         'reference_number' => 'required',
-//         'bill_date' => 'required|date',
-//         'selected_sale_id' => 'required_if:bill_type,sale',
-//         'selected_project_id' => 'required_if:bill_type,project',
-//         'work_order_number' => 'nullable|string|max:255',
-//         'items' => 'required|array',
-//         'total_amount' => 'required|numeric',
-//     ]);
-
-//     // Generate bill number
-//     $billNumber = 'BILL-' . date('Ymd') . '-' . str_pad(Bill::count() + 1, 4, '0', STR_PAD_LEFT);
-
-//     $customerId = null;
-//     $clientId = null;
-
-//     // FIX: Get customer_id and client_id from the selected sale/project
-//     if ($request->bill_type === 'sale' && $request->selected_sale_id) {
-//         $sale = Sale::find($request->selected_sale_id);
-//         $customerId = $sale->customer_id ?? null;
-//     } elseif ($request->bill_type === 'project' && $request->selected_project_id) {
-//         $project = Project::find($request->selected_project_id);
-//         $clientId = $project->client_id ?? null;
-//     }
-
-//     // Create the bill
-//     $bill = Bill::create([
-//         'bill_number' => $billNumber, 
-//         'bill_type' => $request->bill_type,
-//         'reference_number' => $request->reference_number,
-//         'bill_date' => $request->bill_date,
-//         'sale_id' => $request->selected_sale_id,
-//         'project_id' => $request->selected_project_id,
-//         'customer_id' => $customerId,
-//         'client_id' => $clientId, 
-//         'work_order_number' => $request->work_order_number,
-//         'subtotal' => $request->subtotal,
-//         'total_amount' => $request->total_amount,
-//         'notes' => $request->notes,
-//     ]);
-
-//     // Add bill items
-//     foreach ($request->items as $item) {
-//         BillItem::create([
-//             'bill_id' => $bill->id,
-//             'description' => $item['description'],
-//             'quantity' => $item['quantity'],
-//             'unit' => $item['unit'],
-//             'unit_price' => $item['unit_price'],
-//             'total' => $item['total'],
-//         ]);
-//     }
-
-//     // FIX: Load the bill with all relationships for PDF
-//     $billWithRelations = Bill::with(['billItems', 'sale.customer', 'project.client'])->find($bill->id);
-    
-//     $pdf = PDF::loadView('pdf.bill', compact('billWithRelations'));
-    
-//     return $pdf->download('bill-' . $bill->bill_number . '.pdf');
-// }
 private function updateRelatedEntities(Bill $bill, array $validated)
 {
     try {
@@ -758,7 +506,6 @@ public function download($id)
     $pdf = Pdf::loadView('pdf.bill', $pdfData);
     return $pdf->download('bill-' . $bill->bill_number . '.pdf');
 }
-
     public function updateStatus(Bill $bill, Request $request)
     {
         $request->validate([
@@ -876,9 +623,13 @@ private function getBankDetails()
     ];
 }
 
-    // private function convertToWords($number)
-    // {
-    //     // Your number to words conversion logic
-    //     return number_format($number, 2) . " Taka Only";
-    // }
+public function destroy($id)
+{
+    $bill = Bill::findOrFail($id);
+    $bill->billItems()->delete(); // Delete related bill items
+    $bill->delete(); // Delete the bill itself
+
+    return redirect()->route('bills.index')->with('success', 'Bill deleted successfully.');
+ 
+}
 }

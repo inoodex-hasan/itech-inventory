@@ -18,86 +18,43 @@
                     <div class="card-body">
                         <!-- Filters -->
                         <div class="row mb-4">
-                            <div class="col-md-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <form action="{{ route('bills.index') }}" method="GET" id="filterForm">
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label>Bill Type</label>
-                                                        <select name="type" class="form-control"
-                                                            onchange="document.getElementById('filterForm').submit()">
-                                                            <option value="">All Bills</option>
-                                                            <option value="projects"
-                                                                {{ request('type') == 'projects' ? 'selected' : '' }}>
-                                                                Project Bills</option>
-                                                            <option value="sales"
-                                                                {{ request('type') == 'sales' ? 'selected' : '' }}>Sales
-                                                                Bills</option>
-                                                            {{-- <option value="purchases"
-                                                                {{ request('type') == 'purchases' ? 'selected' : '' }}>
-                                                                Purchase Bills</option> --}}
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                {{-- <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label>Status</label>
-                                                        <select name="status" class="form-control"
-                                                            onchange="document.getElementById('filterForm').submit()">
-                                                            <option value="">All Status</option>
-                                                            <option value="draft"
-                                                                {{ request('status') == 'draft' ? 'selected' : '' }}>Draft
-                                                            </option>
-                                                            <option value="sent"
-                                                                {{ request('status') == 'sent' ? 'selected' : '' }}>Sent
-                                                            </option>
-                                                            <option value="paid"
-                                                                {{ request('status') == 'paid' ? 'selected' : '' }}>Paid
-                                                            </option>
-                                                            <option value="overdue"
-                                                                {{ request('status') == 'overdue' ? 'selected' : '' }}>
-                                                                Overdue</option>
-                                                            <option value="cancelled"
-                                                                {{ request('status') == 'cancelled' ? 'selected' : '' }}>
-                                                                Cancelled</option>
-                                                        </select>
-                                                    </div>
-                                                </div> --}}
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label>From Date</label>
-                                                        <input type="date" name="from_date" class="form-control"
-                                                            value="{{ request('from_date') }}"
-                                                            onchange="document.getElementById('filterForm').submit()">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label>To Date</label>
-                                                        <input type="date" name="to_date" class="form-control"
-                                                            value="{{ request('to_date') }}"
-                                                            onchange="document.getElementById('filterForm').submit()">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label>&nbsp;</label>
-                                                        <div>
-                                                            <a href="{{ route('bills.index') }}"
-                                                                class="btn btn-secondary">Clear</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-control" id="typeFilter">
+                                        <option value="">All Types</option>
+                                        <option value="sale" {{ request('type') == 'sale' ? 'selected' : '' }}>Sales
+                                            Challan</option>
+                                        <option value="project" {{ request('type') == 'project' ? 'selected' : '' }}>Project
+                                            Challan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Date From</label>
+                                    <input type="date" class="form-control" id="dateFrom"
+                                        value="{{ request('date_from') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Date To</label>
+                                    <input type="date" class="form-control" id="dateTo"
+                                        value="{{ request('date_to') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-end h-100">
+                                    <button type="button" class="btn btn-primary me-2" id="applyFilters">
+                                        <i class="fas fa-filter me-1"></i> Apply
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="resetFilters">
+                                        <i class="fas fa-redo me-1"></i> Reset
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-
                         <!-- Bills Table -->
                         <div class="card">
                             <div class="card-body">
@@ -106,7 +63,7 @@
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>Bill Number</th>
-                                                <th>Reference</th>
+                                                <th>Type</th>
                                                 <th>Bill Date</th>
                                                 <th>Amount</th>
                                                 <th>Actions</th>
@@ -118,7 +75,7 @@
                                                     <td>
                                                         <strong>{{ $bill->bill_number }}</strong>
                                                     </td>
-                                                    <td>{{ $bill->reference_number }}</td>
+                                                    <td>{{ $bill->type }}</td>
                                                     <td>{{ $bill->bill_date->format('M d, Y') }}</td>
                                                     <td>
                                                         <strong>৳{{ number_format($bill->total_amount, 2) }}</strong>
@@ -154,7 +111,7 @@
                                                                             <i class="far fa-trash-alt me-2"></i>Delete
                                                                         </a>
                                                                         <form id="serviceDelete{{ $bill->id }}"
-                                                                            action="{{ route('projects.destroy', $bill->id) }}"
+                                                                            action="{{ route('bills.destroy', $bill->id) }}"
                                                                             method="POST" style="display:none;">
                                                                             @csrf
                                                                             @method('DELETE')
@@ -281,6 +238,84 @@
             </div>
         </div>
     </div>
+    <script>
+        // Simple filter functionality
+        function setupFilters() {
+            console.log('Setting up filters...');
+
+            // Get elements
+            const applyBtn = document.getElementById('applyFilters');
+            const resetBtn = document.getElementById('resetFilters');
+            const typeFilter = document.getElementById('typeFilter');
+            const dateFrom = document.getElementById('dateFrom');
+            const dateTo = document.getElementById('dateTo');
+
+            // Check if elements exist
+            if (!applyBtn || !resetBtn || !typeFilter) {
+                console.error('Filter elements not found!');
+                return;
+            }
+
+            console.log('All filter elements found');
+
+            // Apply filters
+            applyBtn.addEventListener('click', function() {
+                console.log('Apply button clicked');
+
+                // Get current values
+                const typeValue = typeFilter.value;
+                const dateFromValue = dateFrom.value;
+                const dateToValue = dateTo.value;
+
+                console.log('Filter values:', {
+                    type: typeValue,
+                    dateFrom: dateFromValue,
+                    dateTo: dateToValue
+                });
+
+                // Build URL parameters
+                let params = [];
+
+                if (typeValue) {
+                    params.push('type=' + typeValue);
+                }
+                if (dateFromValue) {
+                    params.push('date_from=' + dateFromValue);
+                }
+                if (dateToValue) {
+                    params.push('date_to=' + dateToValue);
+                }
+
+                // Create final URL
+                let finalUrl = '{{ route('bills.index') }}';
+                if (params.length > 0) {
+                    finalUrl += '?' + params.join('&');
+                }
+
+                console.log('Redirecting to:', finalUrl);
+
+                // Redirect
+                window.location.href = finalUrl;
+            });
+
+            // Reset filters
+            resetBtn.addEventListener('click', function() {
+                console.log('Reset button clicked');
+                window.location.href = '{{ route('bills.index') }}';
+            });
+
+            // Set current filter values from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (typeFilter) typeFilter.value = urlParams.get('type') || '';
+            if (dateFrom) dateFrom.value = urlParams.get('date_from') || '';
+            if (dateTo) dateTo.value = urlParams.get('date_to') || '';
+
+            console.log('Filters setup complete');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', setupFilters);
+    </script>
 @endsection
 
 @push('styles')
@@ -316,72 +351,4 @@
             transform: translateY(-2px);
         }
     </style>
-@endpush
-
-@push('scripts')
-    <script>
-        let currentBillId = null;
-        let currentStatus = null;
-
-        // Status change handler
-        document.querySelectorAll('.status-change').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                currentBillId = this.dataset.billId;
-                currentStatus = this.dataset.status;
-
-                const statusText = this.dataset.status.charAt(0).toUpperCase() + this.dataset.status.slice(
-                    1);
-                document.getElementById('statusText').textContent = statusText;
-
-                $('#statusModal').modal('show');
-            });
-        });
-
-        // Confirm status update
-        document.getElementById('confirmStatusUpdate').addEventListener('click', function() {
-            if (!currentBillId || !currentStatus) return;
-
-            fetch(`/bills/${currentBillId}/status`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        status: currentStatus
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert('Error updating status: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error updating status');
-                })
-                .finally(() => {
-                    $('#statusModal').modal('hide');
-                });
-        });
-
-        // Delete confirmation
-        function confirmDelete(billId) {
-            if (confirm('Are you sure you want to delete this bill? This action cannot be undone.')) {
-                // Implement delete functionality here
-                alert('Delete functionality to be implemented');
-            }
-        }
-
-        // Auto-submit filter form on date changes
-        document.querySelectorAll('input[type="date"]').forEach(input => {
-            input.addEventListener('change', function() {
-                document.getElementById('filterForm').submit();
-            });
-        });
-    </script>
 @endpush

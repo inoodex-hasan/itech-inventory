@@ -18,31 +18,38 @@
                         <div class="row mb-4">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label class="form-label">Search</label>
-                                    <input type="text" class="form-control" id="searchInput"
-                                        placeholder="Search challans...">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
                                     <label class="form-label">Type</label>
                                     <select class="form-control" id="typeFilter">
                                         <option value="">All Types</option>
-                                        <option value="sale">Sales Challan</option>
-                                        <option value="project">Project Challan</option>
+                                        <option value="sale" {{ request('type') == 'sale' ? 'selected' : '' }}>Sales
+                                            Challan</option>
+                                        <option value="project" {{ request('type') == 'project' ? 'selected' : '' }}>Project
+                                            Challan</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="form-label">Date From</label>
-                                    <input type="date" class="form-control" id="dateFrom">
+                                    <input type="date" class="form-control" id="dateFrom"
+                                        value="{{ request('date_from') }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="form-label">Date To</label>
-                                    <input type="date" class="form-control" id="dateTo">
+                                    <input type="date" class="form-control" id="dateTo"
+                                        value="{{ request('date_to') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-end h-100">
+                                    <button type="button" class="btn btn-primary me-2" id="applyFilters">
+                                        <i class="fas fa-filter me-1"></i> Apply
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="resetFilters">
+                                        <i class="fas fa-redo me-1"></i> Reset
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -52,55 +59,66 @@
                             <table class="table table-bordered table-hover" id="challansTable">
                                 <thead class="table-light">
                                     <tr>
-                                        <th width="8%">Challan No.</th>
-                                        <th width="12%">Reference No.</th>
-                                        <th width="10%">Date</th>
-                                        <th width="12%">Type</th>
-                                        <th>Recipient</th>
-                                        <th width="10%">Items</th>
-                                        <th width="15%">Actions</th>
+                                        <th>Challan No.</th>
+                                        <th>Challan Type</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($challans as $challan)
                                         <tr>
                                             <td>
-                                                <span class="fw-bold text-primary">{{ $challan->challan_number }}</span>
+                                                {{ $challan->challan_number }}
                                             </td>
-                                            <td>{{ $challan->reference_number }}</td>
+                                            <td>{{ $challan->type }}</td>
                                             <td>{{ $challan->challan_date->format('M d, Y') }}</td>
+
                                             <td>
-                                                <span class="badge bg-{{ $challan->type == 'sale' ? 'primary' : 'info' }}">
+                                                <span
+                                                    class="badge {{ $challan->type == 'sale' ? 'bg-primary' : 'bg-success' }}">
                                                     {{ ucfirst($challan->type) }} Challan
                                                 </span>
                                             </td>
-                                            <td>
-                                                <div class="d-flex flex-column">
-                                                    <span
-                                                        class="fw-semibold">{{ Str::limit($challan->recipient_organization, 30) }}</span>
-                                                    <small
-                                                        class="text-muted">{{ Str::limit($challan->recipient_address, 25) }}</small>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-secondary rounded-pill">
-                                                    {{ $challan->challanItems->count() }} items
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <a href="{{ route('challans.show', $challan->id) }}"
-                                                        class="btn btn-sm btn-outline-primary" title="Preview">
-                                                        <i class="far fa-eye"></i>
+                                            <td class="d-flex align-items-center">
+                                                <div class="dropdown dropdown-action">
+                                                    <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
+                                                        <i class="fas fa-ellipsis-v"></i>
                                                     </a>
-                                                    <a href="{{ route('challans.download', $challan->id) }}"
-                                                        class="btn btn-sm btn-outline-success" title="Download PDF">
-                                                        <i class="fas fa-download"></i>
-                                                    </a>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger"
-                                                        title="Delete" onclick="confirmDelete({{ $challan->id }})">
-                                                        <i class="far fa-trash-alt"></i>
-                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <ul>
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('challans.show', $challan->id) }}">
+                                                                    <i class="far fa-eye me-2"></i>Preview
+                                                                </a>
+                                                                {{-- <a class="dropdown-item"
+                                                                            href="{{ route('bills.show', $bill->id) }}">
+                                                                            <i class="far fa-eye me-2"></i>View
+                                                                        </a> --}}
+                                                            </li>
+
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('challans.download', $challan->id) }}">
+                                                                <i class="fas fa-download me-2"></i>Download PDF
+                                                            </a>
+
+                                                            </li>
+                                                            <li>
+                                                                <a onclick="if (confirm('Are you sure to delete?')) { document.getElementById('serviceDelete{{ $challan->id }}').submit(); }"
+                                                                    class="dropdown-item" href="javascript:void(0)">
+                                                                    <i class="far fa-trash-alt me-2"></i>Delete
+                                                                </a>
+                                                                <form id="serviceDelete{{ $challan->id }}"
+                                                                    action="{{ route('challans.destroy', $challan->id) }}"
+                                                                    method="POST" style="display:none;">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -137,137 +155,82 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this challan? This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" method="POST" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete Challan</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
-@push('scripts')
     <script>
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchValue = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#challansTable tbody tr');
+        // Simple filter functionality
+        function setupFilters() {
+            console.log('Setting up filters...');
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchValue) ? '' : 'none';
+            // Get elements
+            const applyBtn = document.getElementById('applyFilters');
+            const resetBtn = document.getElementById('resetFilters');
+            const typeFilter = document.getElementById('typeFilter');
+            const dateFrom = document.getElementById('dateFrom');
+            const dateTo = document.getElementById('dateTo');
+
+            // Check if elements exist
+            if (!applyBtn || !resetBtn || !typeFilter) {
+                console.error('Filter elements not found!');
+                return;
+            }
+
+            console.log('All filter elements found');
+
+            // Apply filters
+            applyBtn.addEventListener('click', function() {
+                console.log('Apply button clicked');
+
+                // Get current values
+                const typeValue = typeFilter.value;
+                const dateFromValue = dateFrom.value;
+                const dateToValue = dateTo.value;
+
+                console.log('Filter values:', {
+                    type: typeValue,
+                    dateFrom: dateFromValue,
+                    dateTo: dateToValue
+                });
+
+                // Build URL parameters
+                let params = [];
+
+                if (typeValue) {
+                    params.push('type=' + typeValue);
+                }
+                if (dateFromValue) {
+                    params.push('date_from=' + dateFromValue);
+                }
+                if (dateToValue) {
+                    params.push('date_to=' + dateToValue);
+                }
+
+                // Create final URL
+                let finalUrl = '{{ route('challans.index') }}';
+                if (params.length > 0) {
+                    finalUrl += '?' + params.join('&');
+                }
+
+                console.log('Redirecting to:', finalUrl);
+
+                // Redirect
+                window.location.href = finalUrl;
             });
-        });
 
-        // Filter by type
-        document.getElementById('typeFilter').addEventListener('change', function() {
-            const filterValue = this.value;
-            const rows = document.querySelectorAll('#challansTable tbody tr');
-
-            rows.forEach(row => {
-                if (!filterValue) {
-                    row.style.display = '';
-                    return;
-                }
-
-                const typeCell = row.cells[3];
-                const typeText = typeCell.textContent.toLowerCase();
-                row.style.display = typeText.includes(filterValue) ? '' : 'none';
+            // Reset filters
+            resetBtn.addEventListener('click', function() {
+                console.log('Reset button clicked');
+                window.location.href = '{{ route('challans.index') }}';
             });
-        });
 
-        // Date filter functionality
-        function filterByDate() {
-            const dateFrom = document.getElementById('dateFrom').value;
-            const dateTo = document.getElementById('dateTo').value;
-            const rows = document.querySelectorAll('#challansTable tbody tr');
+            // Set current filter values from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (typeFilter) typeFilter.value = urlParams.get('type') || '';
+            if (dateFrom) dateFrom.value = urlParams.get('date_from') || '';
+            if (dateTo) dateTo.value = urlParams.get('date_to') || '';
 
-            rows.forEach(row => {
-                if (!dateFrom && !dateTo) {
-                    row.style.display = '';
-                    return;
-                }
-
-                const dateCell = row.cells[2];
-                const dateText = dateCell.textContent.trim();
-                const rowDate = new Date(dateText);
-
-                let showRow = true;
-
-                if (dateFrom) {
-                    const fromDate = new Date(dateFrom);
-                    if (rowDate < fromDate) showRow = false;
-                }
-
-                if (dateTo) {
-                    const toDate = new Date(dateTo);
-                    if (rowDate > toDate) showRow = false;
-                }
-
-                row.style.display = showRow ? '' : 'none';
-            });
+            console.log('Filters setup complete');
         }
 
-        document.getElementById('dateFrom').addEventListener('change', filterByDate);
-        document.getElementById('dateTo').addEventListener('change', filterByDate);
-
-        // Delete confirmation
-        function confirmDelete(challanId) {
-            const form = document.getElementById('deleteForm');
-            form.action = `/challans/${challanId}`;
-            new bootstrap.Modal(document.getElementById('deleteModal')).show();
-        }
-
-        // Reset filters
-        function resetFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('typeFilter').value = '';
-            document.getElementById('dateFrom').value = '';
-            document.getElementById('dateTo').value = '';
-
-            const rows = document.querySelectorAll('#challansTable tbody tr');
-            rows.forEach(row => row.style.display = '');
-        }
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', setupFilters);
     </script>
-
-    <style>
-        .table th {
-            border-top: none;
-            font-weight: 600;
-            color: #495057;
-            background-color: #f8f9fa;
-        }
-
-        .btn-group .btn {
-            border-radius: 0.375rem;
-            margin-right: 0.25rem;
-        }
-
-        .btn-group .btn:last-child {
-            margin-right: 0;
-        }
-
-        .badge {
-            font-size: 0.75em;
-        }
-
-        #challansTable tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-    </style>
-@endpush
+@endsection
