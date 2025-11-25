@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 24, 2025 at 12:31 PM
+-- Generation Time: Nov 25, 2025 at 01:37 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -581,7 +581,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (78, '2025_11_24_144057_create_bill_items_table', 49),
 (79, '2025_11_24_152350_add_project_fields_to_sales_table', 50),
 (80, '2025_11_24_152355_add_project_fields_to_sales_table', 51),
-(81, '2025_11_24_163950_make_customer_id_nullable_in_sales_table', 52);
+(81, '2025_11_24_163950_make_customer_id_nullable_in_sales_table', 52),
+(82, '2025_11_25_102923_add_photo_to_products_table', 53),
+(83, '2025_11_25_131014_create_quotations_table', 54),
+(84, '2025_11_25_135221_create_quotation_items_table', 54);
 
 -- --------------------------------------------------------
 
@@ -751,6 +754,7 @@ CREATE TABLE `products` (
   `name` varchar(255) NOT NULL,
   `brand_id` bigint(20) UNSIGNED NOT NULL,
   `model` varchar(255) NOT NULL,
+  `photos` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`photos`)),
   `status` enum('0','1') NOT NULL DEFAULT '1',
   `warranty` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -761,11 +765,10 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `brand_id`, `model`, `status`, `warranty`, `created_at`, `updated_at`) VALUES
-(2, 'HP DeskJet Ink Advantage 2336 All-in-One Color Printer', 2, 'DeskJet Ink Advantage 2336', '1', 365, '2025-11-02 18:39:24', '2025-11-02 18:39:24'),
-(3, 'Brother HL-L2320D Auto Duplex Laser Printer (30 PPM)', 5, 'Brother HL-L2320D', '1', 365, '2025-11-02 18:39:59', '2025-11-02 18:39:59'),
-(4, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 4, 'EcoTank L3250', '1', 365, '2025-11-02 18:40:49', '2025-11-02 18:40:49'),
-(5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '1', 365, '2025-11-02 18:41:22', '2025-11-02 18:41:22');
+INSERT INTO `products` (`id`, `name`, `brand_id`, `model`, `photos`, `status`, `warranty`, `created_at`, `updated_at`) VALUES
+(3, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 5, 'EcoTank L3250', '[\"products\\/MvogjUxGJxkpdJ81qlvcw0xvNkNP359uJMsQmYeJ.jpg\"]', '1', 365, '2025-11-02 18:39:59', '2025-11-25 12:22:41'),
+(4, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 4, 'EcoTank L3250', '[\"products\\/tASNTtO44wLOcacQJD3c4OY1RlN6BeKvD0syvHAu.jpg\"]', '1', 365, '2025-11-02 18:40:49', '2025-11-25 11:48:20'),
+(5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '[\"products\\/hRkUJ44b4qhFOjjeeyCMtSqfHQQWxBekLq60T9eE.jpg\"]', '1', 365, '2025-11-02 18:41:22', '2025-11-25 11:48:08');
 
 -- --------------------------------------------------------
 
@@ -877,10 +880,63 @@ CREATE TABLE `purchases` (
 
 INSERT INTO `purchases` (`id`, `product_id`, `vendor_id`, `quantity`, `unit_price`, `sub_price`, `total_price`, `payment`, `due`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
 (1, 4, 2, 10, 15500.00, 155000.00, 14000.00, 10000.00, 4000.00, 1, NULL, '2025-11-02 19:31:34', '2025-11-02 19:31:34'),
-(2, 2, 1, 15, 15000.00, 225000.00, 220000.00, 150000.00, 70000.00, 1, NULL, '2025-11-03 01:24:55', '2025-11-03 01:24:55'),
 (3, 5, 1, 20, 25000.00, 500000.00, 480000.00, 400000.00, 80000.00, 1, NULL, '2025-11-03 02:05:12', '2025-11-03 02:05:12'),
 (4, 3, 3, 12, 13500.00, 162000.00, 160000.00, 80000.00, 80000.00, 1, NULL, '2025-11-03 02:11:45', '2025-11-03 02:11:45'),
 (5, 4, 4, 15, 15500.00, 232500.00, 230000.00, 150000.00, 80000.00, 2, NULL, '2025-11-20 05:14:42', '2025-11-20 05:14:42');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quotations`
+--
+
+CREATE TABLE `quotations` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `quotation_number` varchar(255) NOT NULL,
+  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `quotation_date` date NOT NULL,
+  `expiry_date` date NOT NULL,
+  `notes` text DEFAULT NULL,
+  `sub_total` decimal(10,2) NOT NULL,
+  `discount_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_amount` decimal(10,2) NOT NULL,
+  `status` enum('draft','sent','accepted','rejected','expired') NOT NULL DEFAULT 'draft',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `quotations`
+--
+
+INSERT INTO `quotations` (`id`, `quotation_number`, `customer_id`, `client_id`, `quotation_date`, `expiry_date`, `notes`, `sub_total`, `discount_amount`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
+(17, 'QT2025110001', NULL, 7, '2025-11-25', '2025-12-25', 'yjyj', 3000.00, 0.00, 3000.00, 'draft', '2025-11-25 12:29:43', '2025-11-25 12:29:43');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quotation_items`
+--
+
+CREATE TABLE `quotation_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `quotation_id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `description` text DEFAULT NULL,
+  `quantity` int(11) NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `total` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `quotation_items`
+--
+
+INSERT INTO `quotation_items` (`id`, `quotation_id`, `product_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
+(18, 17, 4, NULL, 2, 1500.00, 3000.00, '2025-11-25 12:29:43', '2025-11-25 12:29:43');
 
 -- --------------------------------------------------------
 
@@ -1035,7 +1091,6 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`, `sale_type`, `project_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
-(10, 'INV-69089F5D03AFA', 10, NULL, 2, 'retail', NULL, 3, 48000, 46500, 48000, 46500.00, 0.00, 1500, '1', 'partial', '2025-11-03 01:26:05', '2025-11-03 01:27:52'),
 (11, 'INV-6908A8E856C9D', 11, NULL, 5, 'retail', NULL, 10, 256000, 250000, 256000, 150000.00, 100000.00, 6000, '1', 'partial', '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
 (12, 'INV-6922A41B60485', 15, NULL, 3, 'retail', NULL, 2, 29000, 29000, 29000, 0.00, 29000.00, 0, '2', 'credit', '2025-11-23 06:05:15', '2025-11-23 06:05:15'),
 (25, 'PRJ-8-1763981794', NULL, 7, 3, 'project', 8, 1, 15000, 15000, 150000, NULL, NULL, NULL, NULL, 'credit', '2025-11-24 10:56:34', '2025-11-24 10:56:34');
@@ -1453,6 +1508,23 @@ ALTER TABLE `purchases`
   ADD KEY `purchases_updated_by_foreign` (`updated_by`);
 
 --
+-- Indexes for table `quotations`
+--
+ALTER TABLE `quotations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `quotations_quotation_number_unique` (`quotation_number`),
+  ADD KEY `quotations_customer_id_foreign` (`customer_id`),
+  ADD KEY `quotations_client_id_foreign` (`client_id`);
+
+--
+-- Indexes for table `quotation_items`
+--
+ALTER TABLE `quotation_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `quotation_items_quotation_id_foreign` (`quotation_id`),
+  ADD KEY `quotation_items_product_id_foreign` (`product_id`);
+
+--
 -- Indexes for table `revenues`
 --
 ALTER TABLE `revenues`
@@ -1667,7 +1739,7 @@ ALTER TABLE `inventories`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1697,7 +1769,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `projects`
@@ -1722,6 +1794,18 @@ ALTER TABLE `project_items`
 --
 ALTER TABLE `purchases`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `quotations`
+--
+ALTER TABLE `quotations`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `quotation_items`
+--
+ALTER TABLE `quotation_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `revenues`
@@ -1881,6 +1965,20 @@ ALTER TABLE `purchases`
   ADD CONSTRAINT `purchases_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `purchases_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `purchases_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `quotations`
+--
+ALTER TABLE `quotations`
+  ADD CONSTRAINT `quotations_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `quotations_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `quotation_items`
+--
+ALTER TABLE `quotation_items`
+  ADD CONSTRAINT `quotation_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `quotation_items_quotation_id_foreign` FOREIGN KEY (`quotation_id`) REFERENCES `quotations` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `role_has_permissions`
