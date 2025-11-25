@@ -12,7 +12,10 @@ class Sale extends Model
 
     protected $fillable = [
         'order_no',
+        'sale_type',
         'customer_id',
+        'client_id',
+        'project_id',
         'product_id',
         'price',
         'qty',
@@ -52,6 +55,16 @@ class Sale extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }
+
+    public function client()
+{
+    return $this->belongsTo(Client::class, 'client_id');
+}
+
+public function salesBy()
+{
+    return $this->belongsTo(User::class, 'sales_by'); 
+}
 
     /**
      * Relationship with Product

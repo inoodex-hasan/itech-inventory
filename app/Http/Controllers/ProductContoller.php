@@ -26,6 +26,7 @@ use App\Models\Admin\ProductToping;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
 use App\Models\Admin\ProductOptionTopping;
+use Illuminate\Support\Facades\Storage;
 
 class ProductContoller extends Controller
 {
@@ -59,32 +60,39 @@ class ProductContoller extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $attributes = $request->all();
-        $rules = [
-            'name' => 'required',
-            'model_name' => 'required',
-            'status' => 'required',
-            'warranty' => 'required',
-            'brand_id' => 'required',
-        ];
-        $validation = Validator::make($attributes, $rules);
-        if ($validation->fails()) {
-            return redirect()->back()->with(['error' => getNotify(4), 'error_code' => 'edit'])->withErrors($validation)->withInput();
-        }
 
-        $product = new Product;
-        $product->name = $request->name;
-        $product->model = $request->model_name;
-        $product->status = $request->status;
-        $product->brand_id = $request->brand_id;
-        $product->warranty = $request->warranty;
-        $product->save();
-    
-        return redirect()->back()->with(['success' => getNotify(1)]);
+    public function store(Request $request)
+{
+    $validated = $request->validate([
+        'brand_id' => 'required|exists:brands,id',
+        'name' => 'required|string|max:255',
+        'model_name' => 'required|string|max:255',
+        'warranty' => 'required|integer',
+        'status' => 'required|boolean',
+        'photos' => 'nullable|array',
+        'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
+
+    // Handle photo uploads
+    $photoPaths = [];
+    if ($request->hasFile('photos')) {
+        foreach ($request->file('photos') as $photo) {
+            $path = $photo->store('products', 'public');
+            $photoPaths[] = $path;
+        }
     }
 
+    $product = Product::create([
+        'brand_id' => $validated['brand_id'],
+        'name' => $validated['name'],
+        'model' => $validated['model_name'],
+        'warranty' => $validated['warranty'],
+        'status' => $validated['status'],
+        'photos' => !empty($photoPaths) ? $photoPaths : null,
+    ]);
+
+    return redirect()->route('products.index')->with('success', 'Product created successfully.');
+}
     /**
      * Display the specified resource.
      */
@@ -116,38 +124,59 @@ class ProductContoller extends Controller
         return view('admin.pages.product.edit', compact('categories', 'product', 'id', 'subCategories','brands'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $attributes = $request->all();
-        $rules = [
-            'name' => 'required',
-            'model_name' => 'required',
-            'status' => 'required',
-            'brand_id' => 'required',
-            'warranty' => 'required',
-        ];
-        $validation = Validator::make($attributes, $rules);
-        if ($validation->fails()) {
-            return redirect()->back()->with(['error' => getNotify(4), 'error_code' => 'edit'])->withErrors($validation)->withInput();
-        }
+   
+public function update(Request $request, Product $product)
+{
+    $validated = $request->validate([
+        'brand_id' => 'required|exists:brands,id',
+        'name' => 'required|string|max:255',
+        'model_name' => 'required|string|max:255',
+        'warranty' => 'required|integer',
+        'status' => 'required|boolean',
+        'photos' => 'nullable|array',
+        'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        'remaining_photos' => 'nullable|string', // JSON string of remaining photos
+    ]);
 
-        $product = Product::where('id', $id)->first();
-        if(!$product){
-            return redirect()->back()->with(['error' => getNotify(10)])->withInput();
-        }
-        $product->name = $request->name;
-        $product->model = $request->model_name;
-        $product->status = $request->status;
-        $product->brand_id = $request->brand_id;
-        $product->warranty = $request->warranty;
-        $product->update();
-
-        return redirect()->back()->with(['success' => getNotify(2)]);
-
+    // Get remaining photos from hidden input
+    $remainingPhotos = [];
+    if ($request->remaining_photos) {
+        $remainingPhotos = json_decode($request->remaining_photos, true) ?? [];
     }
+
+    // Find deleted photos and remove them from storage
+    $originalPhotos = $product->photos ?? [];
+    $deletedPhotos = array_diff($originalPhotos, $remainingPhotos);
+    
+    foreach ($deletedPhotos as $deletedPhoto) {
+        if (Storage::disk('public')->exists($deletedPhoto)) {
+            Storage::disk('public')->delete($deletedPhoto);
+        }
+    }
+
+    // Handle new photo uploads
+    $newPhotoPaths = [];
+    if ($request->hasFile('photos')) {
+        foreach ($request->file('photos') as $photo) {
+            $path = $photo->store('products', 'public');
+            $newPhotoPaths[] = $path;
+        }
+    }
+
+    // Merge remaining and new photos
+    $allPhotos = array_merge($remainingPhotos, $newPhotoPaths);
+
+    $product->update([
+        'brand_id' => $validated['brand_id'],
+        'name' => $validated['name'],
+        'model' => $validated['model_name'],
+        'warranty' => $validated['warranty'],
+        'status' => $validated['status'],
+        'photos' => !empty($allPhotos) ? $allPhotos : null,
+    ]);
+
+    return redirect()->route('products.index')->with('success', 'Product updated successfully.');
+}
 
     /**
      * Remove the specified resource from storage.

@@ -127,94 +127,6 @@ public function store(Request $request)
     }
 }
 
-// public function store(Request $request)
-// {
-//         $request->validate([
-//         'project_name' => 'required|string|max:255',
-//         'client_type' => 'required|in:new,existing',
-//         // Conditional validation
-//         'client_name' => 'required_if:client_type,new',
-//         'client_phone' => 'required_if:client_type,new',
-//         'client_email' => 'required_if:client_type,new|email',
-//         'client_address' => 'required_if:client_type,new',
-//         'existing_client_id' => 'required_if:client_type,existing|exists:clients,id',
-//         'budget' => 'required|numeric|min:0',
-//         'status' => 'required|in:pending,in_progress,completed,cancelled',
-//     ]);
-
-//     DB::transaction(function () use ($request) {
-//         // Create or get client
-//         if ($request->client_type === 'existing') {
-//             $clientId = $request->existing_client_id;
-//             $client = Client::find($clientId);
-//             $clientData = [
-//                 'client_id' => $clientId,
-//                 'client_name' => $client->name,
-//                 'client_phone' => $client->phone,
-//                 'client_email' => $client->email,
-//                 'client_address' => $client->address,
-//             ];
-//         } else {
-//             $clientData = [
-//                 'client_id' => null,
-//                 'client_name' => $request->client_name,
-//                 'client_phone' => $request->client_phone,
-//                 'client_email' => $request->client_email,
-//                 'client_address' => $request->client_address,
-//             ];
-//         }
-
-//         // Calculate totals
-//         $subTotal = 0;
-//         if ($request->has('product')) {
-//             foreach ($request->product as $index => $productId) {
-//                 $unitPrice = $request->unit_price[$index];
-//                 $quantity = $request->qty[$index];
-//                 $subTotal += $unitPrice * $quantity;
-//             }
-//         }
-
-//         $discount = $request->discount ?? 0;
-//         $grandTotal = $subTotal - $discount;
-//         $advancedPayment = $request->advanced_payment ?? 0;
-//         $duePayment = $grandTotal - $advancedPayment;
-
-//         // Create project
-//         $project = Project::create(array_merge([
-//             'project_name' => $request->project_name,
-//             'budget' => $request->budget,
-//             'start_date' => $request->start_date,
-//             'end_date' => $request->end_date,
-//             'status' => $request->status,
-//             'description' => $request->description,
-//             'sub_total' => $subTotal,
-//             'discount' => $discount,
-//             'grand_total' => $grandTotal,
-//             'advanced_payment' => $advancedPayment,
-//             'due_payment' => $duePayment,
-//         ], $clientData));
-
-//         // Create project items in separate table
-//         if ($request->has('product')) {
-//             foreach ($request->product as $index => $productId) {
-//                 $unitPrice = $request->unit_price[$index];
-//                 $quantity = $request->qty[$index];
-//                 $total = $unitPrice * $quantity;
-                
-//                 ProjectItem::create([
-//                     'project_id' => $project->id,
-//                     'product_id' => $productId,
-//                     'unit_price' => $unitPrice,
-//                     'quantity' => $quantity,
-//                     'total' => $total,
-//                 ]);
-//             }
-//         }
-//     });
-
-//     return redirect()->route('projects.index')->with('success', 'Project created successfully.');
-// }
-
 public function edit($id)
 {
     $project = Project::with(['client', 'items.product'])->findOrFail($id);
@@ -224,11 +136,6 @@ public function edit($id)
     return view('frontend.pages.projects.edit', compact('project', 'existingClients', 'products'));
 }
 
-// public function show($id)
-// {
-//     $project = Project::with(['client', 'items.product'])->findOrFail($id);
-//     return view('frontend.pages.projects.show', compact('project'));
-// }
 
 public function show($id)
 {
@@ -360,79 +267,6 @@ public function update(Request $request, $id)
     }
 }
 
-// public function update(Request $request, Project $project)
-// {
-//     $request->validate([
-//         'project_name' => 'required|string|max:255',
-//         'client_name' => 'required|string|max:255',
-//         'client_phone' => 'required|string|max:15',
-//         'client_address' => 'required|string',
-//         'client_email' => 'required|email',
-//         'budget' => 'nullable|numeric|min:0',
-//         'product' => 'required|array',
-//         'product.*' => 'required|exists:products,id',
-//         'unit_price' => 'required|array',
-//         'unit_price.*' => 'required|numeric|min:0',
-//         'qty' => 'required|array',
-//         'qty.*' => 'required|integer|min:1',
-//         'subTotal' => 'required|numeric|min:0',
-//         'discount' => 'nullable|numeric|min:0',
-//         'grandTotal' => 'required|numeric|min:0',
-//         'advanced_payment' => 'nullable|numeric|min:0',
-//         'duePayment' => 'nullable|numeric|min:0',
-//         'description' => 'nullable|string',
-//         'status' => 'required|in:pending,in_progress,completed,cancelled',
-//         'start_date' => 'nullable|date',
-//         'end_date' => 'nullable|date|after_or_equal:start_date'
-//     ]);
-
-//     // Prepare project items
-//     $projectItems = [];
-//     $totalQuantity = 0;
-//     $totalAmount = 0;
-
-//     foreach ($request->product as $key => $productId) {
-//         $product = Product::find($productId);
-//         $itemTotal = $request->unit_price[$key] * $request->qty[$key];
-        
-//         $projectItems[] = [
-//             'product_id' => $productId,
-//             'product_name' => $product->name . '(' . $product->model . ')',
-//             'unit_price' => $request->unit_price[$key],
-//             'quantity' => $request->qty[$key],
-//             'total' => $itemTotal
-//         ];
-
-//         $totalQuantity += $request->qty[$key];
-//         $totalAmount += $itemTotal;
-//     }
-
-//     $project->update([
-//         'project_name' => $request->project_name,
-//         'client_name' => $request->client_name,
-//         'client_phone' => $request->client_phone,
-//         'client_address' => $request->client_address,
-//         'client_email' => $request->client_email,
-//         'budget' => $request->budget,
-//         'unit_price' => $request->unit_price[0] ?? 0,
-//         'selling_price' => $request->unit_price[0] ?? 0,
-//         'quantity' => $totalQuantity,
-//         'total' => $totalAmount,
-//         'sub_total' => $request->subTotal,
-//         'discount' => $request->discount ?? 0,
-//         'grand_total' => $request->grandTotal,
-//         'advanced_payment' => $request->advanced_payment ?? 0,
-//         'due_payment' => $request->duePayment ?? 0,
-//         'description' => $request->description,
-//         'status' => $request->status,
-//         'start_date' => $request->start_date,
-//         'end_date' => $request->end_date,
-//         'project_items' => $projectItems
-//     ]);
-
-//     return redirect()->route('projects.index')
-//         ->with('success', 'Project updated successfully.');
-// }
 
     public function destroy(Project $project)
     {

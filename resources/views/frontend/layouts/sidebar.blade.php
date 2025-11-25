@@ -133,11 +133,11 @@
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
                             <span>Challan Generate</span></a>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('due-payments.index') }}"
+                    <li>
+                        <a href="{{ route('quotations.index') }}"
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
-                            <span>Due Payment</span></a>
-                    </li> --}}
+                            <span>Quotation Generate</span></a>
+                    </li>
                 @endcan
 
                 @can('Inventory Management')

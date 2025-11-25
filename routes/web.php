@@ -23,6 +23,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCostController;
 use App\Http\Controllers\ProjectItemController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryController;
@@ -38,6 +39,7 @@ use App\Models\Extra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -176,6 +178,11 @@ Route::resource('challans', ChallanController::class);
 Route::get('/challans/{challan}/download', [ChallanController::class, 'download'])->name('challans.download');
 Route::get('/get-sales', [ChallanController::class, 'getSales'])->name('challans.get-sales');
 Route::get('/get-projects', [ChallanController::class, 'getProjects'])->name('challans.get-projects');
+
+Route::resource('quotations', QuotationController::class);
+Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
+Route::get('/quotations/{quotation}/download', [QuotationController::class, 'download'])->name('quotations.download');
+Route::post('quotations/{quotation}/send', [QuotationController::class, 'sendQuotation'])->name('quotations.send');
 
 // Route::get('/get-sales', [BillController::class, 'getSales'])->name('sales.get');
 // Route::get('/get-projects', [BillController::class, 'getProjects'])->name('projects.get');

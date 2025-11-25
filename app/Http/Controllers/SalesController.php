@@ -28,7 +28,12 @@ class SalesController extends Controller
     public function index(Request $request)
     {
 
-        $services = Sale::join('customers', 'customers.id', 'sales.customer_id')->leftjoin('users', 'users.id', '=', 'sales.sales_by');
+        // $services = Sale::join('customers', 'customers.id', 'sales.customer_id')
+        // ->leftjoin('users', 'users.id', '=', 'sales.sales_by')
+        //  ->leftJoin('clients', 'clients.id', '=', 'sales.client_id');
+
+        $services = Sale::with(['customer', 'client', 'salesBy'])->get();
+
 
         $defaultFilter = true;
 
@@ -38,8 +43,6 @@ class SalesController extends Controller
             $services = $services->whereBetween('sales.created_at', [$from, $to]);
             $defaultFilter = false;
         }
-
-
 
         if ($request->search_by == 'order_no' && $request->key != "") {
             $services = $services->where('sales.order_no', 'like', '%' . $request->key . '%');
@@ -57,8 +60,13 @@ class SalesController extends Controller
             $services = $services->whereBetween('sales.created_at', [$startOfMonth, $endOfMonth]);
         }
 
-        $services = $services->select('sales.*', 'users.name as sales_by', 'customers.name', 'customers.phone', 'customers.address')
-            ->orderBy('id', 'desc')->get();
+        // $services = $services->select('sales.*', 'users.name as sales_by', 'customers.name', 'customers.phone', 'customers.address', 'clients.name as client_name', 'clients.phone as client_phone')
+        //     ->orderBy('sales.id', 'desc')->get();
+
+        $services = Sale::with(['customer', 'client', 'salesBy'])
+        ->orderBy('id', 'desc')
+        ->get();
+
 
         $users = lib_salesMan();
         if ($request->search_for == 'pdf') {

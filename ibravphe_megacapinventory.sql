@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 23, 2025 at 01:51 PM
+-- Generation Time: Nov 24, 2025 at 12:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -104,10 +104,11 @@ CREATE TABLE `bills` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `bill_number` varchar(255) NOT NULL,
   `reference_number` varchar(255) DEFAULT NULL,
-  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
   `sale_id` bigint(20) UNSIGNED DEFAULT NULL,
   `project_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `purchase_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `type` enum('sale','project') NOT NULL,
   `work_order_number` varchar(255) DEFAULT NULL,
   `bill_date` date NOT NULL,
   `subtotal` decimal(15,2) NOT NULL DEFAULT 0.00,
@@ -121,9 +122,8 @@ CREATE TABLE `bills` (
 -- Dumping data for table `bills`
 --
 
-INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `client_id`, `sale_id`, `project_id`, `purchase_id`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`) VALUES
-(95, 'BILL-20251123-0001', 'BIL-20251123-180120', NULL, NULL, NULL, NULL, NULL, '2025-11-23', 48000.00, 48000.00, NULL, '2025-11-23 12:01:25', '2025-11-23 12:01:25'),
-(96, 'BILL-20251123-0002', 'BIL-20251123-181011', 2, NULL, 4, NULL, 'Test/1297/23-24-0480', '2025-11-23', 130000.00, 130000.00, NULL, '2025-11-23 12:10:35', '2025-11-23 12:10:35');
+INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `sale_id`, `project_id`, `customer_id`, `client_id`, `type`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`) VALUES
+(1, 'BILL-20251124-0001', 'BIL-20251124-133702', NULL, NULL, NULL, NULL, 'sale', 'Test/1297/23-24-0480', '2025-11-24', 48000.00, 48000.00, NULL, '2025-11-24 07:37:14', '2025-11-24 07:37:14');
 
 -- --------------------------------------------------------
 
@@ -147,8 +147,7 @@ CREATE TABLE `bill_items` (
 --
 
 INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(67, 95, 'HP DeskJet Ink Advantage 2336 All-in-One Color Printer', 3, 16000.00, 48000.00, '2025-11-23 12:01:25', '2025-11-23 12:01:25'),
-(68, 96, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 5, 26000.00, 130000.00, '2025-11-23 12:10:35', '2025-11-23 12:10:35');
+(1, 1, 'HP DeskJet Ink Advantage 2336 All-in-One Color Printer', 3, 16000.00, 48000.00, '2025-11-24 07:37:14', '2025-11-24 07:37:14');
 
 -- --------------------------------------------------------
 
@@ -213,15 +212,6 @@ CREATE TABLE `challans` (
   `project_id` bigint(20) UNSIGNED DEFAULT NULL,
   `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
   `client_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `recipient_organization` varchar(255) NOT NULL,
-  `recipient_designation` varchar(255) NOT NULL DEFAULT 'The Managing Director',
-  `recipient_address` text NOT NULL,
-  `attention_to` varchar(255) DEFAULT NULL,
-  `subject` varchar(255) NOT NULL,
-  `notes` text DEFAULT NULL,
-  `company_name` varchar(255) NOT NULL DEFAULT 'Intelligent Technology',
-  `signatory_name` varchar(255) NOT NULL DEFAULT 'Engr. Shamsul Alam',
-  `signatory_designation` varchar(255) NOT NULL DEFAULT 'Director (Technical)',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -265,7 +255,7 @@ CREATE TABLE `clients` (
 INSERT INTO `clients` (`id`, `name`, `phone`, `email`, `address`, `created_at`, `updated_at`) VALUES
 (2, 'Md Hasan', '01234567890', 'hasan@inoodex.com', 'Dhaka', '2025-11-14 20:08:22', '2025-11-14 20:08:22'),
 (5, 'Mr Rahim', '012304569870', 'rahim@example.com', 'Mirpur', '2025-11-19 11:10:03', '2025-11-19 11:10:03'),
-(6, 'Mr Rahim', '012304569870', 'rahim@example.com', 'Mirpur', '2025-11-19 12:28:57', '2025-11-19 12:28:57');
+(7, 'Verner Nolan', '3242596137', 'your.email+fakedata39453@gmail.com', '7432 Flatley Circle', '2025-11-24 09:56:33', '2025-11-24 09:56:33');
 
 -- --------------------------------------------------------
 
@@ -492,7 +482,7 @@ INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`,
 (1, 4, 10, 16, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-20 05:14:42'),
 (2, 2, 15, 10, 'Opening stock entry', '2025-11-03 01:24:55', '2025-11-03 02:06:48'),
 (3, 5, 20, 12, 'Opening stock entry', '2025-11-03 02:05:12', '2025-11-03 02:06:48'),
-(4, 3, 12, 10, 'Opening stock entry', '2025-11-03 02:11:45', '2025-11-23 06:05:15');
+(4, 3, 12, 3, 'Opening stock entry', '2025-11-03 02:11:45', '2025-11-24 10:56:34');
 
 -- --------------------------------------------------------
 
@@ -582,7 +572,16 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (69, '2025_11_20_175447_create_bills_table', 42),
 (70, '2025_11_21_144055_create_bill_items_table', 43),
 (71, '2025_11_21_144056_create_bill_items_table', 44),
-(72, '2025_11_23_183130_create_challans_table', 45);
+(72, '2025_11_23_183130_create_challans_table', 45),
+(73, '2025_11_23_183135_create_challans_table', 46),
+(74, '2025_11_24_110556_create_challan_items_table', 46),
+(75, '2025_11_24_125447_create_bills_table', 47),
+(76, '2025_11_24_144056_create_bill_items_table', 48),
+(77, '2025_11_24_125448_create_bills_table', 49),
+(78, '2025_11_24_144057_create_bill_items_table', 49),
+(79, '2025_11_24_152350_add_project_fields_to_sales_table', 50),
+(80, '2025_11_24_152355_add_project_fields_to_sales_table', 51),
+(81, '2025_11_24_163950_make_customer_id_nullable_in_sales_table', 52);
 
 -- --------------------------------------------------------
 
@@ -798,31 +797,7 @@ CREATE TABLE `projects` (
 
 INSERT INTO `projects` (`id`, `project_name`, `client_id`, `budget`, `sub_total`, `discount`, `grand_total`, `advanced_payment`, `due_payment`, `description`, `status`, `start_date`, `end_date`, `created_at`, `updated_at`) VALUES
 (4, 'Project 1', 2, 500000.00, 0.00, 0.00, 0.00, 0.00, 0.00, NULL, 'pending', NULL, NULL, '2025-11-19 05:27:16', '2025-11-20 08:37:34'),
-(6, 'Project 2', 6, 520000.00, 0.00, 0.00, 0.00, 0.00, 0.00, NULL, 'pending', NULL, NULL, '2025-11-19 12:28:57', '2025-11-20 06:24:51');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `project_bills`
---
-
-CREATE TABLE `project_bills` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `project_id` bigint(20) UNSIGNED NOT NULL,
-  `bill_number` varchar(255) NOT NULL,
-  `reference_number` varchar(255) DEFAULT NULL,
-  `work_order_number` varchar(255) DEFAULT NULL,
-  `bill_date` date NOT NULL,
-  `due_date` date NOT NULL,
-  `subtotal` decimal(10,2) NOT NULL,
-  `tax_amount` decimal(10,2) NOT NULL,
-  `total_amount` decimal(10,2) NOT NULL,
-  `notes` text DEFAULT NULL,
-  `terms_conditions` text DEFAULT NULL,
-  `status` enum('draft','sent','paid','overdue') NOT NULL DEFAULT 'draft',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+(8, 'Test2', 7, 150000.00, 15000.00, 0.00, 15000.00, 0.00, 15000.00, NULL, 'pending', NULL, NULL, '2025-11-24 10:48:52', '2025-11-24 10:56:34');
 
 -- --------------------------------------------------------
 
@@ -871,8 +846,8 @@ CREATE TABLE `project_items` (
 --
 
 INSERT INTO `project_items` (`id`, `project_id`, `product_id`, `unit_price`, `quantity`, `total`, `created_at`, `updated_at`) VALUES
-(36, 6, 3, 16000.00, 2, 32000.00, '2025-11-20 06:24:51', '2025-11-20 06:24:51'),
-(39, 4, 5, 26000.00, 5, 130000.00, '2025-11-20 08:23:23', '2025-11-20 08:37:34');
+(39, 4, 5, 26000.00, 5, 130000.00, '2025-11-20 08:23:23', '2025-11-20 08:37:34'),
+(56, 8, 3, 15000.00, 1, 15000.00, '2025-11-24 10:56:34', '2025-11-24 10:56:34');
 
 -- --------------------------------------------------------
 
@@ -931,7 +906,7 @@ CREATE TABLE `revenues` (
 --
 
 INSERT INTO `revenues` (`id`, `year`, `month`, `total_sales`, `total_purchases`, `total_expenses`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, 2025, 11, 296500.00, 874000.00, 5000.00, NULL, '2025-11-03 00:06:23', '2025-11-14 20:04:38');
+(1, 2025, 11, 325500.00, 1104000.00, 5000.00, NULL, '2025-11-03 00:06:23', '2025-11-24 04:16:26');
 
 -- --------------------------------------------------------
 
@@ -1037,8 +1012,11 @@ CREATE TABLE `salary_advances` (
 CREATE TABLE `sales` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `order_no` varchar(255) NOT NULL,
-  `customer_id` bigint(20) UNSIGNED NOT NULL,
+  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
+  `sale_type` varchar(255) NOT NULL DEFAULT 'retail',
+  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
   `qty` double NOT NULL,
   `total` double NOT NULL,
   `payble` double NOT NULL,
@@ -1056,10 +1034,11 @@ CREATE TABLE `sales` (
 -- Dumping data for table `sales`
 --
 
-INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `product_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
-(10, 'INV-69089F5D03AFA', 10, 2, 3, 48000, 46500, 48000, 46500.00, 0.00, 1500, '1', 'partial', '2025-11-03 01:26:05', '2025-11-03 01:27:52'),
-(11, 'INV-6908A8E856C9D', 11, 5, 10, 256000, 250000, 256000, 150000.00, 100000.00, 6000, '1', 'partial', '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
-(12, 'INV-6922A41B60485', 15, 3, 2, 29000, 29000, 29000, 0.00, 29000.00, 0, '2', 'credit', '2025-11-23 06:05:15', '2025-11-23 06:05:15');
+INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`, `sale_type`, `project_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
+(10, 'INV-69089F5D03AFA', 10, NULL, 2, 'retail', NULL, 3, 48000, 46500, 48000, 46500.00, 0.00, 1500, '1', 'partial', '2025-11-03 01:26:05', '2025-11-03 01:27:52'),
+(11, 'INV-6908A8E856C9D', 11, NULL, 5, 'retail', NULL, 10, 256000, 250000, 256000, 150000.00, 100000.00, 6000, '1', 'partial', '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
+(12, 'INV-6922A41B60485', 15, NULL, 3, 'retail', NULL, 2, 29000, 29000, 29000, 0.00, 29000.00, 0, '2', 'credit', '2025-11-23 06:05:15', '2025-11-23 06:05:15'),
+(25, 'PRJ-8-1763981794', NULL, 7, 3, 'project', 8, 1, 15000, 15000, 150000, NULL, NULL, NULL, NULL, 'credit', '2025-11-24 10:56:34', '2025-11-24 10:56:34');
 
 -- --------------------------------------------------------
 
@@ -1259,10 +1238,10 @@ ALTER TABLE `attendances`
 ALTER TABLE `bills`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `bills_bill_number_unique` (`bill_number`),
-  ADD KEY `bills_client_id_foreign` (`client_id`),
-  ADD KEY `bills_vendor_id_foreign` (`sale_id`),
+  ADD KEY `bills_sale_id_foreign` (`sale_id`),
   ADD KEY `bills_project_id_foreign` (`project_id`),
-  ADD KEY `bills_purchase_id_foreign` (`purchase_id`);
+  ADD KEY `bills_customer_id_foreign` (`customer_id`),
+  ADD KEY `bills_client_id_foreign` (`client_id`);
 
 --
 -- Indexes for table `bill_items`
@@ -1448,14 +1427,6 @@ ALTER TABLE `projects`
   ADD KEY `projects_client_id_foreign` (`client_id`);
 
 --
--- Indexes for table `project_bills`
---
-ALTER TABLE `project_bills`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `project_bills_bill_number_unique` (`bill_number`),
-  ADD KEY `project_bills_project_id_foreign` (`project_id`);
-
---
 -- Indexes for table `project_costs`
 --
 ALTER TABLE `project_costs`
@@ -1525,7 +1496,9 @@ ALTER TABLE `sales`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `sales_order_no_unique` (`order_no`),
   ADD KEY `sales_customer_id_foreign` (`customer_id`),
-  ADD KEY `sales_product_id_foreign` (`product_id`);
+  ADD KEY `sales_product_id_foreign` (`product_id`),
+  ADD KEY `sales_project_id_foreign` (`project_id`),
+  ADD KEY `sales_client_id_foreign` (`client_id`);
 
 --
 -- Indexes for table `sales_items`
@@ -1592,13 +1565,13 @@ ALTER TABLE `attendances`
 -- AUTO_INCREMENT for table `bills`
 --
 ALTER TABLE `bills`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `bill_items`
 --
 ALTER TABLE `bill_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `bookings`
@@ -1616,19 +1589,19 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `challans`
 --
 ALTER TABLE `challans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `challan_items`
 --
 ALTER TABLE `challan_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `cost_categories`
@@ -1694,7 +1667,7 @@ ALTER TABLE `inventories`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1730,13 +1703,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `project_bills`
---
-ALTER TABLE `project_bills`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `project_costs`
@@ -1748,7 +1715,7 @@ ALTER TABLE `project_costs`
 -- AUTO_INCREMENT for table `project_items`
 --
 ALTER TABLE `project_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `purchases`
@@ -1784,7 +1751,7 @@ ALTER TABLE `salary_advances`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `sales_items`
@@ -1830,10 +1797,10 @@ ALTER TABLE `advance_salaries`
 -- Constraints for table `bills`
 --
 ALTER TABLE `bills`
-  ADD CONSTRAINT `bills_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `bills_purchase_id_foreign` FOREIGN KEY (`purchase_id`) REFERENCES `purchases` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `bills_vendor_id_foreign` FOREIGN KEY (`sale_id`) REFERENCES `vendors` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `bills_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `bills_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `bills_sale_id_foreign` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `bill_items`
@@ -1893,12 +1860,6 @@ ALTER TABLE `projects`
   ADD CONSTRAINT `projects_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `project_bills`
---
-ALTER TABLE `project_bills`
-  ADD CONSTRAINT `project_bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
-
---
 -- Constraints for table `project_costs`
 --
 ALTER TABLE `project_costs`
@@ -1944,8 +1905,10 @@ ALTER TABLE `salary_advances`
 -- Constraints for table `sales`
 --
 ALTER TABLE `sales`
+  ADD CONSTRAINT `sales_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `sales_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `sales_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `sales_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `sales_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `ta_das`

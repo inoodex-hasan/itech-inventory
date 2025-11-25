@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Project;
 use App\Models\ProjectItem;
+use App\Models\Sale;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -37,92 +39,7 @@ class ProjectItemController extends Controller
      * Store new project item
      */
 
-    public function store(Request $request)
-{
-    \Log::info('Store request data:', $request->all());
-    
-    // Validate the request
-    $validated = $request->validate([
-        'project_id' => 'required|exists:projects,id',
-        'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|exists:products,id',
-        'items.*.unit_price' => 'required|numeric|min:0',
-        'items.*.quantity' => 'required|integer|min:1',
-        'items.*.total_price' => 'required|numeric|min:0',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        $projectId = $request->project_id;
-        $itemsAdded = 0;
-        $itemsUpdated = 0;
-
-        foreach ($request->items as $itemData) {
-            $productId = $itemData['product_id'];
-            $unitPrice = $itemData['unit_price'];
-            $quantity = $itemData['quantity'];
-            
-            // Check if item already exists with same product_id and unit_price
-            $existingItem = ProjectItem::where('project_id', $projectId)
-                ->where('product_id', $productId)
-                ->where('unit_price', $unitPrice)
-                ->first();
-
-            if ($existingItem) {
-                // Update existing item - increase quantity
-                $newQuantity = $existingItem->quantity + $quantity;
-                $newTotal = $existingItem->unit_price * $newQuantity;
-                
-                $existingItem->update([
-                    'quantity' => $newQuantity,
-                    'total_price' => $newTotal
-                ]);
-                
-                $itemsUpdated++;
-                
-                \Log::info("Updated existing item - Product: {$productId}, New Quantity: {$newQuantity}");
-            } else {
-                // Create new item
-                ProjectItem::create([
-                    'project_id' => $projectId,
-                    'product_id' => $productId,
-                    'unit_price' => $unitPrice,
-                    'quantity' => $quantity,
-                    'total_price' => $itemData['total_price'],
-                ]);
-                
-                $itemsAdded++;
-            }
-        }
-
-        // Recalculate project grand total
-        $this->recalculateProjectGrandTotal($projectId);
-
-        DB::commit();
-
-        $message = "Project items processed successfully. ";
-        if ($itemsAdded > 0) {
-            $message .= "{$itemsAdded} new item(s) added. ";
-        }
-        if ($itemsUpdated > 0) {
-            $message .= "{$itemsUpdated} existing item(s) updated.";
-        }
-
-        return redirect()->route('project-items.index')
-            ->with('success', $message);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::error('Error storing project items: ' . $e->getMessage());
-        
-        return redirect()->back()
-            ->withInput()
-            ->with('error', 'Error adding project items: ' . $e->getMessage());
-    }
-}
-
-// public function store(Request $request)
+//     public function store(Request $request)
 // {
 //     \Log::info('Store request data:', $request->all());
     
@@ -140,25 +57,62 @@ class ProjectItemController extends Controller
 
 //     try {
 //         $projectId = $request->project_id;
+//         $itemsAdded = 0;
+//         $itemsUpdated = 0;
 
-//         // Create project items
 //         foreach ($request->items as $itemData) {
-//             ProjectItem::create([
-//                 'project_id' => $projectId,
-//                 'product_id' => $itemData['product_id'],
-//                 'unit_price' => $itemData['unit_price'],
-//                 'quantity' => $itemData['quantity'],
-//                 'total_price' => $itemData['total_price'],
-//             ]);
+//             $productId = $itemData['product_id'];
+//             $unitPrice = $itemData['unit_price'];
+//             $quantity = $itemData['quantity'];
+            
+//             // Check if item already exists with same product_id and unit_price
+//             $existingItem = ProjectItem::where('project_id', $projectId)
+//                 ->where('product_id', $productId)
+//                 ->where('unit_price', $unitPrice)
+//                 ->first();
+
+//             if ($existingItem) {
+//                 // Update existing item - increase quantity
+//                 $newQuantity = $existingItem->quantity + $quantity;
+//                 $newTotal = $existingItem->unit_price * $newQuantity;
+                
+//                 $existingItem->update([
+//                     'quantity' => $newQuantity,
+//                     'total_price' => $newTotal
+//                 ]);
+                
+//                 $itemsUpdated++;
+                
+//                 \Log::info("Updated existing item - Product: {$productId}, New Quantity: {$newQuantity}");
+//             } else {
+//                 // Create new item
+//                 ProjectItem::create([
+//                     'project_id' => $projectId,
+//                     'product_id' => $productId,
+//                     'unit_price' => $unitPrice,
+//                     'quantity' => $quantity,
+//                     'total_price' => $itemData['total_price'],
+//                 ]);
+                
+//                 $itemsAdded++;
+//             }
 //         }
 
-//         // Recalculate project grand total from ALL items of the same project
+//         // Recalculate project grand total
 //         $this->recalculateProjectGrandTotal($projectId);
 
 //         DB::commit();
 
+//         $message = "Project items processed successfully. ";
+//         if ($itemsAdded > 0) {
+//             $message .= "{$itemsAdded} new item(s) added. ";
+//         }
+//         if ($itemsUpdated > 0) {
+//             $message .= "{$itemsUpdated} existing item(s) updated.";
+//         }
+
 //         return redirect()->route('project-items.index')
-//             ->with('success', count($request->items) . ' items added successfully. Project grand total updated.');
+//             ->with('success', $message);
 
 //     } catch (\Exception $e) {
 //         DB::rollBack();
@@ -170,6 +124,124 @@ class ProjectItemController extends Controller
 //     }
 // }
 
+public function store(Request $request)
+{
+    \Log::info('Store request data:', $request->all());
+
+    // Validate request
+    $validated = $request->validate([
+        'project_id' => 'required|exists:projects,id',
+        'items' => 'required|array|min:1',
+        'items.*.product_id' => 'required|exists:products,id',
+        'items.*.unit_price' => 'required|numeric|min:0',
+        'items.*.quantity' => 'required|integer|min:1',
+        'items.*.total_price' => 'required|numeric|min:0',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // ✅ Fetch project first
+        $project = Project::findOrFail($request->project_id);
+        $clientId = $project->client_id;
+
+        $itemsAdded = 0;
+        $itemsUpdated = 0;
+        $subTotal = 0;
+
+        foreach ($request->items as $itemData) {
+            $productId = $itemData['product_id'];
+            $unitPrice = $itemData['unit_price'];
+            $quantity = $itemData['quantity'];
+            $totalPrice = $itemData['total_price'];
+
+            $subTotal += $totalPrice;
+
+            // Check if item exists in project_items
+            $existingItem = ProjectItem::where('project_id', $project->id)
+                ->where('product_id', $productId)
+                ->where('unit_price', $unitPrice)
+                ->first();
+
+            if ($existingItem) {
+                // Update existing item
+                $existingItem->update([
+                    'quantity' => $existingItem->quantity + $quantity,
+                    'total' => $existingItem->total + $totalPrice,
+                ]);
+                $itemsUpdated++;
+
+                // Update sales if exists
+                $sale = Sale::where('project_id', $project->id)
+                    ->where('product_id', $productId)
+                    ->first();
+
+                if ($sale) {
+                    $sale->update([
+                        'qty' => $sale->qty + $quantity,
+                        'total' => $sale->total + $totalPrice,
+                        'payble' => $sale->payble + $totalPrice,
+                        'bill' => $project->budget,
+                    ]);
+                }
+            } else {
+                // Create new project item
+                ProjectItem::create([
+                    'project_id' => $project->id,
+                    'product_id' => $productId,
+                    'unit_price' => $unitPrice,
+                    'quantity' => $quantity,
+                    'total' => $totalPrice,
+                ]);
+                $itemsAdded++;
+
+                // Insert into sales
+                Sale::create([
+                    'order_no'    => 'PRJ-' . $project->id . '-' . time(),
+                    'customer_id' => null,      // project sale
+                    'client_id'   => $clientId, // fetched from project
+                    'product_id'  => $productId,
+                    'sale_type'   => 'project',
+                    'project_id'  => $project->id,
+                    'qty'         => $quantity,
+                    'total'       => $totalPrice,
+                    'payble'      => $totalPrice,
+                    'bill'        => $project->budget,
+                    'status'      => 'credit',
+                ]);
+            }
+
+            // Update stock in inventories
+            $inventory = Inventory::where('product_id', $productId)->first();
+            if (!$inventory || $inventory->current_stock < $quantity) {
+                throw new \Exception("Not enough stock for product ID {$productId}");
+            }
+            $inventory->decrement('current_stock', $quantity);
+        }
+
+        // Update project totals
+        $project->update([
+            'sub_total' => $subTotal,
+            'grand_total' => $subTotal - $project->discount,
+            'due_payment' => $subTotal - $project->advanced_payment - $project->discount,
+        ]);
+
+        DB::commit();
+
+        $message = "Project items processed successfully. ";
+        if ($itemsAdded > 0) $message .= "{$itemsAdded} new item(s) added. ";
+        if ($itemsUpdated > 0) $message .= "{$itemsUpdated} existing item(s) updated.";
+
+        return redirect()->route('project-items.index')->with('success', $message);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error storing project items: ' . $e->getMessage());
+
+        return redirect()->back()->withInput()->with('error', 'Error adding project items: ' . $e->getMessage());
+    }
+}
+
     /**
      * Display project item details
      */
@@ -179,33 +251,7 @@ class ProjectItemController extends Controller
         return view('frontend.pages.project-items.show', compact('projectItem'));
     }
 
-    /**
-     * Show form to edit project item
-     */
-
-// public function edit($id)
-// {
-//     $projectItem = ProjectItem::with(['project', 'product.inventory', 'product.latestPurchase'])->findOrFail($id);
-//     $projects = Project::all();
-//     $products = Product::with(['inventory', 'latestPurchase'])->get();
-
-//     return view('frontend.pages.project-items.edit', compact('projectItem', 'projects', 'products'));
-// }
-
-// public function edit($id)
-// {
-//     $projectItem = ProjectItem::findOrFail($id);
-
-//     $project = Project::with('items.product')
-//                       ->findOrFail($projectItem->project_id);
-
-//     $projects = Project::all();
-//     $products = Product::with(['inventory', 'latestPurchase'])->get();
-
-//     return view('frontend.pages.project-items.edit', compact(
-//         'projectItem', 'project', 'projects', 'products'
-//     ));
-// }
+ 
 
 public function edit($id)
 {
@@ -218,48 +264,7 @@ public function edit($id)
     ));
 }
 
-    /**
-     * Update project item
-     */
-
-
-// public function update(Request $request, $id)
-// {
-//     // Debug the request data
-//     \Log::info('Update request data:', $request->all());
-
-//     $validated = $request->validate([
-//         'project_id' => 'required|exists:projects,id',
-//         'product_id' => 'required|exists:products,id',
-//         'unit_price' => 'required|numeric|min:0',
-//         'quantity' => 'required|integer|min:1',
-//         'total_price' => 'required|numeric|min:0',
-//     ]);
-
-//     try {
-//         $projectItem = ProjectItem::findOrFail($id);
-
-//         // Update the project item
-//         $projectItem->update([
-//             'project_id' => $validated['project_id'],
-//             'product_id' => $validated['product_id'],
-//             'unit_price' => $validated['unit_price'],
-//             'quantity' => $validated['quantity'],
-//             'total_price' => $validated['total_price'],
-//         ]);
-
-//         return redirect()->route('project-items.index')
-//             ->with('success', 'Project item updated successfully.');
-
-//     } catch (\Exception $e) {
-//         \Log::error('Error updating project item: ' . $e->getMessage());
-        
-//         return redirect()->back()
-//             ->withInput()
-//             ->with('error', 'Error updating project item: ' . $e->getMessage());
-//     }
-// }
-
+   
 public function update(Request $request, $id)
 {
     \Log::info('Update project item request:', $request->all());

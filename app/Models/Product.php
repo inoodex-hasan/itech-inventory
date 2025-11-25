@@ -11,10 +11,15 @@ class Product extends Model
 {
     use HasFactory;
 
+      protected $casts = [
+        'photos' => 'array',
+    ];
+
     protected $fillable = [
         'name',
         'brand_id',
         'model',
+        'photos',
         'status',
         'warranty',
     ];

@@ -127,7 +127,7 @@
                                             aria-label="Phone: activate to sort column ascending">Payble</th>
                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
                                             rowspan="1" colspan="1"
-                                            aria-label="Status: activate to sort column ascending">Sales By</th>
+                                            aria-label="Status: activate to sort column ascending">Type</th>
                                         <th class="no-sort sorting_disabled" rowspan="1" colspan="1"
                                             aria-label="Actions">Actions</th>
                                     </tr>
@@ -145,20 +145,15 @@
                                                 <h2 class="table-avatar"> <span>{{ $service->order_no }}</span></h2>
                                             </td>
                                             <td>
-                                                <h2 class="table-avatar">
-                                                    <a href="profile.html" class="avatar avatar-md me-2 d-none">
-                                                        <img class="avatar-img rounded-circle"
-                                                            src="assets/img/profiles/avatar-14.jpg" alt="User Image">
-                                                    </a>
-                                                    <a href="javascript:void(0)">{{ $service->name }}
-                                                    </a>
-                                                </h2>
+                                                {{ $service->sale_type == 'project' ? $service->client->name ?? 'N/A' : $service->customer->name ?? 'N/A' }}
                                             </td>
                                             <td>
-                                                <h2 class="table-avatar"> <span>{{ $service->phone }}</span></h2>
+                                                {{ $service->sale_type == 'project' ? $service->client->phone ?? 'N/A' : $service->customer->phone ?? 'N/A' }}
                                             </td>
+
                                             <td> {{ $service->payble }} </td>
-                                            <td> {{ $service->sales_by }} </td>
+                                            <td>{{ ucfirst($service->sale_type) }}</td>
+
                                             <td class="d-flex align-items-center">
                                                 <div class="dropdown dropdown-action">
                                                     <a href="#" class=" btn-action-icon " data-bs-toggle="dropdown"
