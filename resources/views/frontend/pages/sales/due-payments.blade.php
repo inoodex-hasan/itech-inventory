@@ -6,24 +6,21 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">
-
-                            All Due Payments
-
-                        </h4>
+                        <h4 class="card-title">All Due Payments</h4>
                     </div>
 
                     @if ($sales->count())
                         <div class="p-3">
                             <table class="table table-bordered table-striped">
-                                <thead class="table-dark">
+                                <thead>
                                     <tr>
                                         <th>#</th>
                                         <th>Invoice No</th>
-                                        <th>Customer</th>
+                                        <th>Customer/Client</th>
                                         <th>Total Amount</th>
                                         <th>Paid</th>
                                         <th>Due</th>
+                                        <th>Sale Type</th>
                                         <th>Sale Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -33,27 +30,32 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $sale->order_no }}</td>
-                                            <td>{{ $sale->customer->name ?? 'Walk-in Customer' }}</td>
+                                            <td>{{ $sale->sale_type == 'project' ? $sale->client->name ?? 'N/A' : $sale->customer->name ?? 'N/A' }}
+                                            </td>
                                             <td>{{ number_format($sale->payble, 2) }} Tk</td>
                                             <td>{{ number_format($sale->advanced_payment, 2) }} Tk</td>
                                             <td>
                                                 <strong class="text-danger">{{ number_format($sale->due_payment, 2) }}
                                                     Tk</strong>
                                             </td>
+                                            <td>{{ ucfirst($sale->sale_type) }}</td>
                                             <td>{{ $sale->created_at->format('d M, Y') }}</td>
                                             <td>
-                                                {{-- <a href="{{ route('sales.show', $sale->id) }}" class="btn btn-sm btn-info">
-                                                <i class="fa fa-eye"></i> View
-                                            </a> --}}
-                                                {{-- Optional: add “Pay Due” button --}}
                                                 @if ($sale->due_payment > 0)
-                                                    <a href="{{ route('sales.payments', $sale->id) }}"
-                                                        class="btn btn-sm btn-outline-success">
-                                                        <i class="fas fa-credit-card me-1"></i> Pay Now
-                                                    </a>
+                                                    @if ($sale->sale_type == 'project')
+                                                        <a href="{{ route('projects.payments', $sale->id) }}"
+                                                            class="btn btn-sm btn-outline-success">
+                                                            <i class="fas fa-credit-card me-1"></i> Pay Now
+                                                        </a>
+                                                    @else
+                                                        <a href="{{ route('sales.payments', $sale->id) }}"
+                                                            class="btn btn-sm btn-outline-success">
+                                                            <i class="fas fa-credit-card me-1"></i> Pay Now
+                                                        </a>
+                                                    @endif
                                                 @endif
-
                                             </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -79,7 +81,6 @@
 
                 document.getElementById('remainingAmount').textContent = '৳' + remaining.toFixed(2);
 
-                // Change color based on remaining amount
                 const remainingElement = document.getElementById('remainingAmount');
                 if (remaining === 0) {
                     remainingElement.parentElement.className = 'alert alert-success py-2';
@@ -90,7 +91,6 @@
                 }
             }
 
-            // Initialize on page load
             document.addEventListener('DOMContentLoaded', function() {
                 updateRemaining({{ $sale->due_payment }});
             });

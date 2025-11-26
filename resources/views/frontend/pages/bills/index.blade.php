@@ -10,7 +10,7 @@
                             <h4 class="mb-0">Bills Management</h4>
                             <div>
                                 <a href="{{ route('bills.create') }}" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Create New Bill
+                                    <i class="fas fa-plus"></i> Create Bill
                                 </a>
                             </div>
                         </div>
@@ -47,81 +47,80 @@
                             <div class="col-md-3">
                                 <div class="d-flex align-items-end h-100">
                                     <button type="button" class="btn btn-primary me-2" id="applyFilters">
-                                        <i class="fas fa-filter me-1"></i> Apply
+                                        Apply
                                     </button>
                                     <button type="button" class="btn btn-outline-secondary" id="resetFilters">
-                                        <i class="fas fa-redo me-1"></i> Reset
+                                        Reset
                                     </button>
                                 </div>
                             </div>
                         </div>
                         <!-- Bills Table -->
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-fluid">
-                                    <table class="table table-bordered table-hover" id="billsTable">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Bill Number</th>
-                                                <th>Type</th>
-                                                <th>Bill Date</th>
-                                                <th>Amount</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse($bills as $bill)
-                                                <tr>
-                                                    <td>
-                                                        <strong>{{ $bill->bill_number }}</strong>
-                                                    </td>
-                                                    <td>{{ $bill->type }}</td>
-                                                    <td>{{ $bill->bill_date->format('M d, Y') }}</td>
-                                                    <td>
-                                                        <strong>৳{{ number_format($bill->total_amount, 2) }}</strong>
-                                                    </td>
-                                                    <td class="d-flex align-items-center">
-                                                        <div class="dropdown dropdown-action">
-                                                            <a href="#" class="btn-action-icon"
-                                                                data-bs-toggle="dropdown">
-                                                                <i class="fas fa-ellipsis-v"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <ul>
-                                                                    <li>
-                                                                        <a class="dropdown-item"
+                        {{-- <div class="card">
+                            <div class="card-body"> --}}
+                        <div class="table-fluid">
+                            <table class="table table-bordered table-hover" id="billsTable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Bill Number</th>
+                                        <th>Type</th>
+                                        <th>Bill Date</th>
+                                        <th>Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($bills as $bill)
+                                        <tr>
+                                            <td>
+                                                <strong>{{ $bill->bill_number }}</strong>
+                                            </td>
+                                            <td>{{ $bill->type }}</td>
+                                            <td>{{ $bill->bill_date->format('M d, Y') }}</td>
+                                            <td>
+                                                <strong>৳{{ number_format($bill->total_amount, 2) }}</strong>
+                                            </td>
+                                            <td class="d-flex align-items-center">
+                                                <div class="dropdown dropdown-action">
+                                                    <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <ul>
+                                                            <li>
+                                                                {{-- <a class="dropdown-item"
                                                                             href="{{ route('bills.show', $bill->id) }}">
                                                                             <i class="far fa-eye me-2"></i>Preview
-                                                                        </a>
-                                                                        {{-- <a class="dropdown-item"
+                                                                        </a> --}}
+                                                                {{-- <a class="dropdown-item"
                                                                             href="{{ route('bills.show', $bill->id) }}">
                                                                             <i class="far fa-eye me-2"></i>View
                                                                         </a> --}}
-                                                                    </li>
+                                                            </li>
 
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('bills.download', $bill->id) }}">
-                                                                        <i class="fas fa-download me-2"></i>Download PDF
-                                                                    </a>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('bills.download', $bill->id) }}">
+                                                                <i class="fas fa-download me-2"></i>Download PDF
+                                                            </a>
 
-                                                                    </li>
-                                                                    <li>
-                                                                        <a onclick="if (confirm('Are you sure to delete?')) { document.getElementById('serviceDelete{{ $bill->id }}').submit(); }"
-                                                                            class="dropdown-item" href="javascript:void(0)">
-                                                                            <i class="far fa-trash-alt me-2"></i>Delete
-                                                                        </a>
-                                                                        <form id="serviceDelete{{ $bill->id }}"
-                                                                            action="{{ route('bills.destroy', $bill->id) }}"
-                                                                            method="POST" style="display:none;">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                        </form>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    {{-- <td>
+                                                            </li>
+                                                            <li>
+                                                                <a onclick="if (confirm('Are you sure to delete?')) { document.getElementById('serviceDelete{{ $bill->id }}').submit(); }"
+                                                                    class="dropdown-item" href="javascript:void(0)">
+                                                                    <i class="far fa-trash-alt me-2"></i>Delete
+                                                                </a>
+                                                                <form id="serviceDelete{{ $bill->id }}"
+                                                                    action="{{ route('bills.destroy', $bill->id) }}"
+                                                                    method="POST" style="display:none;">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            {{-- <td>
                                                         <div class="btn-group" role="group">
                                                             <a href="{{ route('bills.show', $bill) }}"
                                                                 class="btn btn-sm btn-info" title="View">
@@ -178,40 +177,40 @@
                                                             </div>
                                                         </div>
                                                     </td> --}}
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="8" class="text-center py-4">
-                                                        <div class="text-muted">
-                                                            {{-- <i class="fas fa-file-invoice fa-3x mb-3"></i> --}}
-                                                            <h5>No bills found</h5>
-                                                            {{-- <p>Create your first bill to get started</p>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center py-4">
+                                                <div class="text-muted">
+                                                    {{-- <i class="fas fa-file-invoice fa-3x mb-3"></i> --}}
+                                                    <h5>No bills found</h5>
+                                                    {{-- <p>Create your first bill to get started</p>
                                                             <a href="{{ route('bills.create') }}"
                                                                 class="btn btn-primary">
                                                                 <i class="fas fa-plus"></i> Create Bill
                                                             </a> --}}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <!-- Pagination -->
-                                @if ($bills->hasPages())
-                                    <div class="d-flex justify-content-between align-items-center mt-4">
-                                        <div class="text-muted">
-                                            Showing {{ $bills->firstItem() }} to {{ $bills->lastItem() }} of
-                                            {{ $bills->total() }} entries
-                                        </div>
-                                        <div>
-                                            {{ $bills->links() }}
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
+
+                        <!-- Pagination -->
+                        @if ($bills->hasPages())
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <div class="text-muted">
+                                    Showing {{ $bills->firstItem() }} to {{ $bills->lastItem() }} of
+                                    {{ $bills->total() }} entries
+                                </div>
+                                <div>
+                                    {{ $bills->links() }}
+                                </div>
+                            </div>
+                        @endif
+                        {{-- </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -313,7 +312,7 @@
             console.log('Filters setup complete');
         }
 
-        // Initialize when page loads
+        // Initialize when page loa
         document.addEventListener('DOMContentLoaded', setupFilters);
     </script>
 @endsection

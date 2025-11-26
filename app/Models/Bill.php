@@ -88,15 +88,14 @@ class Bill extends Model
         return $prefix . '-' . now()->format('Ymd') . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
     }
 
-    // Get bill type
-    public function getTypeAttribute()
-    {
-        if ($this->project_id) return 'project';
-        if ($this->purchase_id) return 'purchase';
-        if ($this->vendor_id) return 'vendor';
-        if ($this->client_id) return 'sale';
-        return 'general';
-    }
+    // public function getTypeAttribute()
+    // {
+    //     if ($this->project_id) return 'project';
+    //     if ($this->purchase_id) return 'purchase';
+    //     if ($this->vendor_id) return 'vendor';
+    //     if ($this->client_id) return 'sale';
+    //     return 'general';
+    // }
 
     // Get related entity name for display
     public function getRelatedToAttribute()

@@ -9,6 +9,8 @@ use App\Models\Sale;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
 
 class ProjectItemController extends Controller
 {
@@ -141,7 +143,6 @@ public function store(Request $request)
     DB::beginTransaction();
 
     try {
-        // ✅ Fetch project first
         $project = Project::findOrFail($request->project_id);
         $clientId = $project->client_id;
 
@@ -195,9 +196,11 @@ public function store(Request $request)
                 ]);
                 $itemsAdded++;
 
+                $unique = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 12));
+                $orderNo = 'PRJ-' . $project->id . '-' . $unique;
                 // Insert into sales
                 Sale::create([
-                    'order_no'    => 'PRJ-' . $project->id . '-' . time(),
+                    'order_no' => $orderNo,
                     'customer_id' => null,      // project sale
                     'client_id'   => $clientId, // fetched from project
                     'product_id'  => $productId,

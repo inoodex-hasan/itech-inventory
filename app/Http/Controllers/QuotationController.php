@@ -54,7 +54,6 @@ public function store(Request $request)
     ]);
 
     DB::transaction(function () use ($request, $validated) {
-        // Calculate totals from items
         $subTotal = 0;
         foreach ($request->items as $item) {
             $subTotal += $item['quantity'] * $item['unit_price'];
@@ -65,9 +64,9 @@ public function store(Request $request)
 
         // Create quotation
         $quotation = Quotation::create([
-            'client_id' => $request->client_id, // Can be null if manual input
+            'client_id' => $request->client_id,
             'quotation_date' => now(),
-            'expiry_date' => now()->addDays(30),
+            'expiry_date' => now()->addDays(15),
             'notes' => $request->subject,
             'sub_total' => $subTotal,
             'discount_amount' => $discountAmount,
@@ -201,7 +200,6 @@ public function generatePDF(Quotation $quotation)
 {
     $quotation->load(['items.product.brand']);
     
-    // Get PDF data from session
     $pdfData = session('quotation_pdf_data_' . $quotation->id, []);
     
     $amount_in_words = $this->convertNumberToWords($quotation->total_amount) . ' Taka Only';

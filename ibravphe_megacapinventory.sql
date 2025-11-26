@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 25, 2025 at 01:37 PM
+-- Generation Time: Nov 26, 2025 at 10:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -254,8 +254,7 @@ CREATE TABLE `clients` (
 
 INSERT INTO `clients` (`id`, `name`, `phone`, `email`, `address`, `created_at`, `updated_at`) VALUES
 (2, 'Md Hasan', '01234567890', 'hasan@inoodex.com', 'Dhaka', '2025-11-14 20:08:22', '2025-11-14 20:08:22'),
-(5, 'Mr Rahim', '012304569870', 'rahim@example.com', 'Mirpur', '2025-11-19 11:10:03', '2025-11-19 11:10:03'),
-(7, 'Verner Nolan', '3242596137', 'your.email+fakedata39453@gmail.com', '7432 Flatley Circle', '2025-11-24 09:56:33', '2025-11-24 09:56:33');
+(9, 'Mr Rahim', '01000000000', 'rahim@example.com', 'Mirpur', '2025-11-26 05:52:50', '2025-11-26 05:52:50');
 
 -- --------------------------------------------------------
 
@@ -313,7 +312,8 @@ INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_
 (2, 'Hasan', NULL, '01326598470', NULL, NULL, 'Mirpur', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-02 19:18:55', '2025-11-02 19:18:55'),
 (10, 'Md Hasan', NULL, '01123695847', NULL, NULL, 'Banani', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 01:26:05', '2025-11-03 01:26:05'),
 (11, 'Md Juel', NULL, '01213986745', NULL, NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
-(15, 'Md', NULL, '01195674368', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-23 06:05:15', '2025-11-23 06:05:15');
+(15, 'Md', NULL, '01195674368', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-23 06:05:15', '2025-11-23 06:05:15'),
+(16, 'Md Hasan', NULL, '01200000000', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-26 05:26:27', '2025-11-26 05:26:27');
 
 -- --------------------------------------------------------
 
@@ -479,9 +479,9 @@ CREATE TABLE `inventories` (
 --
 
 INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 4, 10, 16, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-20 05:14:42'),
+(1, 4, 10, 9, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-26 05:54:14'),
 (2, 2, 15, 10, 'Opening stock entry', '2025-11-03 01:24:55', '2025-11-03 02:06:48'),
-(3, 5, 20, 12, 'Opening stock entry', '2025-11-03 02:05:12', '2025-11-03 02:06:48'),
+(3, 5, 20, 7, 'Opening stock entry', '2025-11-03 02:05:12', '2025-11-26 05:54:14'),
 (4, 3, 12, 3, 'Opening stock entry', '2025-11-03 02:11:45', '2025-11-24 10:56:34');
 
 -- --------------------------------------------------------
@@ -584,7 +584,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (81, '2025_11_24_163950_make_customer_id_nullable_in_sales_table', 52),
 (82, '2025_11_25_102923_add_photo_to_products_table', 53),
 (83, '2025_11_25_131014_create_quotations_table', 54),
-(84, '2025_11_25_135221_create_quotation_items_table', 54);
+(84, '2025_11_25_135221_create_quotation_items_table', 54),
+(85, '2025_11_26_123944_add_project_id_to_payments_table', 55);
 
 -- --------------------------------------------------------
 
@@ -672,6 +673,7 @@ CREATE TABLE `payments` (
   `payment_for` int(11) NOT NULL,
   `customer_id` bigint(20) NOT NULL,
   `sale_id` bigint(20) NOT NULL,
+  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
   `payment_method` enum('cash','card','bank_transfer') NOT NULL DEFAULT 'cash',
   `amount` double NOT NULL,
   `status` enum('0','1') NOT NULL DEFAULT '1',
@@ -683,9 +685,9 @@ CREATE TABLE `payments` (
 -- Dumping data for table `payments`
 --
 
-INSERT INTO `payments` (`id`, `payment_for`, `customer_id`, `sale_id`, `payment_method`, `amount`, `status`, `created_at`, `updated_at`) VALUES
-(1, 2, 9, 9, 'cash', 10000, '1', '2025-11-03 01:06:11', '2025-11-03 01:06:11'),
-(2, 2, 10, 10, 'cash', 21500, '1', '2025-11-03 01:27:52', '2025-11-03 01:27:52');
+INSERT INTO `payments` (`id`, `payment_for`, `customer_id`, `sale_id`, `project_id`, `payment_method`, `amount`, `status`, `created_at`, `updated_at`) VALUES
+(1, 2, 9, 9, NULL, 'cash', 10000, '1', '2025-11-03 01:06:11', '2025-11-03 01:06:11'),
+(2, 2, 10, 10, NULL, 'cash', 21500, '1', '2025-11-03 01:27:52', '2025-11-03 01:27:52');
 
 -- --------------------------------------------------------
 
@@ -766,7 +768,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `brand_id`, `model`, `photos`, `status`, `warranty`, `created_at`, `updated_at`) VALUES
-(3, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 5, 'EcoTank L3250', '[\"products\\/MvogjUxGJxkpdJ81qlvcw0xvNkNP359uJMsQmYeJ.jpg\"]', '1', 365, '2025-11-02 18:39:59', '2025-11-25 12:22:41'),
+(3, 'Brother HL-L2320D Auto Duplex Laser Printer (30 PPM)', 5, 'Brother HL-L2320D', '[\"products\\/MvogjUxGJxkpdJ81qlvcw0xvNkNP359uJMsQmYeJ.jpg\"]', '1', 365, '2025-11-02 18:39:59', '2025-11-25 12:56:30'),
 (4, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 4, 'EcoTank L3250', '[\"products\\/tASNTtO44wLOcacQJD3c4OY1RlN6BeKvD0syvHAu.jpg\"]', '1', 365, '2025-11-02 18:40:49', '2025-11-25 11:48:20'),
 (5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '[\"products\\/hRkUJ44b4qhFOjjeeyCMtSqfHQQWxBekLq60T9eE.jpg\"]', '1', 365, '2025-11-02 18:41:22', '2025-11-25 11:48:08');
 
@@ -799,8 +801,7 @@ CREATE TABLE `projects` (
 --
 
 INSERT INTO `projects` (`id`, `project_name`, `client_id`, `budget`, `sub_total`, `discount`, `grand_total`, `advanced_payment`, `due_payment`, `description`, `status`, `start_date`, `end_date`, `created_at`, `updated_at`) VALUES
-(4, 'Project 1', 2, 500000.00, 0.00, 0.00, 0.00, 0.00, 0.00, NULL, 'pending', NULL, NULL, '2025-11-19 05:27:16', '2025-11-20 08:37:34'),
-(8, 'Test2', 7, 150000.00, 15000.00, 0.00, 15000.00, 0.00, 15000.00, NULL, 'pending', NULL, NULL, '2025-11-24 10:48:52', '2025-11-24 10:56:34');
+(10, 'Project 1', 9, 250000.00, 116000.00, 0.00, 116000.00, 0.00, 116000.00, NULL, 'pending', NULL, NULL, '2025-11-26 05:52:50', '2025-11-26 05:54:14');
 
 -- --------------------------------------------------------
 
@@ -824,8 +825,7 @@ CREATE TABLE `project_costs` (
 --
 
 INSERT INTO `project_costs` (`id`, `project_id`, `cost_category_id`, `description`, `amount`, `cost_date`, `created_at`, `updated_at`) VALUES
-(4, 4, 1, NULL, 5000.00, '2025-11-19', '2025-11-19 07:21:30', '2025-11-19 07:21:30'),
-(5, 4, 2, NULL, 8000.00, '2025-11-20', '2025-11-20 08:14:17', '2025-11-20 08:14:17');
+(6, 10, 1, NULL, 5000.00, '2025-11-26', '2025-11-26 06:06:09', '2025-11-26 06:06:09');
 
 -- --------------------------------------------------------
 
@@ -849,8 +849,8 @@ CREATE TABLE `project_items` (
 --
 
 INSERT INTO `project_items` (`id`, `project_id`, `product_id`, `unit_price`, `quantity`, `total`, `created_at`, `updated_at`) VALUES
-(39, 4, 5, 26000.00, 5, 130000.00, '2025-11-20 08:23:23', '2025-11-20 08:37:34'),
-(56, 8, 3, 15000.00, 1, 15000.00, '2025-11-24 10:56:34', '2025-11-24 10:56:34');
+(65, 10, 4, 16000.00, 2, 32000.00, '2025-11-26 05:54:14', '2025-11-26 05:54:14'),
+(66, 10, 5, 28000.00, 3, 84000.00, '2025-11-26 05:54:14', '2025-11-26 05:54:14');
 
 -- --------------------------------------------------------
 
@@ -906,13 +906,6 @@ CREATE TABLE `quotations` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `quotations`
---
-
-INSERT INTO `quotations` (`id`, `quotation_number`, `customer_id`, `client_id`, `quotation_date`, `expiry_date`, `notes`, `sub_total`, `discount_amount`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
-(17, 'QT2025110001', NULL, 7, '2025-11-25', '2025-12-25', 'yjyj', 3000.00, 0.00, 3000.00, 'draft', '2025-11-25 12:29:43', '2025-11-25 12:29:43');
-
 -- --------------------------------------------------------
 
 --
@@ -930,13 +923,6 @@ CREATE TABLE `quotation_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `quotation_items`
---
-
-INSERT INTO `quotation_items` (`id`, `quotation_id`, `product_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(18, 17, 4, NULL, 2, 1500.00, 3000.00, '2025-11-25 12:29:43', '2025-11-25 12:29:43');
 
 -- --------------------------------------------------------
 
@@ -962,7 +948,7 @@ CREATE TABLE `revenues` (
 --
 
 INSERT INTO `revenues` (`id`, `year`, `month`, `total_sales`, `total_purchases`, `total_expenses`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, 2025, 11, 325500.00, 1104000.00, 5000.00, NULL, '2025-11-03 00:06:23', '2025-11-24 04:16:26');
+(1, 2025, 11, 149000.00, 884000.00, 5000.00, NULL, '2025-11-03 00:06:23', '2025-11-26 07:07:18');
 
 -- --------------------------------------------------------
 
@@ -1042,6 +1028,13 @@ CREATE TABLE `salaries` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `salaries`
+--
+
+INSERT INTO `salaries` (`id`, `employee_id`, `month`, `basic_salary`, `advance`, `allowance`, `deduction`, `net_salary`, `payment_status`, `payment_date`, `note`, `created_at`, `updated_at`) VALUES
+(6, 5, '2025-11', 25000.00, 5000.00, 700.00, 0.00, 20700.00, 'paid', '2025-11-26', NULL, '2025-11-26 07:11:58', '2025-11-26 07:11:58');
+
 -- --------------------------------------------------------
 
 --
@@ -1091,9 +1084,9 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`, `sale_type`, `project_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
-(11, 'INV-6908A8E856C9D', 11, NULL, 5, 'retail', NULL, 10, 256000, 250000, 256000, 150000.00, 100000.00, 6000, '1', 'partial', '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
-(12, 'INV-6922A41B60485', 15, NULL, 3, 'retail', NULL, 2, 29000, 29000, 29000, 0.00, 29000.00, 0, '2', 'credit', '2025-11-23 06:05:15', '2025-11-23 06:05:15'),
-(25, 'PRJ-8-1763981794', NULL, 7, 3, 'project', 8, 1, 15000, 15000, 150000, NULL, NULL, NULL, NULL, 'credit', '2025-11-24 10:56:34', '2025-11-24 10:56:34');
+(26, 'INV-69268F83DF752', 16, NULL, 4, 'retail', NULL, 2, 32400, 33000, 33000, 15500.00, 17500.00, 0, '2', 'partial', '2025-11-26 05:26:27', '2025-11-26 05:29:49'),
+(35, 'PRJ-10-0B4C22CF0487', NULL, 9, 4, 'project', 10, 2, 32000, 32000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14'),
+(36, 'PRJ-10-E7F592F03244', NULL, 9, 5, 'project', 10, 3, 84000, 84000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14');
 
 -- --------------------------------------------------------
 
@@ -1132,7 +1125,8 @@ INSERT INTO `sales_items` (`id`, `order_id`, `product_id`, `unit_price`, `warran
 (12, 10, 2, 16000, 365, 3, 48000, '2025-11-03 01:26:05', '2025-11-03 01:26:05'),
 (13, 11, 5, 28000, 365, 8, 224000, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
 (14, 11, 2, 16000, 365, 2, 32000, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
-(15, 12, 3, 14500, 365, 2, 29000, '2025-11-23 06:05:15', '2025-11-23 06:05:15');
+(15, 12, 3, 14500, 365, 2, 29000, '2025-11-23 06:05:15', '2025-11-23 06:05:15'),
+(17, 26, 4, 16500, 365, 2, 33000, '2025-11-26 05:29:49', '2025-11-26 05:29:49');
 
 -- --------------------------------------------------------
 
@@ -1191,7 +1185,8 @@ CREATE TABLE `ta_das` (
 INSERT INTO `ta_das` (`id`, `user_id`, `employee_id`, `date`, `amount`, `used_amount`, `remaining_amount`, `purpose`, `type`, `payment_type`, `created_at`, `updated_at`) VALUES
 (1, NULL, 5, '2025-11-12', 200.00, 150.00, 50.00, NULL, 'TA', 'Advance', '2025-11-12 00:04:30', '2025-11-13 00:18:33'),
 (2, 6, 5, '2025-11-12', 150.00, 0.00, 0.00, NULL, 'TA', 'Claim', '2025-11-12 00:10:08', '2025-11-12 00:10:08'),
-(3, 6, 5, '2025-11-13', 100.00, 0.00, 0.00, NULL, 'DA', 'Claim', '2025-11-13 00:18:56', '2025-11-13 00:18:56');
+(3, 6, 5, '2025-11-13', 100.00, 0.00, 0.00, NULL, 'DA', 'Claim', '2025-11-13 00:18:56', '2025-11-13 00:18:56'),
+(4, 6, 5, '2025-11-26', 500.00, 0.00, 0.00, 'lunch', 'DA', 'Claim', '2025-11-26 07:11:04', '2025-11-26 07:11:04');
 
 -- --------------------------------------------------------
 
@@ -1661,19 +1656,19 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `challans`
 --
 ALTER TABLE `challans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `challan_items`
 --
 ALTER TABLE `challan_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `cost_categories`
@@ -1685,7 +1680,7 @@ ALTER TABLE `cost_categories`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `daily_expenses`
@@ -1739,7 +1734,7 @@ ALTER TABLE `inventories`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1775,19 +1770,19 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `project_costs`
 --
 ALTER TABLE `project_costs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `project_items`
 --
 ALTER TABLE `project_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `purchases`
@@ -1799,13 +1794,13 @@ ALTER TABLE `purchases`
 -- AUTO_INCREMENT for table `quotations`
 --
 ALTER TABLE `quotations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `quotation_items`
 --
 ALTER TABLE `quotation_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `revenues`
@@ -1823,7 +1818,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `salaries`
 --
 ALTER TABLE `salaries`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `salary_advances`
@@ -1835,13 +1830,13 @@ ALTER TABLE `salary_advances`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `sales_items`
 --
 ALTER TABLE `sales_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -1853,7 +1848,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `ta_das`
 --
 ALTER TABLE `ta_das`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`

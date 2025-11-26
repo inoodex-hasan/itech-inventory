@@ -492,12 +492,7 @@
                                         <input type="text" class="form-control" name="items[${index}][unit]" value="${unit}">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Serial No.</label>
-                                        <input type="text" class="form-control" name="items[${index}][serial]" value="${item.serial || ''}" placeholder="Enter serial number">
-                                    </div>
-                                </div>
+                             
                             </div>
                         </div>
                     </div>

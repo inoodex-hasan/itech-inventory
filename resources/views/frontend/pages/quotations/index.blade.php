@@ -35,7 +35,7 @@
                                             <th>Date</th>
                                             <th>Expiry Date</th>
                                             <th>Total Amount</th>
-                                            <th>Status</th>
+                                            {{-- <th>Status</th> --}}
                                             <th style="width: 125px;">Action</th>
                                         </tr>
                                     </thead>
@@ -52,7 +52,7 @@
                                                 <td>{{ $quotation->quotation_date->format('M d, Y') }}</td>
                                                 <td>{{ $quotation->expiry_date->format('M d, Y') }}</td>
                                                 <td>{{ number_format($quotation->total_amount, 2) }}</td>
-                                                <td>
+                                                {{-- <td>
                                                     @if ($quotation->status == 'draft')
                                                         <span class="badge bg-warning">Draft</span>
                                                     @elseif($quotation->status == 'sent')
@@ -64,7 +64,7 @@
                                                     @else
                                                         <span class="badge bg-secondary">Expired</span>
                                                     @endif
-                                                </td>
+                                                </td> --}}
                                                 <td class="d-flex align-items-center">
                                                     <div class="dropdown dropdown-action">
                                                         <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">

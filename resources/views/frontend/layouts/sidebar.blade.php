@@ -123,6 +123,11 @@
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
                             <span>Due Payment</span></a>
                     </li>
+                    {{-- <li>
+                        <a href="{{ route('sales.index') }}"
+                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
+                            <span>Invoice Generate</span></a>
+                    </li> --}}
                     <li>
                         <a href="{{ route('bills.index') }}"
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>

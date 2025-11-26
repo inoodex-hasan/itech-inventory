@@ -9,7 +9,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h4 class="mb-0">Challan Management</h4>
                             <a href="{{ route('challans.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Create New Challan
+                                <i class="fas fa-plus me-2"></i>Create Challan
                             </a>
                         </div>
                     </div>
@@ -45,10 +45,10 @@
                             <div class="col-md-3">
                                 <div class="d-flex align-items-end h-100">
                                     <button type="button" class="btn btn-primary me-2" id="applyFilters">
-                                        <i class="fas fa-filter me-1"></i> Apply
+                                        Apply
                                     </button>
                                     <button type="button" class="btn btn-outline-secondary" id="resetFilters">
-                                        <i class="fas fa-redo me-1"></i> Reset
+                                        Reset
                                     </button>
                                 </div>
                             </div>
@@ -57,12 +57,12 @@
                         <!-- Challan List -->
                         <div class="table-fluid">
                             <table class="table table-bordered table-hover" id="challansTable">
-                                <thead class="table-light">
+                                <thead class="thead-light">
                                     <tr>
                                         <th>Challan No.</th>
                                         <th>Challan Type</th>
                                         <th>Date</th>
-                                        <th>Items</th>
+                                        {{-- <th>Items</th> --}}
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -70,17 +70,17 @@
                                     @forelse($challans as $challan)
                                         <tr>
                                             <td>
-                                                {{ $challan->challan_number }}
+                                                <strong>{{ $challan->challan_number }}</strong>
                                             </td>
                                             <td>{{ $challan->type }}</td>
                                             <td>{{ $challan->challan_date->format('M d, Y') }}</td>
-
+                                            {{-- 
                                             <td>
                                                 <span
                                                     class="badge {{ $challan->type == 'sale' ? 'bg-primary' : 'bg-success' }}">
                                                     {{ ucfirst($challan->type) }} Challan
                                                 </span>
-                                            </td>
+                                            </td> --}}
                                             <td class="d-flex align-items-center">
                                                 <div class="dropdown dropdown-action">
                                                     <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
@@ -89,10 +89,10 @@
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <ul>
                                                             <li>
-                                                                <a class="dropdown-item"
+                                                                {{-- <a class="dropdown-item"
                                                                     href="{{ route('challans.show', $challan->id) }}">
                                                                     <i class="far fa-eye me-2"></i>Preview
-                                                                </a>
+                                                                </a> --}}
                                                                 {{-- <a class="dropdown-item"
                                                                             href="{{ route('bills.show', $bill->id) }}">
                                                                             <i class="far fa-eye me-2"></i>View

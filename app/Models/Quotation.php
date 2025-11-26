@@ -47,18 +47,38 @@ class Quotation extends Model
         });
     }
 
-    public static function generateQuotationNumber()
-    {
-        $prefix = 'QT';
-        $year = date('Y');
-        $month = date('m');
+    // public static function generateQuotationNumber()
+    // {
+    //     $prefix = 'QT';
+    //     $year = date('Y');
+    //     $month = date('m');
         
-        $lastQuotation = static::where('quotation_number', 'like', "{$prefix}{$year}{$month}%")
-            ->orderBy('id', 'desc')
-            ->first();
+    //     $lastQuotation = static::where('quotation_number', 'like', "{$prefix}{$year}{$month}%")
+    //         ->orderBy('id', 'desc')
+    //         ->first();
 
-        $sequence = $lastQuotation ? (int)substr($lastQuotation->quotation_number, -4) + 1 : 1;
+    //     $sequence = $lastQuotation ? (int)substr($lastQuotation->quotation_number, -4) + 1 : 1;
 
-        return "{$prefix}{$year}{$month}" . str_pad($sequence, 4, '0', STR_PAD_LEFT);
-    }
+    //     return "{$prefix}{$year}{$month}" . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+    // }
+
+    public static function generateQuotationNumber()
+{
+    $prefix = 'QT';
+    $date = date('Ymd'); // 20251126
+    
+    // Search last quotation for today
+    $lastQuotation = static::where('quotation_number', 'like', "{$prefix}-{$date}-%")
+        ->orderBy('id', 'desc')
+        ->first();
+
+    // Extract last 4 digits sequence
+    $sequence = $lastQuotation 
+        ? (int)substr($lastQuotation->quotation_number, -4) + 1 
+        : 1;
+
+    // Format: QT-20251126-0001
+    return "{$prefix}-{$date}-" . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+}
+
 }

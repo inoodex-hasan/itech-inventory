@@ -6,6 +6,7 @@ use Input;
 use Validator;
 use Carbon\Carbon;
 use App\Models\Sale;
+use App\Models\Project;
 use App\Models\SalesItem;
 use App\Models\User;
 use App\Models\Payment;
@@ -593,43 +594,6 @@ class SalesController extends Controller
         return view('frontend.pages.sales.invoice', compact('sales', 'items', 'customer'));
     }
 
-    // public function payments(Request $request)
-    // {
-
-    //     $payments = Payment::where('payment_for', 2);
-
-    //     $defaultFilter = true;
-
-    //     if ($request->from != "" && $request->to != "") {
-    //         $from = date('Y-m-d 00:00:00', strtotime($request->from));
-    //         $to = date('Y-m-d 23:59:59', strtotime($request->to));
-    //         $payments = $payments->whereBetween('payments.created_at', [$from, $to]);
-    //         $defaultFilter = false;
-    //     }
-
-    //     if ($request->payments_method != "") {
-    //         $payments = $payments->where('payments.payment_method_id', $request->payments_method);
-    //         $defaultFilter = false;
-    //     }
-
-    //     if ($defaultFilter) {
-    //         $startOfMonth = date('Y-m-01 00:00:00');
-    //         $endOfMonth = date('Y-m-t 23:59:59');
-    //         $payments = $payments->whereBetween('payments.created_at', [$startOfMonth, $endOfMonth]);
-    //     }
-
-    //     $payments = $payments->get();
-
-    //     if ($request->search_for == 'pdf') {
-    //         $pdf = Pdf::loadView('pdf.service_payments', compact('payments', 'request'))
-    //             ->setPaper('A4', 'portrait');
-    //         return $pdf->download('service Payments.pdf');
-    //     }
-
-    //     return view('frontend.pages.sales.payments', compact('payments', 'request'));
-    // }
-
-
     public function payments(Request $request, $saleId = null)
     {
         // Base query: only service payments
@@ -826,15 +790,46 @@ class SalesController extends Controller
         }
     }
 
-    public function duePayments()
+//     public function duePayments()
+// {
+//     $sales = Sale::where('due_payment', '>', 0)
+//                 ->latest()
+//                 ->get();
+
+//     return view('frontend.pages.sales.due-payments', compact('sales'));
+// }
+
+public function duePayments()
 {
-    $sales = Sale::where('due_payment', '>', 0)
-                ->latest()
-                ->get();
+    // Retail sales with due payments
+    $sales = Sale::with('customer')
+        ->where('sale_type', 'retail')
+        ->where('due_payment', '>', 0)
+        ->get();
 
-    return view('frontend.pages.sales.due-payments', compact('sales'));
+    // Projects with due payments
+    $projects = Project::with('client')
+        ->where('due_payment', '>', 0)
+        ->get()
+        ->map(function ($project) {
+            $sale = new Sale();               
+            $sale->id = $project->id;      
+            $sale->order_no = 'PRJ-' . $project->id;
+            $sale->customer = null;
+            $sale->client = $project->client;
+            $sale->payble = $project->budget;
+            $sale->advanced_payment = $project->advanced_payment;
+            $sale->due_payment = $project->due_payment;
+            $sale->sale_type = 'project';
+            $sale->created_at = $project->created_at;
+            return $sale;
+        });
+
+    // Merge retail sales and projects
+    $allItems = $sales->merge($projects)->sortByDesc('created_at');
+
+    return view('frontend.pages.sales.due-payments', ['sales' => $allItems]);
 }
-
 
 
     // private function getPaymentStatus($advancedPayment, $payble)

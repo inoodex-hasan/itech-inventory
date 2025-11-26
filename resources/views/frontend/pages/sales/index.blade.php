@@ -162,33 +162,33 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <ul>
-                                                            <li>
-                                                                <a href="javascript:void(0)"
-                                                                    class="dropdown-item view-sale-details-btn"
-                                                                    data-sale-id="{{ $service->id }}">
-                                                                    <i class="far fa-eye me-2"></i> Details
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a class="dropdown-item" target="_blank"
-                                                                    href="{{ route('sales.invoice', $service->id) }}">
-                                                                    <i class="far fa-edit me-2"></i>Invoice </a>
-                                                            </li>
-                                                            <li>
-                                                                <a class="dropdown-item"
-                                                                    href="{{ route('sales.payments', $service->id) }}">
-                                                                    <i class="far fa-money-bill-alt me-2"></i> Payment</a>
-                                                            </li>
-                                                            <li>
-                                                                <a class="dropdown-item"
-                                                                    href="{{ route('sales.edit', $service->id) }}">
-                                                                    <i class="far fa-edit me-2"></i>Edit </a>
-                                                            </li>
 
+                                                            @if ($service->sale_type == 'retail')
+                                                                {{-- Invoice / Bill --}}
+                                                                <li>
+                                                                    <a class="dropdown-item" target="_blank"
+                                                                        href="{{ route('sales.invoice', $service->id) }}">
+                                                                        <i class="far fa-file-alt me-2"></i>
+                                                                        Invoice
+                                                                    </a>
+                                                                </li>
+
+                                                                {{-- Edit --}}
+                                                                <li>
+                                                                    <a class="dropdown-item"
+                                                                        href="{{ route('sales.edit', $service->id) }}">
+                                                                        <i class="far fa-edit me-2"></i> Edit
+                                                                    </a>
+                                                                </li>
+                                                            @endif
+
+
+                                                            {{-- DELETE ( always show for both retail & project ) --}}
                                                             <li>
                                                                 <a onclick="if (confirm('Are you sure to delete the Sales?')) { document.getElementById('serviceDelete{{ $service->id }}').submit(); }"
                                                                     class="dropdown-item" href="javascript:void(0)">
-                                                                    <i class="far fa-edit me-2"></i>Delete </a>
+                                                                    <i class="far fa-trash-alt me-2"></i>Delete
+                                                                </a>
                                                                 <form id="serviceDelete{{ $service->id }}"
                                                                     action="{{ route('sales.destroy', $service->id) }}"
                                                                     method="post">
@@ -198,6 +198,7 @@
                                                             </li>
 
                                                         </ul>
+
                                                     </div>
                                                 </div>
                                             </td>

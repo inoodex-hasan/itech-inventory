@@ -6,6 +6,7 @@ use \DB;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\Project;
+use App\Models\Payment;
 use App\Models\ProjectItem;
 use Illuminate\Http\Request;
 
@@ -312,4 +313,47 @@ public function downloadBill($id)
 
     return view('bills.pdf', compact('project', 'itemsSubTotal', 'totalCosts', 'grandTotal'));
 }
+
+public function payments($projectId)
+{
+    $project = Project::with('client')->findOrFail($projectId);
+
+    // Fetch payments linked to this project
+    $payments = Payment::where('payment_for', 3)
+                       ->where('project_id', $projectId)
+                       ->get();
+
+    return view('frontend.pages.projects.payments', compact('project', 'payments'));
+}
+
+public function processPayment(Request $request)
+{
+    $request->validate([
+        'project_id' => 'required|exists:projects,id',
+        'payment_amount' => 'required|numeric|min:0.01',
+        'payment_method' => 'required|string',
+    ]);
+
+    $project = Project::findOrFail($request->project_id);
+
+    // Create payment
+    Payment::create([
+        'payment_for' => 3, // project payment
+        'project_id' => $project->id,
+        'amount' => $request->payment_amount,
+        'payment_method' => $request->payment_method,
+        'status' => 'paid',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Update project payments
+    $project->advanced_payment += $request->payment_amount;
+    $project->due_payment = max($project->budget - $project->advanced_payment, 0);
+    $project->save();
+
+    return redirect()->back()->with('success', 'Payment processed successfully.');
+}
+
+
 }

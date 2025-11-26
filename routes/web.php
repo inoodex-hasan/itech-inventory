@@ -41,17 +41,10 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 
-
-
-
-
-
-
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [FrontendController::class, 'index'])->name('index');
 
-    // Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     //Product Management
     Route::group(['middleware' => ['permission:Product Management']], function () {
         Route::prefix('product')->middleware(['auth'])->group(function () {
@@ -89,18 +82,10 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    //Order Management
-    // Route::group(['middleware' => ['permission:content-management']], function () {
-    //     Route::resource('slider', SliderController::class);
-    //     Route::resource('home-ad', AdsController::class);
-    // });
-
-
     Route::group(['middleware' => ['permission:Administration']], function () {
         Route::resource('users', UserController::class);
         Route::resource('role', RoleController::class);
         Route::resource('permission', PermissionController::class);
-        // Route::resource('attendance', AttendanceController::class);
 
         Route::get('/user/pin', [UserController::class, 'pin'])->name('users.pin');
         Route::post('/user/pin', [UserController::class, 'pinStore'])->name('users.pin_store');
@@ -133,8 +118,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/employee/{id}/advance-sum', [ExpenseController::class, 'getAdvanceSum']);
 
     });
-    // Route::resource('dailySales', DailySaleController::class);
-    // Route::resource('salesTarget', SalesTargetController::class);
 
     Route::get('/revenues', [RevenueController::class, 'index'])->name('revenues.index');
     Route::post('/revenues/generate', [RevenueController::class, 'generate'])->name('revenues.generate');
@@ -147,11 +130,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('employees/{id}', [EmployeeController::class, 'show'])->name('employees.view');
 
 
-    Route::resource('ta-da', TaDaController::class);
+    Route::resource('ta-da', controller: TaDaController::class);
 
     Route::resource('salary', SalaryController::class);
 
     Route::resource('projects', ProjectController::class);
+    Route::get('/projects/payments/{project}', [ProjectController::class, 'payments'])->name('projects.payments');
+
 
     Route::resource('clients', ClientController::class);
 
@@ -184,58 +169,17 @@ Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'generateP
 Route::get('/quotations/{quotation}/download', [QuotationController::class, 'download'])->name('quotations.download');
 Route::post('quotations/{quotation}/send', [QuotationController::class, 'sendQuotation'])->name('quotations.send');
 
-// Route::get('/get-sales', [BillController::class, 'getSales'])->name('sales.get');
-// Route::get('/get-projects', [BillController::class, 'getProjects'])->name('projects.get');
-    
-
-//     Route::prefix('projects/{project}')->group(function () {
-//     Route::get('/bills', [ProjectBillController::class, 'index'])->name('projects.bills.index');
-//     Route::get('/bills/create', [ProjectBillController::class, 'create'])->name('projects.bills.create');
-//     Route::post('/bills', [ProjectBillController::class, 'store'])->name('projects.bills.store');
-//     Route::post('/bills/generate-from-items', [ProjectBillController::class, 'generateFromItems'])->name('projects.bills.generate-from-items');
-// });
-
 // Bill generation routes
 Route::get('/projects/{project}/bills/create', [ProjectBillController::class, 'createBill'])->name('projects.bills.create');
 Route::post('/projects/{project}/bills/', [ProjectBillController::class, 'storeBill'])->name('projects.bills.store');
 
-// Route::get('/bills/{bill}', [ProjectBillController::class, 'show'])->name('projects.bills.show');
-// Route::get('/bills/{bill}/download', [ProjectBillController::class, 'download'])->name('projects.bills.download');
-// Route::get('/bills/{bill}/preview', [ProjectBillController::class, 'preview'])->name('projects.bills.preview');
-
-// Route::prefix('projects/{project}')->group(function () {
-//     Route::get('/items', [ProjectItemController::class, 'index'])->name('project-items.index');
-//     Route::get('/items/create', [ProjectItemController::class, 'create'])->name('project-items.create');
-//     Route::post('/items', [ProjectItemController::class, 'store'])->name('project-items.store');
-//     Route::get('/items/{item}/edit', [ProjectItemController::class, 'edit'])->name('project-items.edit');
-//     Route::put('/items/{item}', [ProjectItemController::class, 'update'])->name('project-items.update');
-//     Route::delete('/items/{item}', [ProjectItemController::class, 'destroy'])->name('project-items.destroy');
-// });
-
-// Route::prefix('projects/{project}')->group(function () {
-//     Route::get('/costs', [ProjectCostController::class, 'index'])->name('project-costs.index');
-//     Route::get('/costs/create', [ProjectCostController::class, 'create'])->name('project-costs.create');
-//     Route::post('/costs', [ProjectCostController::class, 'store'])->name('project-costs.store');
-//     Route::get('/costs/{cost}/edit', [ProjectCostController::class, 'edit'])->name('project-costs.edit');
-//     Route::put('/costs/{cost}', [ProjectCostController::class, 'update'])->name('project-costs.update');
-//     Route::delete('/costs/{cost}', [ProjectCostController::class, 'destroy'])->name('project-costs.destroy');
-// });
-
-    // Route::group(['middleware' => ['permission:Service Management|Sales Management']], function () {
-    //     Route::get('payments/{id}/{payment_for}', [PaymentController::class, 'payments'])->name('payments');
-    //     Route::post('add/payment', [PaymentController::class, 'addPayment'])->name('add.payment');
-    //     Route::post('update/payment/{id}', [PaymentController::class, 'updatePayment'])->name('update.payment');
-    //     Route::delete('delete/payment/{id}', [PaymentController::class, 'deletePayment'])->name('delete.payment');
-    //     Route::resource('products', ProductContoller::class);
-    // });
-
 });
-
 
 Route::middleware(['web'])->group(
     function () {
         Route::get('/sales/search-orders', [SalesController::class, 'searchOrders'])->name('sales.search-orders');
         Route::post('/sales/process-payment', [SalesController::class, 'processPayment'])->name('sales.process-payment');
+        Route::post('/projects/process-payment', [ProjectController::class, 'processPayment'])->name('projects.process-payment');
     }
 );
 

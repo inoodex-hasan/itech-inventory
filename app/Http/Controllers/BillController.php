@@ -73,7 +73,7 @@ class BillController extends Controller
     public function getSales()
 {
     try {
-        $sales = Sale::with(['customer', 'product']) // Load product relationship
+        $sales = Sale::with(['customer', 'product']) 
                     ->get()
                     ->map(function($sale) {
                         return [
@@ -93,9 +93,9 @@ class BillController extends Controller
                             'items' => [
                                 [
                                     'id' => $sale->product_id ?? $sale->id,
-                                    'description' => $sale->product->name ?? 'Product #' . $sale->order_no, // Use product name
+                                    'description' => $sale->product->name ?? 'Product #' . $sale->order_no, 
                                     'quantity' => $sale->qty ?? 1,
-                                    'unit' => 'Piece', // Adjust based on your product data
+                                    'unit' => 'Piece', 
                                     'unit_price' => $sale->qty ? ($sale->total / $sale->qty) : $sale->total,
                                     'total' => $sale->total,
                                 ]
@@ -131,7 +131,6 @@ public function getProjects()
                                 'address' => $project->client->address ?? 'N/A',
                             ] : null,
                             'items' => $project->projectItems->map(function($item) {
-                                // Get description from the product relationship
                                 $productName = $item->product ? $item->product->name : null;
                                 $productDescription = $item->product ? $item->product->description : null;
                                 
@@ -165,7 +164,6 @@ public function store(Request $request)
         'work_order_number' => 'nullable|string|max:255',
         'items' => 'required|array',
         'total_amount' => 'required|numeric',
-        // Remove client_name and client_address from validation since they'll be auto-populated
         'attention_to' => 'nullable|string|max:255',
         'terms_conditions' => 'required|string',
         'bank_account_name' => 'required|string|max:255',
@@ -203,7 +201,7 @@ public function store(Request $request)
         $clientAddress = $project->client->address ?? null;
     }
 
-    // Create the bill
+
     $bill = Bill::create([
         'bill_number' => $billNumber, 
         'bill_type' => $request->bill_type,
@@ -212,14 +210,13 @@ public function store(Request $request)
         'sale_id' => $request->selected_sale_id,
         'project_id' => $request->selected_project_id,
         'customer_id' => $customerId,
-        'client_id' => $clientId, // Make sure this column exists
+        'client_id' => $clientId, 
         'work_order_number' => $request->work_order_number,
         'subtotal' => $request->subtotal,
         'total_amount' => $request->total_amount,
         'notes' => $request->notes,
     ]);
 
-    // Add bill items
     foreach ($request->items as $item) {
         BillItem::create([
             'bill_id' => $bill->id,
@@ -231,10 +228,9 @@ public function store(Request $request)
         ]);
     }
 
-    // Load bill with relationships for PDF
     $billWithRelations = Bill::with(['billItems', 'sale.customer', 'project.client'])->find($bill->id);
     
-    // Prepare data for PDF
+
     $pdfData = [
         'bill' => $billWithRelations,
         'amount_in_words' => $this->convertToWords($billWithRelations->total_amount),
@@ -268,7 +264,6 @@ public function store(Request $request)
 
 public function show($id)
 {
-    // Get the bill with all relationships
     $bill = Bill::with([
         'billItems',
         'sale.customer', 
@@ -277,7 +272,6 @@ public function show($id)
         'client'
     ])->findOrFail($id);
 
-    // Prepare data for the view (similar to PDF data)
     $data = [
         'bill' => $bill,
         'amount_in_words' => $this->convertToWords($bill->total_amount),
@@ -441,7 +435,6 @@ private function updateRelatedEntities(Bill $bill, array $validated)
         }
     } catch (\Exception $e) {
         \Log::error('Error updating related entities: ' . $e->getMessage());
-        // Don't throw error, just log it as this is secondary
     }
 }
 
@@ -626,8 +619,8 @@ private function getBankDetails()
 public function destroy($id)
 {
     $bill = Bill::findOrFail($id);
-    $bill->billItems()->delete(); // Delete related bill items
-    $bill->delete(); // Delete the bill itself
+    $bill->billItems()->delete(); 
+    $bill->delete(); 
 
     return redirect()->route('bills.index')->with('success', 'Bill deleted successfully.');
  
