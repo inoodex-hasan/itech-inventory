@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 @section('content')
     <div class="row justify-content-center p-3">
-        <div class="col">
+        <div class="col col-sm-10">
             <div class="card p-4 shadow">
                 <h2 class="mb-3">Edit Salary</h2>
                 <form method="POST" action="{{ route('salary.update', $salary->id) }}">

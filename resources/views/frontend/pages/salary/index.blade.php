@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 @section('content')
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
         <div class="content-page-header d-flex justify-content-between">
             <h5>Salary Manage</h5>
             <a href="{{ route('salary.create') }}" class="btn btn-primary">+ Add Salary</a>

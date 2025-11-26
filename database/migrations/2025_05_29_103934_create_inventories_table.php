@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('product_id');
-            $table->integer('opening_stock')->default(0); // New field: Opening stock
-            $table->integer('current_stock')->default(0); // New field: Current stock       
+            $table->integer('opening_stock')->default(0); 
+            $table->integer('current_stock')->default(0);      
             $table->text('notes')->nullable();
             $table->timestamps();
         });

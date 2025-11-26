@@ -20,7 +20,7 @@
             padding: 14px !important;
         }
     </style>
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
 
 
         <!-- Page Header -->

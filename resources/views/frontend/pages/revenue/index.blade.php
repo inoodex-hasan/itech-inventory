@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 @section('content')
-    <div class="container-fluid">
+    <div class="container-fluid col-sm-10">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Monthly Revenue Summary</h4>
             <form method="POST" action="{{ route('revenues.generate') }}">

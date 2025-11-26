@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 @section('content')
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
         <div class="page-header">
             <div class="content-page-header mt-5">
                 <h5>Purchase List</h5>
@@ -90,7 +90,7 @@
         <!-- /Page Header -->
         <!-- Search Filter -->
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-10">
                 <div class="card-table">
                     <div class="card-body">
                         <div class="table-fluid">
@@ -319,7 +319,7 @@
                 }
 
                 quantityInput_{{ $purchase->id }}.addEventListener('input',
-                calculateSubPrice_{{ $purchase->id }});
+                    calculateSubPrice_{{ $purchase->id }});
                 unitPriceInput_{{ $purchase->id }}.addEventListener('input',
                     calculateSubPrice_{{ $purchase->id }});
                 totalPriceInput_{{ $purchase->id }}.addEventListener('input', calculateDue_{{ $purchase->id }});

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 26, 2025 at 10:50 AM
+-- Generation Time: Nov 26, 2025 at 03:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -309,11 +309,9 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_verified_at`, `address`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
-(2, 'Hasan', NULL, '01326598470', NULL, NULL, 'Mirpur', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-02 19:18:55', '2025-11-02 19:18:55'),
-(10, 'Md Hasan', NULL, '01123695847', NULL, NULL, 'Banani', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 01:26:05', '2025-11-03 01:26:05'),
-(11, 'Md Juel', NULL, '01213986745', NULL, NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
-(15, 'Md', NULL, '01195674368', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-23 06:05:15', '2025-11-23 06:05:15'),
-(16, 'Md Hasan', NULL, '01200000000', NULL, NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-26 05:26:27', '2025-11-26 05:26:27');
+(11, 'Md Juel', NULL, '01213986745', 'juel@example.com', NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-26 11:00:21'),
+(15, 'Md Rahim', NULL, '01195674368', 'rahim@example.com', NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-23 06:05:15', '2025-11-26 10:59:08'),
+(16, 'Md Hasan', NULL, '01200000000', 'hasan@example.com', NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-26 05:26:27', '2025-11-26 10:56:57');
 
 -- --------------------------------------------------------
 
@@ -480,7 +478,6 @@ CREATE TABLE `inventories` (
 
 INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`, `notes`, `created_at`, `updated_at`) VALUES
 (1, 4, 10, 9, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-26 05:54:14'),
-(2, 2, 15, 10, 'Opening stock entry', '2025-11-03 01:24:55', '2025-11-03 02:06:48'),
 (3, 5, 20, 7, 'Opening stock entry', '2025-11-03 02:05:12', '2025-11-26 05:54:14'),
 (4, 3, 12, 3, 'Opening stock entry', '2025-11-03 02:11:45', '2025-11-24 10:56:34');
 
@@ -687,7 +684,8 @@ CREATE TABLE `payments` (
 
 INSERT INTO `payments` (`id`, `payment_for`, `customer_id`, `sale_id`, `project_id`, `payment_method`, `amount`, `status`, `created_at`, `updated_at`) VALUES
 (1, 2, 9, 9, NULL, 'cash', 10000, '1', '2025-11-03 01:06:11', '2025-11-03 01:06:11'),
-(2, 2, 10, 10, NULL, 'cash', 21500, '1', '2025-11-03 01:27:52', '2025-11-03 01:27:52');
+(2, 2, 10, 10, NULL, 'cash', 21500, '1', '2025-11-03 01:27:52', '2025-11-03 01:27:52'),
+(3, 2, 16, 26, NULL, 'cash', 7500, '1', '2025-11-26 11:02:09', '2025-11-26 11:02:09');
 
 -- --------------------------------------------------------
 
@@ -825,7 +823,7 @@ CREATE TABLE `project_costs` (
 --
 
 INSERT INTO `project_costs` (`id`, `project_id`, `cost_category_id`, `description`, `amount`, `cost_date`, `created_at`, `updated_at`) VALUES
-(6, 10, 1, NULL, 5000.00, '2025-11-26', '2025-11-26 06:06:09', '2025-11-26 06:06:09');
+(6, 10, 2, NULL, 5000.00, '2025-11-26', '2025-11-26 06:06:09', '2025-11-26 13:25:43');
 
 -- --------------------------------------------------------
 
@@ -948,7 +946,7 @@ CREATE TABLE `revenues` (
 --
 
 INSERT INTO `revenues` (`id`, `year`, `month`, `total_sales`, `total_purchases`, `total_expenses`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, 2025, 11, 149000.00, 884000.00, 5000.00, NULL, '2025-11-03 00:06:23', '2025-11-26 07:07:18');
+(1, 2025, 11, 149000.00, 884000.00, 5000.00, NULL, '2025-11-03 00:06:23', '2025-11-26 12:10:01');
 
 -- --------------------------------------------------------
 
@@ -1084,7 +1082,7 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`, `sale_type`, `project_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
-(26, 'INV-69268F83DF752', 16, NULL, 4, 'retail', NULL, 2, 32400, 33000, 33000, 15500.00, 17500.00, 0, '2', 'partial', '2025-11-26 05:26:27', '2025-11-26 05:29:49'),
+(26, 'INV-69268F83DF752', 16, NULL, 4, 'retail', NULL, 2, 32400, 33000, 33000, 23000.00, 10000.00, 0, '2', 'partial', '2025-11-26 05:26:27', '2025-11-26 11:02:09'),
 (35, 'PRJ-10-0B4C22CF0487', NULL, 9, 4, 'project', 10, 2, 32000, 32000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14'),
 (36, 'PRJ-10-E7F592F03244', NULL, 9, 5, 'project', 10, 3, 84000, 84000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14');
 
@@ -1650,7 +1648,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `challans`
@@ -1746,7 +1744,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `permissions`

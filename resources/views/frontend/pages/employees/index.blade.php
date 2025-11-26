@@ -41,7 +41,7 @@
                         <th>Name</th>
                         <th>Designation</th>
                         <th>Phone</th>
-                        <th>Image</th>
+                        {{-- <th>Image</th> --}}
                         <th>Status</th>
                         <th width="180">Action</th>
                     </tr>
@@ -55,12 +55,12 @@
                             <td>{{ $employee->name }}</td>
                             <td>{{ $employee->designation }}</td>
                             <td>{{ $employee->phone }}</td>
-                            <td class="align-middle">
+                            {{-- <td class="align-middle">
                                 @if ($employee->image)
                                     <img src="{{ asset('uploads/employees/' . $employee->image) }}" width="50"
                                         class="rounded">
                                 @endif
-                            </td>
+                            </td> --}}
 
                             <td>
                                 @if ($employee->status == 'active')
@@ -76,12 +76,12 @@
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-end">
                                         <ul>
-                                            <li>
+                                            {{-- <li>
                                                 <a class="dropdown-item"
                                                     href="{{ route('employees.view', $employee->id) }}">
                                                     <i class="far fa-eye me-2"></i>View
                                                 </a>
-                                            </li>
+                                            </li> --}}
                                             <li>
                                                 <a class="dropdown-item"
                                                     href="{{ route('employees.edit', $employee->id) }}">

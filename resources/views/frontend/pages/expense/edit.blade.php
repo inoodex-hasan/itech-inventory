@@ -22,7 +22,7 @@
         }
     </style>
 
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
         <div class="card mb-0">
             <div class="card-body">
 

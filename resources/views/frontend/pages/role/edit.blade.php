@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-<div class="content container-fluid">
+<div class="content container-fluid col-sm-10">
 <div class="page-header">
 						<div class="content-page-header">
 							<h5>Edit Role</h5>

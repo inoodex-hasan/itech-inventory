@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    <div class="container-fluid">
+    <div class="container-fluid col-sm-10">
         <div class="row">
             <div class="col-12">
                 <div class="card">

@@ -20,7 +20,7 @@
             width: 0;
         }
     </style>
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
         <div class="page-header">
             <div class="content-page-header">
                 <h5>Vendors</h5>

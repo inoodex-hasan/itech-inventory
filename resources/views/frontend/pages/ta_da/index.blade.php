@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
 
         <div class="page-header mb-4">
             <div class="d-flex justify-content-between align-items-center">

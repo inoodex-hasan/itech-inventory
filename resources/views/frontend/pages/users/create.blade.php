@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
         <div class="page-header">
             <div class="content-page-header">
                 <h5>Create User</h5>
@@ -42,13 +42,13 @@
                                     @csrf
                                     <div class="row">
                                         <!-- <div class="col-xxl-3 col-md-6 mb-3">
-                                                    <label for="name" class="form-label">Type</label>
-                                                    <select class="form-select mb-3" name="role_id">
-                                                        @foreach (userTypes() as $key => $value)
+                                                        <label for="name" class="form-label">Type</label>
+                                                        <select class="form-select mb-3" name="role_id">
+                                                            @foreach (userTypes() as $key => $value)
     <option value="{{ $key }}">{{ $value }}</option>
     @endforeach
-                                                    </select>
-                                                </div> -->
+                                                        </select>
+                                                    </div> -->
                                         <div class="col-xxl-3 col-md-6 mb-3">
                                             <label for="name" class="form-label">Name</label>
                                             <input type="text" class="form-control" value="{{ old('name') }}"

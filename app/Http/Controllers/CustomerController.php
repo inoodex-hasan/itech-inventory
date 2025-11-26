@@ -55,7 +55,7 @@ class CustomerController extends Controller
         $customer->status = '1';
         $customer->save();
     
-        return redirect()->back()->with(['success' => getNotify(1)]);
+        return redirect()->route('customers.index')->with(['success' => getNotify(1)]);
 
     }
 
@@ -101,7 +101,7 @@ class CustomerController extends Controller
         $customer->address = $request->address;
         $customer->save();
     
-        return redirect()->back()->with(['success' => getNotify(2)]);
+        return redirect()->route('customers.index')->with(['success' => getNotify(2)]);
     }
 
     /**

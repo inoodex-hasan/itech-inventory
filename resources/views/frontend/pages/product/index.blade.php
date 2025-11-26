@@ -20,7 +20,7 @@
             width: 0;
         }
     </style>
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
         <div class="page-header">
             <div class="content-page-header">
                 <h5>Products</h5>
@@ -168,13 +168,13 @@
                                                     <span class="badge bg-danger">Inactive</span>
                                                 @endif
                                             </td>
-                                            <td class="d-flex align-items-center">
-                                                <div class="dropdown dropdown-action">
+                                            <td class="justify-content-center align-items-center">
+                                                <div class="dropdown">
                                                     <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
                                                         <i class="fas fa-ellipsis-v"></i>
                                                     </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <ul>
+                                                    <div class="dropdown-menu dropdown-menu-end shadow-sm rounded-3">
+                                                        <ul class="list-unstyled mb-0">
                                                             <li>
                                                                 <a class="dropdown-item" href="javascript:void(0)"
                                                                     data-bs-toggle="modal"
@@ -183,8 +183,9 @@
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <a onclick="if (confirm('Are you sure to delete the product?')) { document.getElementById('serviceDelete{{ $product->id }}').submit(); }"
-                                                                    class="dropdown-item" href="javascript:void(0)">
+                                                                <a class="dropdown-item text-danger"
+                                                                    href="javascript:void(0)"
+                                                                    onclick="if(confirm('Are you sure to delete the product?')) { document.getElementById('serviceDelete{{ $product->id }}').submit(); }">
                                                                     <i class="far fa-trash-alt me-2"></i>Delete
                                                                 </a>
                                                                 <form id="serviceDelete{{ $product->id }}"
@@ -198,6 +199,7 @@
                                                     </div>
                                                 </div>
                                             </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>

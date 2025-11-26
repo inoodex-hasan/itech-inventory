@@ -1,85 +1,90 @@
 @extends('frontend.layouts.app')
 @section('content')
+    <div class="content container-fluid">
 
-<div class="content container-fluid">
-  <div class="page-header">
-    <div class="content-page-header">
-      <h5>Brands</h5>
-      <div class="list-btn">
-        <ul class="filter-list">
-          <li>
-            <a class="btn btn-primary" href="{{ route('brands.create') }}">
-              <i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Add Brand
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-10"> <!-- Centered 8-column layout -->
 
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="card-table">
-        <div class="card-body">
-          <div class="table-responsive">
-            <table id="brandTable" class="table table-center table-hover">
-              <thead class="thead-light">
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th class="no-sort">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($brands as $brand)
-                <tr>
-                  <td>{{ $loop->iteration }}</td>
-                  <td>{{ $brand->name }}</td>
-                  <td>
-                    @if($brand->status == 1)
-                      <span class="badge bg-success">Active</span>
-                    @else
-                      <span class="badge bg-danger">Inactive</span>
-                    @endif
-                  </td>
-                  <td class="d-flex align-items-center">
-                    <div class="dropdown dropdown-action">
-                      <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
-                        <i class="fas fa-ellipsis-v"></i>
-                      </a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <ul>
-                          <li>
-                            <a class="dropdown-item" href="{{ route('brands.edit', $brand->id) }}">
-                              <i class="far fa-edit me-2"></i>Edit
-                            </a>
-                          </li>
-                          <li>
-                            <a onclick="if (confirm('Are you sure to delete this brand?')) { document.getElementById('deleteBrand{{ $brand->id }}').submit(); }" class="dropdown-item" href="javascript:void(0)">
-                              <i class="far fa-trash-alt me-2"></i>Delete
-                            </a>
-                            <form id="deleteBrand{{ $brand->id }}" action="{{ route('brands.destroy', $brand->id) }}" method="POST" style="display: none;">
-                              @csrf
-                              @method('DELETE')
-                            </form>
-                          </li>
-                        </ul>
-                      </div>
+                <!-- Page Header -->
+                <div class="page-header mb-3">
+                    <div class="content-page-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Brands</h5>
+                        <a class="btn btn-primary" href="{{ route('brands.create') }}">
+                            <i class="fa fa-plus-circle me-2"></i>Add Brand
+                        </a>
                     </div>
-                  </td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
+                </div>
 
-            <!-- Optional: Modals for inline edit (if not using separate page) -->
-            {{-- You can add modal edit form per brand here if needed --}}
-          </div>
+                <!-- Card with Table -->
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body p-4">
+
+                        <div class="table-responsive">
+                            <table id="brandTable" class="table table-hover align-middle text-center w-100">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="w-auto">#</th>
+                                        <th class="w-auto">Name</th>
+                                        <th class="w-auto">Status</th>
+                                        <th class="w-auto">Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach ($brands as $brand)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $brand->name }}</td>
+
+                                            <td>
+                                                @if ($brand->status == 1)
+                                                    <span class="badge bg-success">Active</span>
+                                                @else
+                                                    <span class="badge bg-danger">Inactive</span>
+                                                @endif
+                                            </td>
+
+                                            <!-- Perfectly centered dropdown -->
+                                            <td class="d-flex justify-content-center align-items-center">
+                                                <div class="dropdown">
+                                                    <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </a>
+
+                                                    <div class="dropdown-menu dropdown-menu-end shadow-sm rounded-3">
+
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('brands.edit', $brand->id) }}">
+                                                            <i class="far fa-edit me-2"></i>Edit
+                                                        </a>
+
+                                                        <a onclick="if (confirm('Are you sure to delete this brand?')) { document.getElementById('deleteBrand{{ $brand->id }}').submit(); }"
+                                                            class="dropdown-item" href="javascript:void(0)">
+                                                            <i class="far fa-trash-alt me-2"></i>Delete
+                                                        </a>
+
+                                                        <form id="deleteBrand{{ $brand->id }}"
+                                                            action="{{ route('brands.destroy', $brand->id) }}"
+                                                            method="POST" style="display:none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
+
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
+    </div>
 @endsection

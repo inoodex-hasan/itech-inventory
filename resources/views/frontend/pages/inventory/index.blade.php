@@ -26,14 +26,14 @@
             <div class="content-page-header">
                 <h5>Inventories</h5>
                 <div class="list-btn">
-                    <ul class="filter-list">
+                    {{-- <ul class="filter-list">
                         <li>
                             <a class="btn btn-primary" href="javascript:void(0)" data-bs-toggle="modal"
                                 data-bs-target="#add-product-modal">
                                 <i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Add Opening Stock
                             </a>
                         </li>
-                    </ul>
+                    </ul> --}}
 
                     <!-- Add Product Modal -->
                     <div id="add-product-modal" class="modal fade" tabindex="-1" aria-hidden="true">
@@ -105,6 +105,7 @@
                                         <th>#</th>
                                         <th>Product</th>
                                         <th>Model</th>
+                                        <th>Photos</th>
                                         <th>Opening Stock</th>
                                         <th>Current Stock</th>
                                         {{-- <th class="no-sort">Actions</th> --}}
@@ -114,9 +115,32 @@
                                     @foreach ($inventories as $inventory)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $inventory->product->name }}</td>
+                                            <td>
+                                                {{ $inventory->product?->name ?? 'Product Not Found' }}
+                                            </td>
                                             <td>
                                                 ({{ $inventory->product->model ?? 'N/A' }})
+                                            </td>
+                                            <td>
+                                                @if ($inventory->product->photos && count($inventory->product->photos) > 0)
+                                                    <div class="d-flex gap-1 align-items-center">
+                                                        @foreach ($inventory->product->photos as $index => $photo)
+                                                            @if ($index < 2)
+                                                                <img src="{{ asset('storage/' . $photo) }}"
+                                                                    alt="Product Photo"
+                                                                    style="height: 60px; width: 60px; object-fit: cover;"
+                                                                    class="img-thumbnail rounded">
+                                                            @endif
+                                                        @endforeach
+
+                                                        @if (count($inventory->product->photos) > 2)
+                                                            <span
+                                                                class="badge bg-secondary ms-1">+{{ count($inventory->product->photos) - 2 }}</span>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">No photos</span>
+                                                @endif
                                             </td>
                                             <td>{{ $inventory->opening_stock ?? 0 }}</td>
                                             <td>{{ $inventory->current_stock ?? 0 }}</td>

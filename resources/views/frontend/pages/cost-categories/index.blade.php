@@ -1,91 +1,78 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-<div class="content container-fluid">
-    <div class="page-header">
-        <div class="row align-items-center">
-            <div class="col">
-                <h3 class="page-title">Cost Categories</h3>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('cost-categories.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add Category
-                </a>
-            </div>
-        </div>
-    </div>
+    <div class="d-flex justify-content-center align-items-start mt-5">
+        <div class="col-12 col-md-10">
+            <div class="card shadow-sm rounded-3">
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 fw-bold">Cost Categories</h4>
+                    <a href="{{ route('cost-categories.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Category
+                    </a>
+                </div>
+
                 <div class="card-body">
                     <div class="table-fluid">
-                        <table class="table table-hover">
-                            <thead>
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
                                 <tr>
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>Status</th>
-                                    <th>Actions</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($categories as $category)
-                                <tr>
-                                    <td>{{ $category->name }}</td>
-                                    <td>{{ $category->description ?? 'N/A' }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $category->is_active ? 'success' : 'danger' }}">
-                                            {{ $category->is_active ? 'Active' : 'Inactive' }}
-                                        </span>
-                                    </td>
-                                    
-                                        
-                                            {{-- <form action="{{ route('cost-categories.toggle-status', $category->id) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('PUT')
-                                                <button type="submit" class="btn btn-sm btn-{{ $category->is_active ? 'warning' : 'success' }}">
-                                                    <i class="fas fa-{{ $category->is_active ? 'times' : 'check' }}"></i>
-                                                </button>
-                                            </form> --}}
-                                        
-                                        <td class="d-flex align-items-center">
-                                            <div class="dropdown dropdown-action">
-                                                <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
+                                @foreach ($categories as $category)
+                                    <tr>
+                                        <td>{{ $category->name }}</td>
+                                        <td>{{ $category->description ?? 'N/A' }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ $category->is_active ? 'success' : 'danger' }}">
+                                                {{ $category->is_active ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="dropdown">
+                                                <a href="#" class="btn btn-sm btn-light" data-bs-toggle="dropdown">
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <ul>
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('cost-categories.edit', $category->id) }}">
-                                                                <i class="far fa-edit me-2"></i>Edit
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a onclick="if (confirm('Are you sure to delete?')) { document.getElementById('serviceDelete{{ $category->id }}').submit(); }"
-                                                                class="dropdown-item" href="javascript:void(0)">
-                                                                <i class="far fa-trash-alt me-2"></i>Delete
-                                                            </a>
-                                                            <form id="serviceDelete{{ $category->id }}"
-                                                                action="{{ route('cost-categories.destroy', $category->id) }}"
-                                                                method="POST" style="display:none;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                            </form>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('cost-categories.edit', $category->id) }}">
+                                                            <i class="far fa-edit me-2"></i>Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="javascript:void(0)"
+                                                            onclick="if(confirm('Are you sure to delete?')) { document.getElementById('deleteCategory{{ $category->id }}').submit(); }">
+                                                            <i class="far fa-trash-alt me-2"></i>Delete
+                                                        </a>
+                                                        <form id="deleteCategory{{ $category->id }}"
+                                                            action="{{ route('cost-categories.destroy', $category->id) }}"
+                                                            method="POST" style="display:none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </td>
-                                </tr>
+                                    </tr>
                                 @endforeach
+                                @if ($categories->isEmpty())
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No categories found.</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-</div>
 @endsection
