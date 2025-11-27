@@ -29,11 +29,11 @@
                                         value="{{ old('name', $client->name ?? '') }}" required>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                {{-- <div class="col-md-6 mb-3">
                                     <label class="form-label">Company Name</label>
                                     <input type="text" name="company_name" class="form-control"
                                         value="{{ old('company_name', $client->company_name ?? '') }}">
-                                </div>
+                                </div> --}}
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Phone <span class="text-danger">*</span></label>
@@ -47,21 +47,21 @@
                                         value="{{ old('email', $client->email ?? '') }}" required>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
+                                {{-- <div class="col-md-6 mb-3">
                                     <label class="form-label">Tax Number</label>
                                     <input type="text" name="tax_number" class="form-control"
                                         value="{{ old('tax_number', $client->tax_number ?? '') }}">
-                                </div>
+                                </div> --}}
 
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Address <span class="text-danger">*</span></label>
                                     <textarea name="address" class="form-control" rows="3" required>{{ old('address', $client->address ?? '') }}</textarea>
                                 </div>
-
+                                {{-- 
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Notes</label>
                                     <textarea name="notes" class="form-control" rows="3">{{ old('notes', $client->notes ?? '') }}</textarea>
-                                </div>
+                                </div> --}}
                             </div>
 
                             <div class="text-end">

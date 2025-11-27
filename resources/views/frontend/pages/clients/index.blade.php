@@ -1,14 +1,12 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
                     <h3 class="page-title">Clients</h3>
                 </div>
-
-
             </div>
         </div>
 

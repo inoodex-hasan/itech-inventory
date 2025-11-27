@@ -23,7 +23,8 @@
                             <div class="row mb-3">
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Name</label>
-                                    <input type="text" class="form-control" name="name" required>
+                                    <input type="text" class="form-control" name="name" placeholder="Enter name"
+                                        required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -34,12 +35,12 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" name="email">
+                                    <input type="email" class="form-control" name="email" placeholder="Enter email">
                                 </div>
 
                                 <div class="col-12 mb-3">
                                     <label class="form-label fw-bold">Address</label>
-                                    <textarea class="form-control" name="address" rows="3" required></textarea>
+                                    <textarea class="form-control" name="address" rows="3" placeholder="Enter address" required></textarea>
                                 </div>
                             </div>
 

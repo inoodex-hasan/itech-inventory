@@ -17,13 +17,13 @@
 
                         <div class="mb-3">
                             <label class="form-label">Category Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control"
+                            <input type="text" name="name" class="form-control" placeholder="Enter category name"
                                 value="{{ old('name', $category->name ?? '') }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Description</label>
-                            <textarea name="description" class="form-control" rows="3">{{ old('description', $category->description ?? '') }}</textarea>
+                            <textarea name="description" class="form-control" placeholder="Enter description" rows="3">{{ old('description', $category->description ?? '') }}</textarea>
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
