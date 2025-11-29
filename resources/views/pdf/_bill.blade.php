@@ -184,28 +184,32 @@
     <div class="container">
         <!-- Reference and Date -->
         <div class="reference">
-            Ref: {{ $bill->reference_number }} {{ $bill->bill_date->format('F d, Y') }}
+            <span style="float: left;">Ref: {{ $bill->reference_number }}</span>
+            <span style="float: right;">{{ $bill->bill_date->format('F d, Y') }}</span>
+            <div style="clear: both;"></div>
         </div>
 
-        <!-- Recipient Details -->
+        <!-- Recipient Details - USE VARIABLES FROM PDFDATA -->
         <div class="to-section">
             <p>To,</p>
-            <p>{{ $bill->recipient_designation }}</p>
-            <p>{{ $bill->recipient_organization }}</p>
-            <p>{{ $bill->recipient_address }}</p>
-            @if ($bill->attention_to)
-                <p>Attention: {{ $bill->attention_to }}</p>
+            <p>{{ $recipient_designation ?? 'Director (IT)' }}</p>
+            <p>{{ $recipient_organization ?? ($bill->client_name ?? 'N/A') }}</p>
+            <p>{{ $recipient_address ?? ($bill->client_address ?? 'N/A') }}</p>
+            @if ($attention_to)
+                <p>Attention: {{ $attention_to }}</p>
             @endif
         </div>
 
         <!-- Work Order -->
-        <div class="work-order">
-            Work order # {{ $bill->work_order_number }}
-        </div>
+        @if ($bill->work_order_number)
+            <div class="work-order">
+                Work order # {{ $bill->work_order_number }}
+            </div>
+        @endif
 
         <!-- Subject -->
         <div class="subject">
-            Sub: <span class="underline">{{ $bill->notes }}</span>
+            Sub: <span style="text-decoration: underline;">Bill for Supplying of Products/Services</span>
         </div>
 
         <!-- Letter Body -->
@@ -223,6 +227,7 @@
         <table>
             <thead>
                 <tr>
+                    <th class="serial">S/L</th>
                     <th class="product-description">PRODUCT DESCRIPTION</th>
                     <th class="quantity">QTY.</th>
                     <th class="unit-price">UNIT PRICE</th>
@@ -230,10 +235,11 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($bill->items as $index => $item)
+                @foreach ($bill->billItems as $index => $item)
                     <tr>
+                        <td class="serial">{{ $index + 1 }}</td>
                         <td class="product-description">
-                            <strong>{{ $index + 1 }}.</strong>
+
                             <div class="product-specs">
                                 {!! nl2br(e($item->description)) !!}
                             </div>
@@ -246,17 +252,11 @@
 
                 <!-- Total Rows -->
                 <tr class="total-row">
-                    <td colspan="3">Subtotal</td>
+                    <td colspan="4">Subtotal</td>
                     <td class="total-price">{{ number_format($bill->subtotal, 2) }}</td>
                 </tr>
-                @if ($bill->tax_amount > 0)
-                    <tr class="total-row">
-                        <td colspan="3">Tax Amount</td>
-                        <td class="total-price">{{ number_format($bill->tax_amount, 2) }}</td>
-                    </tr>
-                @endif
                 <tr class="total-row">
-                    <td colspan="3">Total Amount</td>
+                    <td colspan="4">Total Amount</td>
                     <td class="total-price">{{ number_format($bill->total_amount, 2) }}</td>
                 </tr>
             </tbody>
@@ -264,15 +264,15 @@
 
         <!-- Amount in Words -->
         <div class="amount-in-words">
-            In Word: {{ $amount_in_words ?? $bill->amount_in_words }}
+            In Word: {{ $amount_in_words }}
         </div>
 
-        <!-- Terms and Conditions -->
-        @if ($bill->terms_conditions)
+        <!-- Terms and Conditions - USE VARIABLE FROM PDFDATA -->
+        @if ($terms_conditions)
             <div class="terms-title">Terms and Conditions</div>
 
             <table class="terms-table">
-                @foreach (explode("\n", $bill->terms_conditions) as $index => $term)
+                @foreach (explode("\n", $terms_conditions) as $index => $term)
                     @if (trim($term))
                         <tr>
                             <td>{{ $index + 1 }}.</td>
@@ -292,12 +292,6 @@
                 <p><strong>Branch:</strong> {{ $bank_details['branch'] ?? 'Satmosjid Road' }}</p>
                 <p><strong>Account Number:</strong> {{ $bank_details['account_number'] ?? '06933000526' }}</p>
                 <p><strong>Account Type:</strong> {{ $bank_details['account_type'] ?? 'Current' }}</p>
-                @if (isset($bank_details['routing_number']))
-                    <p><strong>Receiving Bank Routing Number:</strong> {{ $bank_details['routing_number'] }}</p>
-                @endif
-                @if (isset($bank_details['mobile']))
-                    <p><strong>Mobile:</strong> {{ $bank_details['mobile'] }}</p>
-                @endif
             </div>
         @endif
 
@@ -333,127 +327,3 @@
 </body>
 
 </html>
-
-{{-- <!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>Bill - {{ $bill->bill_number }}</title>
-    <style>
-        body {
-            font-family: DejaVu Sans, sans-serif;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .bill-info {
-            margin-bottom: 20px;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .table th,
-        .table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .table th {
-            background-color: #f2f2f2;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .total-section {
-            margin-top: 20px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="header">
-        <h1>BILL</h1>
-        <h3>{{ $bill->bill_number }}</h3>
-    </div>
-
-    <div class="bill-info">
-        <p><strong>Bill Date:</strong> {{ $bill->bill_date }}</p>
-        <p><strong>Reference:</strong> {{ $bill->reference_number }}</p>
-        <p><strong>Type:</strong> {{ ucfirst($bill->bill_type) }} Bill</p>
-        @if ($bill->work_order_number)
-            <p><strong>Work Order:</strong> {{ $bill->work_order_number }}</p>
-        @endif
-    </div>
-
-    <!-- Customer/Client Information -->
-    <div style="margin-bottom: 20px;">
-        <h4>Bill To:</h4>
-        @if ($bill->bill_type === 'sale' && $bill->sale && $bill->sale->customer)
-            <p><strong>{{ $bill->sale->customer->name }}</strong></p>
-            <p>Email: {{ $bill->sale->customer->email ?? 'N/A' }}</p>
-            <p>Phone: {{ $bill->sale->customer->phone ?? 'N/A' }}</p>
-            <p>Address: {{ $bill->sale->customer->address ?? 'N/A' }}</p>
-        @elseif($bill->bill_type === 'project' && $bill->project && $bill->project->client)
-            <p><strong>{{ $bill->project->client->name }}</strong></p>
-            <p>Email: {{ $bill->project->client->email ?? 'N/A' }}</p>
-            <p>Phone: {{ $bill->project->client->phone ?? 'N/A' }}</p>
-            <p>Address: {{ $bill->project->client->address ?? 'N/A' }}</p>
-        @else
-            <p>Customer information not available</p>
-        @endif
-    </div>
-
-    <!-- Bill Items -->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Description</th>
-                <th>Quantity</th>
-                <th>Unit</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($bill->billItems as $item)
-                <tr>
-                    <td>{{ $item->description }}</td>
-                    <td>{{ $item->quantity }}</td>
-                    <td>{{ $item->unit }}</td>
-                    <td class="text-right">{{ number_format($item->unit_price, 2) }}</td>
-                    <td class="text-right">{{ number_format($item->total, 2) }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <!-- Totals -->
-    <div class="total-section" style="text-align: right;">
-        <p><strong>Subtotal: {{ number_format($bill->subtotal, 2) }}</strong></p>
-        <p><strong>Total Amount: {{ number_format($bill->total_amount, 2) }}</strong></p>
-    </div>
-
-    @if ($bill->notes)
-        <div style="margin-top: 30px;">
-            <h4>Notes:</h4>
-            <p>{{ $bill->notes }}</p>
-        </div>
-    @endif
-
-    <div style="margin-top: 50px; text-align: center;">
-        <p>Thank you for your business!</p>
-    </div>
-</body>
-
-</html> --}}

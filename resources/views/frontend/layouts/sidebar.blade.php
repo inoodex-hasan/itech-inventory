@@ -116,6 +116,15 @@
                     </li>
                 @endcan
 
+                @can('Company Management')
+                    <li class="menu-title "><span>Company Management</span></li>
+                    <li class="">
+                        <a href="{{ route('company-details.index') }}"
+                            class="{{ Route::currentRouteName() == 'company-details.index' ? 'active' : '' }}"><i
+                                class="fe fe-package"></i> <span> Company Details</span></a>
+                    </li>
+                @endcan
+
                 @can('Payment Management')
                     <li class="menu-title"><span>Payment Management</span></li>
                     <li>
@@ -228,6 +237,11 @@
                         <a href="{{ route('salary.index') }}"
                             class="{{ Route::currentRouteName() == 'salary.index' ? 'active' : '' }}"><i
                                 class="fe fe-list"></i> <span>Salary Manage</span></a>
+
+                        <a href="{{ route('bank-details.index') }}"
+                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i
+                                class="fe fe-plus-circle"></i>
+                            <span>Bank Details</span></a>
 
                     </li>
                 @endcan

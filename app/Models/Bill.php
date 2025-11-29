@@ -11,7 +11,9 @@ class Bill extends Model
     protected $fillable = [
         'bill_number', 'reference_number', 'client_id', 'vendor_id', 
         'project_id', 'purchase_id', 'work_order_number', 'bill_date',
-        'subtotal', 'total_amount', 'amount_in_words', 'status', 'notes'
+        'subtotal', 'total_amount', 'amount_in_words', 'status', 'notes',  
+        'bank_detail_id', 'company_detail_id', 'terms_conditions', 'subject',
+        'attention_to'
     ];
 
     protected $casts = [
@@ -58,6 +60,16 @@ class Bill extends Model
       public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
+    }
+
+    public function bankDetail()
+    {
+        return $this->belongsTo(BankDetail::class, 'bank_detail_id');
+    }
+
+    public function companyDetail()
+    {
+        return $this->belongsTo(CompanyDetail::class, 'company_detail_id');
     }
 
     // Generate bill number based on type

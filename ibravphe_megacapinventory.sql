@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 27, 2025 at 11:08 AM
+-- Generation Time: Nov 29, 2025 at 01:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -97,6 +97,33 @@ CREATE TABLE `attendances` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `bank_details`
+--
+
+CREATE TABLE `bank_details` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `account_name` varchar(255) NOT NULL,
+  `bank_name` varchar(255) NOT NULL,
+  `branch` varchar(255) NOT NULL,
+  `account_number` varchar(255) NOT NULL,
+  `account_type` varchar(255) NOT NULL,
+  `routing_number` varchar(255) DEFAULT NULL,
+  `is_default` tinyint(1) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `bank_details`
+--
+
+INSERT INTO `bank_details` (`id`, `account_name`, `bank_name`, `branch`, `account_number`, `account_type`, `routing_number`, `is_default`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'ghjrtuj', 'rhyj', 'rthdrher', '321654', 'Current', '65584', 1, 1, '2025-11-29 10:21:26', '2025-11-29 10:24:34');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `bills`
 --
 
@@ -115,15 +142,20 @@ CREATE TABLE `bills` (
   `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
   `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `bank_detail_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `company_detail_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `terms_conditions` text DEFAULT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  `attention_to` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `bills`
 --
 
-INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `sale_id`, `project_id`, `customer_id`, `client_id`, `type`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 'BILL-20251124-0001', 'BIL-20251124-133702', NULL, NULL, NULL, NULL, 'sale', 'Test/1297/23-24-0480', '2025-11-24', 48000.00, 48000.00, NULL, '2025-11-24 07:37:14', '2025-11-24 07:37:14');
+INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `sale_id`, `project_id`, `customer_id`, `client_id`, `type`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`, `bank_detail_id`, `company_detail_id`, `terms_conditions`, `subject`, `attention_to`) VALUES
+(12, 'BILL-20251129-0001', 'BIL-20251129-172600', NULL, 10, NULL, 9, 'sale', 'rytkytuk', '2025-11-29', 116000.00, 116000.00, NULL, '2025-11-29 11:26:11', '2025-11-29 11:26:11', 1, 1, 'The products come with a 1-year limited warranty. Please note that the warranty does not cover physical damage or burn cases.\r\nThe delivered products & accessories will not be changeable after use.\r\n The party will pay by Cash/ an account Payee Cheque/DD/Pay Order in favor of our company with a work order.\r\nGovt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per government rule.', 'Bill for Supplying of Products/Services', 'kytuytuk');
 
 -- --------------------------------------------------------
 
@@ -147,7 +179,8 @@ CREATE TABLE `bill_items` (
 --
 
 INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(1, 1, 'HP DeskJet Ink Advantage 2336 All-in-One Color Printer', 3, 16000.00, 48000.00, '2025-11-24 07:37:14', '2025-11-24 07:37:14');
+(15, 12, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 16000.00, 32000.00, '2025-11-29 11:26:11', '2025-11-29 11:26:11'),
+(16, 12, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 28000.00, 84000.00, '2025-11-29 11:26:11', '2025-11-29 11:26:11');
 
 -- --------------------------------------------------------
 
@@ -213,8 +246,21 @@ CREATE TABLE `challans` (
   `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
   `client_id` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `attention_to` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `challans`
+--
+
+INSERT INTO `challans` (`id`, `challan_number`, `reference_number`, `challan_date`, `type`, `sale_id`, `project_id`, `customer_id`, `client_id`, `created_at`, `updated_at`, `attention_to`) VALUES
+(31, 'CHALLAN-20251129-0001', 'CHL-20251129-182634', '2025-11-29', 'sale', 26, NULL, 16, NULL, '2025-11-29 12:26:56', '2025-11-29 12:26:56', NULL),
+(32, 'CHALLAN-20251129-0002', 'CHL-20251129-183106', '2025-11-29', 'project', NULL, 10, NULL, 9, '2025-11-29 12:31:15', '2025-11-29 12:31:15', NULL),
+(33, 'CHALLAN-20251129-0003', 'CHL-20251129-183228', '2025-11-29', 'sale', 26, NULL, 16, NULL, '2025-11-29 12:32:34', '2025-11-29 12:32:34', NULL),
+(34, 'CHALLAN-20251129-0004', 'CHL-20251129-183800', '2025-11-29', 'sale', 26, NULL, 16, NULL, '2025-11-29 12:38:09', '2025-11-29 12:38:09', NULL),
+(35, 'CHALLAN-20251129-0005', 'CHL-20251129-183918', '2025-11-29', 'sale', 26, NULL, 16, NULL, '2025-11-29 12:39:24', '2025-11-29 12:39:24', NULL),
+(36, 'CHALLAN-20251129-0006', 'CHL-20251129-184053', '2025-11-29', 'project', NULL, 10, NULL, 9, '2025-11-29 12:41:02', '2025-11-29 12:41:02', NULL);
 
 -- --------------------------------------------------------
 
@@ -231,6 +277,20 @@ CREATE TABLE `challan_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `challan_items`
+--
+
+INSERT INTO `challan_items` (`id`, `challan_id`, `description`, `quantity`, `unit`, `created_at`, `updated_at`) VALUES
+(32, 31, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-29 12:26:56', '2025-11-29 12:26:56'),
+(33, 32, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Unit', '2025-11-29 12:31:15', '2025-11-29 12:31:15'),
+(34, 32, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Unit', '2025-11-29 12:31:15', '2025-11-29 12:31:15'),
+(35, 33, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-29 12:32:34', '2025-11-29 12:32:34'),
+(36, 34, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-29 12:38:09', '2025-11-29 12:38:09'),
+(37, 35, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-29 12:39:24', '2025-11-29 12:39:24'),
+(38, 36, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Unit', '2025-11-29 12:41:02', '2025-11-29 12:41:02'),
+(39, 36, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Unit', '2025-11-29 12:41:02', '2025-11-29 12:41:02');
 
 -- --------------------------------------------------------
 
@@ -255,6 +315,34 @@ CREATE TABLE `clients` (
 INSERT INTO `clients` (`id`, `name`, `phone`, `email`, `address`, `created_at`, `updated_at`) VALUES
 (2, 'Md Hasan', '01234567890', 'hasan@inoodex.com', 'Dhaka', '2025-11-14 20:08:22', '2025-11-14 20:08:22'),
 (9, 'Mr Rahim', '01000000000', 'rahim@example.com', 'Mirpur', '2025-11-26 05:52:50', '2025-11-26 05:52:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `company_details`
+--
+
+CREATE TABLE `company_details` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `signatory_name` varchar(255) NOT NULL,
+  `signatory_designation` varchar(255) NOT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `is_default` tinyint(1) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `company_details`
+--
+
+INSERT INTO `company_details` (`id`, `name`, `signatory_name`, `signatory_designation`, `phone`, `email`, `website`, `address`, `is_default`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'ABC', 'abc', 'abcd', '216421644', 'hasan@example.com', 'www.abc.com', 'dlkgnoisdgjldkgn', 1, 1, '2025-11-29 09:54:32', '2025-11-29 10:00:54');
 
 -- --------------------------------------------------------
 
@@ -582,7 +670,12 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (82, '2025_11_25_102923_add_photo_to_products_table', 53),
 (83, '2025_11_25_131014_create_quotations_table', 54),
 (84, '2025_11_25_135221_create_quotation_items_table', 54),
-(85, '2025_11_26_123944_add_project_id_to_payments_table', 55);
+(85, '2025_11_26_123944_add_project_id_to_payments_table', 55),
+(86, '2025_11_29_153131_create_bank_details_table', 56),
+(87, '2025_11_29_153146_create_company_details_table', 56),
+(88, '2025_11_29_153309_add_fields_to_bills_table', 56),
+(89, '2025_11_29_163131_create_bank_details_table', 57),
+(90, '2025_11_29_173929_add_fields_to_challans_table', 58);
 
 -- --------------------------------------------------------
 
@@ -722,7 +815,8 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (16, 'Employee Management', 'web', '2025-11-09 01:21:40', '2025-11-09 01:21:40'),
 (17, 'Project Management', 'web', '2025-11-11 19:05:43', '2025-11-11 19:05:43'),
 (18, 'Client Management', 'web', '2025-11-17 23:16:07', '2025-11-17 23:16:07'),
-(19, 'Cost Management', 'web', '2025-11-18 00:22:52', '2025-11-18 00:22:52');
+(19, 'Cost Management', 'web', '2025-11-18 00:22:52', '2025-11-18 00:22:52'),
+(20, 'Company Management', 'web', '2025-11-29 09:49:27', '2025-11-29 09:49:27');
 
 -- --------------------------------------------------------
 
@@ -904,6 +998,13 @@ CREATE TABLE `quotations` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `quotations`
+--
+
+INSERT INTO `quotations` (`id`, `quotation_number`, `customer_id`, `client_id`, `quotation_date`, `expiry_date`, `notes`, `sub_total`, `discount_amount`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
+(20, 'QT-20251129-0001', NULL, NULL, '2025-11-29', '2025-12-14', 'thrtj', 65800.00, 0.00, 65800.00, 'draft', '2025-11-29 12:46:27', '2025-11-29 12:46:27');
+
 -- --------------------------------------------------------
 
 --
@@ -921,6 +1022,14 @@ CREATE TABLE `quotation_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `quotation_items`
+--
+
+INSERT INTO `quotation_items` (`id`, `quotation_id`, `product_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
+(21, 20, 4, NULL, 2, 12500.00, 25000.00, '2025-11-29 12:46:27', '2025-11-29 12:46:27'),
+(22, 20, 5, NULL, 3, 13600.00, 40800.00, '2025-11-29 12:46:27', '2025-11-29 12:46:27');
 
 -- --------------------------------------------------------
 
@@ -1002,7 +1111,8 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (16, 2),
 (17, 1),
 (18, 1),
-(19, 1);
+(19, 1),
+(20, 1);
 
 -- --------------------------------------------------------
 
@@ -1281,6 +1391,12 @@ ALTER TABLE `attendances`
   ADD KEY `attendances_date_index` (`date`);
 
 --
+-- Indexes for table `bank_details`
+--
+ALTER TABLE `bank_details`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `bills`
 --
 ALTER TABLE `bills`
@@ -1289,7 +1405,9 @@ ALTER TABLE `bills`
   ADD KEY `bills_sale_id_foreign` (`sale_id`),
   ADD KEY `bills_project_id_foreign` (`project_id`),
   ADD KEY `bills_customer_id_foreign` (`customer_id`),
-  ADD KEY `bills_client_id_foreign` (`client_id`);
+  ADD KEY `bills_client_id_foreign` (`client_id`),
+  ADD KEY `bills_bank_detail_id_foreign` (`bank_detail_id`),
+  ADD KEY `bills_company_detail_id_foreign` (`company_detail_id`);
 
 --
 -- Indexes for table `bill_items`
@@ -1330,6 +1448,12 @@ ALTER TABLE `challan_items`
 -- Indexes for table `clients`
 --
 ALTER TABLE `clients`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `company_details`
+--
+ALTER TABLE `company_details`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1627,16 +1751,22 @@ ALTER TABLE `attendances`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `bank_details`
+--
+ALTER TABLE `bank_details`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `bills`
 --
 ALTER TABLE `bills`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `bill_items`
 --
 ALTER TABLE `bill_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `bookings`
@@ -1654,19 +1784,25 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `challans`
 --
 ALTER TABLE `challans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `challan_items`
 --
 ALTER TABLE `challan_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `company_details`
+--
+ALTER TABLE `company_details`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `cost_categories`
@@ -1732,7 +1868,7 @@ ALTER TABLE `inventories`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1750,7 +1886,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -1792,13 +1928,13 @@ ALTER TABLE `purchases`
 -- AUTO_INCREMENT for table `quotations`
 --
 ALTER TABLE `quotations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `quotation_items`
 --
 ALTER TABLE `quotation_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `revenues`
@@ -1874,7 +2010,9 @@ ALTER TABLE `advance_salaries`
 -- Constraints for table `bills`
 --
 ALTER TABLE `bills`
+  ADD CONSTRAINT `bills_bank_detail_id_foreign` FOREIGN KEY (`bank_detail_id`) REFERENCES `bank_details` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `bills_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `bills_company_detail_id_foreign` FOREIGN KEY (`company_detail_id`) REFERENCES `company_details` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `bills_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `bills_sale_id_foreign` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`) ON DELETE CASCADE;

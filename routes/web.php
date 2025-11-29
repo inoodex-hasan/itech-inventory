@@ -9,7 +9,8 @@ use App\Http\Controllers\{
     ProjectItemController, PurchaseController, QuotationController,
     RevenueController, RoleController, PermissionController,
     SalaryController, SalesController, ServiceController,
-    TaDaController, UserController, VendorController
+    TaDaController, UserController, VendorController, BankDetailController, 
+    CompanyDetailController
 };
 
 use Illuminate\Support\Facades\Auth;
@@ -129,4 +130,10 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::post('/sales/process-payment', [SalesController::class, 'processPayment'])->name('sales.process-payment');
     Route::post('/projects/process-payment', [ProjectController::class, 'processPayment'])->name('projects.process-payment');
     Route::get('/sales/search-orders', [SalesController::class, 'searchOrders'])->name('sales.search-orders');
+
+    Route::resource('bank-details', BankDetailController::class);
+    Route::post('bank-details/{bankDetail}/set-default', [BankDetailController::class, 'setDefault'])->name('bank-details.set-default');
+    
+    Route::resource('company-details', CompanyDetailController::class);
+    Route::post('company-details/{companyDetail}/set-default', [CompanyDetailController::class, 'setDefault'])->name('company-details.set-default');
 });

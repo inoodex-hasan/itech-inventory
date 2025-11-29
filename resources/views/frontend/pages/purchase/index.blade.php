@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 @section('content')
-    <div class="content container-fluid col-sm-10">
+    <div class="content container-fluid">
         <div class="page-header">
             <div class="content-page-header mt-5">
                 <h5>Purchase List</h5>
@@ -90,175 +90,171 @@
         <!-- /Page Header -->
         <!-- Search Filter -->
         <div class="row">
-            <div class="col-sm-10">
-                <div class="card-table">
-                    <div class="card-body">
-                        <div class="table-fluid">
-                            <table class="table table-center table-hover">
-                                <thead>
+            <div class="card-table">
+                <div class="card-body">
+                    <div class="table-fluid">
+                        <table class="table table-center table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Vendor</th>
+                                    <th>Qty</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Price</th>
+                                    <th>Payment</th>
+                                    <th>Due</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($purchases as $purchase)
                                     <tr>
-                                        <th>#</th>
-                                        <th>Date</th>
-                                        <th>Product</th>
-                                        <th>Vendor</th>
-                                        <th>Qty</th>
-                                        <th>Unit Price</th>
-                                        <th>Total Price</th>
-                                        <th>Payment</th>
-                                        <th>Due</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($purchases as $purchase)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $purchase->created_at->format('Y-m-d') }}</td>
-                                            <td>{{ $purchase->product->name ?? 'N/A' }}({{ $purchase->product->model ?? 'N/A' }})
-                                            </td>
-                                            <td>{{ $purchase->vendor->name ?? 'N/A' }}</td>
-                                            <td>{{ $purchase->quantity }}</td>
-                                            <td>{{ $purchase->unit_price }}</td>
-                                            <td>{{ $purchase->total_price }}</td>
-                                            <td>{{ $purchase->payment }}</td>
-                                            <td>{{ $purchase->due }}</td>
-                                            <td>
-                                                <div class="dropdown">
-                                                    <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item" data-bs-toggle="modal"
-                                                            data-bs-target="#edit-purchase-{{ $purchase->id }}">Edit</a>
-                                                        <form method="POST"
-                                                            action="{{ route('purchase.destroy', $purchase->id) }}">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="dropdown-item"
-                                                                onclick="return confirm('Are you sure?')">Delete</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-
-                                        <!-- Edit Modal -->
-                                        <div id="edit-purchase-{{ $purchase->id }}" class="modal fade" tabindex="-1"
-                                            aria-labelledby="editModalLabel-{{ $purchase->id }}" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editModalLabel-{{ $purchase->id }}">
-                                                            Edit Purchase</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-
-                                                    <div class="modal-body">
-                                                        <form method="POST"
-                                                            action="{{ route('purchase.update', $purchase->id) }}">
-                                                            @csrf
-                                                            @method('PUT')
-
-                                                            <div class="mb-3">
-                                                                <label for="edit-product_id-{{ $purchase->id }}"
-                                                                    class="form-label">Product</label>
-                                                                <select id="edit-product_id-{{ $purchase->id }}"
-                                                                    name="product_id" class="form-select select2"
-                                                                    required>
-                                                                    @foreach ($products as $product)
-                                                                        <option value="{{ $product->id }}"
-                                                                            {{ $product->id == $purchase->product_id ? 'selected' : '' }}>
-                                                                            {{ $product->name }}
-                                                                            ({{ $product->model ?? 'N/A' }})
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="edit-quantity-{{ $purchase->id }}"
-                                                                    class="form-label">Quantity</label>
-                                                                <input id="edit-quantity-{{ $purchase->id }}"
-                                                                    name="quantity" value="{{ $purchase->quantity }}"
-                                                                    class="form-control" placeholder="Quantity" />
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="edit-unit_price-{{ $purchase->id }}"
-                                                                    class="form-label">Last Unit Price</label>
-                                                                <input id="edit-unit_price-{{ $purchase->id }}"
-                                                                    name="unit_price" value="{{ $purchase->unit_price }}"
-                                                                    class="form-control" placeholder="Unit Price" />
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="edit-sub_price-{{ $purchase->id }}"
-                                                                    class="form-label">Sub Price</label>
-                                                                <input id="edit-sub_price-{{ $purchase->id }}"
-                                                                    name="sub_price" value="{{ $purchase->sub_price }}"
-                                                                    class="form-control" placeholder="Sub Price" />
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="edit-total_price-{{ $purchase->id }}"
-                                                                    class="form-label">Paybale Total Price</label>
-                                                                <input id="edit-total_price-{{ $purchase->id }}"
-                                                                    name="total_price"
-                                                                    value="{{ $purchase->total_price }}"
-                                                                    class="form-control" placeholder="Total Price" />
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="edit-payment-{{ $purchase->id }}"
-                                                                    class="form-label">Payment</label>
-                                                                <input id="edit-payment-{{ $purchase->id }}"
-                                                                    name="payment" value="{{ $purchase->payment }}"
-                                                                    class="form-control" placeholder="Payment" />
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="edit-due-{{ $purchase->id }}"
-                                                                    class="form-label">Due</label>
-                                                                <input id="edit-due-{{ $purchase->id }}" name="due"
-                                                                    value="{{ $purchase->due }}" class="form-control"
-                                                                    placeholder="Due" />
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="vendor" class="form-label">Vendor</label>
-                                                                <select id="vendor" name="vendor_id"
-                                                                    class="form-select" required>
-                                                                    <option value="">Select Vendor</option>
-                                                                    @foreach ($vendors as $vendor)
-                                                                        <option value="{{ $vendor->id }}"
-                                                                            {{ $vendor->id == $purchase->vendor_id ? 'selected' : '' }}>
-                                                                            {{ $vendor->name }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="modal-footer">
-                                                                <button type="submit"
-                                                                    class="btn btn-primary">Update</button>
-
-                                                            </div>
-
-                                                        </form>
-                                                    </div>
-
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $purchase->created_at->format('Y-m-d') }}</td>
+                                        <td>{{ $purchase->product->name ?? 'N/A' }}({{ $purchase->product->model ?? 'N/A' }})
+                                        </td>
+                                        <td>{{ $purchase->vendor->name ?? 'N/A' }}</td>
+                                        <td>{{ $purchase->quantity }}</td>
+                                        <td>{{ $purchase->unit_price }}</td>
+                                        <td>{{ $purchase->total_price }}</td>
+                                        <td>{{ $purchase->payment }}</td>
+                                        <td>{{ $purchase->due }}</td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a class="dropdown-item" data-bs-toggle="modal"
+                                                        data-bs-target="#edit-purchase-{{ $purchase->id }}">Edit</a>
+                                                    <form method="POST"
+                                                        action="{{ route('purchase.destroy', $purchase->id) }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item"
+                                                            onclick="return confirm('Are you sure?')">Delete</button>
+                                                    </form>
                                                 </div>
                                             </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Edit Modal -->
+                                    <div id="edit-purchase-{{ $purchase->id }}" class="modal fade" tabindex="-1"
+                                        aria-labelledby="editModalLabel-{{ $purchase->id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editModalLabel-{{ $purchase->id }}">
+                                                        Edit Purchase</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <form method="POST"
+                                                        action="{{ route('purchase.update', $purchase->id) }}">
+                                                        @csrf
+                                                        @method('PUT')
+
+                                                        <div class="mb-3">
+                                                            <label for="edit-product_id-{{ $purchase->id }}"
+                                                                class="form-label">Product</label>
+                                                            <select id="edit-product_id-{{ $purchase->id }}"
+                                                                name="product_id" class="form-select select2" required>
+                                                                @foreach ($products as $product)
+                                                                    <option value="{{ $product->id }}"
+                                                                        {{ $product->id == $purchase->product_id ? 'selected' : '' }}>
+                                                                        {{ $product->name }}
+                                                                        ({{ $product->model ?? 'N/A' }})
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="edit-quantity-{{ $purchase->id }}"
+                                                                class="form-label">Quantity</label>
+                                                            <input id="edit-quantity-{{ $purchase->id }}" name="quantity"
+                                                                value="{{ $purchase->quantity }}" class="form-control"
+                                                                placeholder="Quantity" />
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="edit-unit_price-{{ $purchase->id }}"
+                                                                class="form-label">Last Unit Price</label>
+                                                            <input id="edit-unit_price-{{ $purchase->id }}"
+                                                                name="unit_price" value="{{ $purchase->unit_price }}"
+                                                                class="form-control" placeholder="Unit Price" />
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="edit-sub_price-{{ $purchase->id }}"
+                                                                class="form-label">Sub Price</label>
+                                                            <input id="edit-sub_price-{{ $purchase->id }}"
+                                                                name="sub_price" value="{{ $purchase->sub_price }}"
+                                                                class="form-control" placeholder="Sub Price" />
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="edit-total_price-{{ $purchase->id }}"
+                                                                class="form-label">Paybale Total Price</label>
+                                                            <input id="edit-total_price-{{ $purchase->id }}"
+                                                                name="total_price" value="{{ $purchase->total_price }}"
+                                                                class="form-control" placeholder="Total Price" />
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="edit-payment-{{ $purchase->id }}"
+                                                                class="form-label">Payment</label>
+                                                            <input id="edit-payment-{{ $purchase->id }}" name="payment"
+                                                                value="{{ $purchase->payment }}" class="form-control"
+                                                                placeholder="Payment" />
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="edit-due-{{ $purchase->id }}"
+                                                                class="form-label">Due</label>
+                                                            <input id="edit-due-{{ $purchase->id }}" name="due"
+                                                                value="{{ $purchase->due }}" class="form-control"
+                                                                placeholder="Due" />
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="vendor" class="form-label">Vendor</label>
+                                                            <select id="vendor" name="vendor_id" class="form-select"
+                                                                required>
+                                                                <option value="">Select Vendor</option>
+                                                                @foreach ($vendors as $vendor)
+                                                                    <option value="{{ $vendor->id }}"
+                                                                        {{ $vendor->id == $purchase->vendor_id ? 'selected' : '' }}>
+                                                                        {{ $vendor->name }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="submit" class="btn btn-primary">Update</button>
+
+                                                        </div>
+
+                                                    </form>
+                                                </div>
+
+                                            </div>
                                         </div>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                    </div>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

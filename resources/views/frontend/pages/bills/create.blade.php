@@ -59,13 +59,13 @@
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label class="form-label">Work Order (Optional)</label>
+                                        <label class="form-label">Work Order</label>
                                         <input type="text" class="form-control" name="work_order_number">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Client Information Section (Always Required) -->
+                            <!-- Client Information Section -->
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <h5 class="border-bottom pb-2 mb-3 text-primary">Client Information</h5>
@@ -81,7 +81,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="form-label">Attention To (Optional)</label>
+                                        <label class="form-label">Attention To</label>
                                         <input type="text" class="form-control" id="attention_to" name="attention_to"
                                             placeholder="Enter contact person name">
                                     </div>
@@ -139,10 +139,6 @@
                                         <h5 class="mb-0">Bill Items</h5>
                                         <div>
                                             <span class="badge bg-info" id="items-count">0 items</span>
-                                            {{-- <button type="button" class="btn btn-sm btn-outline-primary ms-2"
-                                                id="add-manual-item">
-                                                <i class="fas fa-plus"></i> Add Item
-                                            </button> --}}
                                         </div>
                                     </div>
 
@@ -158,28 +154,8 @@
                             <!-- Totals Section -->
                             <div class="row mb-4">
                                 <div class="col-md-6 offset-md-6">
-                                    {{-- <div class="card bg-light">
-                                        <div class="card-body">
-                                            <div class="row mb-2">
-                                                <div class="col-6">
-                                                    <strong>Subtotal:</strong>
-                                                </div>
-                                                <div class="col-6 text-end">
-                                                    <span id="subtotal-display">0.00</span>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-2">
-                                                <div class="col-6">
-                                                    <strong>Total Amount:</strong>
-                                                </div>
-                                                <div class="col-6 text-end">
-                                                    <span id="total-display">0.00</span> --}}
                                     <input type="hidden" id="total_amount" name="total_amount" value="0">
                                     <input type="hidden" id="subtotal" name="subtotal" value="0">
-                                    {{-- </div>
-                                            </div>
-                                        </div>
-                                    </div> --}}
                                 </div>
                             </div>
 
@@ -217,117 +193,129 @@
                                 </div>
                             </div>
 
-                            <!-- Bank Details Section -->
+                            <!-- Bank Details Selection Section -->
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <h5 class="border-bottom pb-2 mb-3">Bank Details</h5>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-12">
                                     <div class="form-group">
-                                        <label class="form-label">Account Name *</label>
-                                        <input type="text" class="form-control" name="bank_account_name"
-                                            value="Intelligent Technology" required>
+                                        <label class="form-label">Select Bank Account *</label>
+                                        <select class="form-control" name="bank_detail_id" id="bank_detail_id" required>
+                                            <option value="">Select Bank Account</option>
+                                            @foreach ($bankDetails as $bank)
+                                                <option value="{{ $bank->id }}"
+                                                    {{ $bank->is_default ? 'selected' : '' }}>
+                                                    {{ $bank->bank_name }} - {{ $bank->account_name }}
+                                                    ({{ $bank->account_number }})
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Bank Name *</label>
-                                        <input type="text" class="form-control" name="bank_name"
-                                            value="Bank Asia Ltd." required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Branch *</label>
-                                        <input type="text" class="form-control" name="bank_branch"
-                                            value="Satmosjid Road" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Account Number *</label>
-                                        <input type="text" class="form-control" name="bank_account_number"
-                                            value="06933000526" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Account Type *</label>
-                                        <input type="text" class="form-control" name="bank_account_type"
-                                            value="Current" required>
+                                <!-- Bank Details Preview -->
+                                <div class="col-12 mt-3">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">Selected Bank Details</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row" id="bank-details-preview">
+                                                <div class="col-md-3">
+                                                    <strong>Account Name:</strong>
+                                                    <span id="preview-account-name">-</span>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <strong>Bank Name:</strong>
+                                                    <span id="preview-bank-name">-</span>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <strong>Branch:</strong>
+                                                    <span id="preview-branch">-</span>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <strong>Account No:</strong>
+                                                    <span id="preview-account-number">-</span>
+                                                </div>
+                                                <div class="col-md-3 mt-2">
+                                                    <strong>Account Type:</strong>
+                                                    <span id="preview-account-type">-</span>
+                                                </div>
+                                                <div class="col-md-3 mt-2">
+                                                    <strong>Routing No:</strong>
+                                                    <span id="preview-routing-number">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Sales Person Details Section -->
+                            <!-- Company Details Selection Section -->
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <h5 class="border-bottom pb-2 mb-3">Company & Signatory Details</h5>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Company Name *</label>
-                                        <input type="text" class="form-control" name="company_name"
-                                            value="Intelligent Technology" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Signatory Name *</label>
-                                        <input type="text" class="form-control" name="signatory_name"
-                                            value="Engr. Shamsul Alam" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Signatory Designation *</label>
-                                        <input type="text" class="form-control" name="signatory_designation"
-                                            value="Director (Technical)" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Phone</label>
-                                        <input type="text" class="form-control" name="company_phone"
-                                            value="+880 XXXX-XXXXXX">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" name="company_email"
-                                            value="info@intelligenttech.com">
-                                    </div>
-                                </div>
-
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label class="form-label">Website</label>
-                                        <input type="text" class="form-control" name="company_website"
-                                            value="www.intelligenttech.com">
+                                        <label class="form-label">Select Company *</label>
+                                        <select class="form-control" name="company_detail_id" id="company_detail_id"
+                                            required>
+                                            <option value="">Select Company</option>
+                                            @foreach ($companyDetails as $company)
+                                                <option value="{{ $company->id }}"
+                                                    {{ $company->is_default ? 'selected' : '' }}>
+                                                    {{ $company->name }} - {{ $company->signatory_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Company Details Preview -->
+                                <div class="col-12 mt-3">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">Selected Company Details</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row" id="company-details-preview">
+                                                <div class="col-md-4">
+                                                    <strong>Company Name:</strong>
+                                                    <span id="preview-company-name">-</span>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <strong>Signatory:</strong>
+                                                    <span id="preview-signatory-name">-</span>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <strong>Designation:</strong>
+                                                    <span id="preview-signatory-designation">-</span>
+                                                </div>
+                                                <div class="col-md-4 mt-2">
+                                                    <strong>Phone:</strong>
+                                                    <span id="preview-company-phone">-</span>
+                                                </div>
+                                                <div class="col-md-4 mt-2">
+                                                    <strong>Email:</strong>
+                                                    <span id="preview-company-email">-</span>
+                                                </div>
+                                                <div class="col-md-4 mt-2">
+                                                    <strong>Website:</strong>
+                                                    <span id="preview-company-website">-</span>
+                                                </div>
+                                                <div class="col-12 mt-2">
+                                                    <strong>Address:</strong>
+                                                    <span id="preview-company-address">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- <!-- Notes Section -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Additional Notes</label>
-                                        <textarea class="form-control" name="notes" rows="3" placeholder="Additional notes or comments..."></textarea>
-                                    </div>
-                                </div>
-                            </div> --}}
 
                             <!-- Submit Button -->
                             <div class="row">
@@ -354,6 +342,10 @@
                                 }
                                 window.billFormHandlerLoaded = true;
 
+                                // Bank and Company data from PHP
+                                const bankDetails = @json($bankDetails);
+                                const companyDetails = @json($companyDetails);
+
                                 const billTypeSelect = document.getElementById('bill_type');
                                 const dynamicSelection = document.getElementById('dynamic-selection');
                                 const autoInfoSection = document.getElementById('auto-info-section');
@@ -363,11 +355,15 @@
                                 const termsTextarea = document.getElementById('terms_conditions');
                                 const billForm = document.getElementById('billForm');
 
+                                // Bank and Company select elements
+                                const bankSelect = document.getElementById('bank_detail_id');
+                                const companySelect = document.getElementById('company_detail_id');
+
                                 // Default terms and conditions
-                                const defaultTerms = `1. The products come with a 1-year limited warranty. Please note that the warranty does not cover physical damage or burn cases.
-2. The delivered products & accessories will not be changeable after use.
-3. The party will pay by Cash/ an account Payee Cheque/DD/Pay Order in favor of our company with a work order.
-4. Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per government rule.`;
+                                const defaultTerms = ` The products come with a 1-year limited warranty. Please note that the warranty does not cover physical damage or burn cases.
+The delivered products & accessories will not be changeable after use.
+ The party will pay by Cash/ an account Payee Cheque/DD/Pay Order in favor of our company with a work order.
+Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per government rule.`;
 
                                 // Set default terms
                                 termsTextarea.value = defaultTerms;
@@ -380,18 +376,88 @@
                                 let loadedProjectsData = null;
                                 let formSubmitted = false;
 
-                                // Bill type change handler
+                                // Initialize bank and company previews
+                                updateBankPreview();
+                                updateCompanyPreview();
+
+                                // Bank selection change handler
+                                bankSelect.addEventListener('change', function() {
+                                    updateBankPreview();
+                                });
+
+                                // Company selection change handler
+                                companySelect.addEventListener('change', function() {
+                                    updateCompanyPreview();
+                                });
+
+                                function updateBankPreview() {
+                                    const selectedBankId = bankSelect.value;
+                                    const selectedBank = bankDetails.find(bank => bank.id == selectedBankId);
+
+                                    if (selectedBank) {
+                                        document.getElementById('preview-account-name').textContent = selectedBank.account_name;
+                                        document.getElementById('preview-bank-name').textContent = selectedBank.bank_name;
+                                        document.getElementById('preview-branch').textContent = selectedBank.branch;
+                                        document.getElementById('preview-account-number').textContent = selectedBank.account_number;
+                                        document.getElementById('preview-account-type').textContent = selectedBank.account_type;
+                                        document.getElementById('preview-routing-number').textContent = selectedBank.routing_number ||
+                                            '-';
+                                    } else {
+                                        document.getElementById('preview-account-name').textContent = '-';
+                                        document.getElementById('preview-bank-name').textContent = '-';
+                                        document.getElementById('preview-branch').textContent = '-';
+                                        document.getElementById('preview-account-number').textContent = '-';
+                                        document.getElementById('preview-account-type').textContent = '-';
+                                        document.getElementById('preview-routing-number').textContent = '-';
+                                    }
+                                }
+
+                                function updateCompanyPreview() {
+                                    const selectedCompanyId = companySelect.value;
+                                    const selectedCompany = companyDetails.find(company => company.id == selectedCompanyId);
+
+                                    if (selectedCompany) {
+                                        document.getElementById('preview-company-name').textContent = selectedCompany.name;
+                                        document.getElementById('preview-signatory-name').textContent = selectedCompany.signatory_name;
+                                        document.getElementById('preview-signatory-designation').textContent = selectedCompany
+                                            .signatory_designation;
+                                        document.getElementById('preview-company-phone').textContent = selectedCompany.phone || '-';
+                                        document.getElementById('preview-company-email').textContent = selectedCompany.email || '-';
+                                        document.getElementById('preview-company-website').textContent = selectedCompany.website || '-';
+                                        document.getElementById('preview-company-address').textContent = selectedCompany.address || '-';
+                                    } else {
+                                        document.getElementById('preview-company-name').textContent = '-';
+                                        document.getElementById('preview-signatory-name').textContent = '-';
+                                        document.getElementById('preview-signatory-designation').textContent = '-';
+                                        document.getElementById('preview-company-phone').textContent = '-';
+                                        document.getElementById('preview-company-email').textContent = '-';
+                                        document.getElementById('preview-company-website').textContent = '-';
+                                        document.getElementById('preview-company-address').textContent = '-';
+                                    }
+                                }
+
+                                // Bill type change handler - FIXED
                                 billTypeSelect.addEventListener('change', function() {
                                     const billType = this.value;
-                                    console.log('Bill type selected:', billType);
+                                    console.log('Bill type changed to:', billType);
+
+                                    // Clear previous content
                                     dynamicSelection.innerHTML = '';
                                     autoInfoSection.style.display = 'none';
                                     clearItems();
 
+                                    // Reset hidden fields
+                                    document.getElementById('selected_sale_id').value = '';
+                                    document.getElementById('selected_project_id').value = '';
+
                                     if (billType === 'sale') {
+                                        console.log('Showing sales selection');
                                         showSalesSelection();
                                     } else if (billType === 'project') {
+                                        console.log('Showing projects selection');
                                         showProjectsSelection();
+                                    } else {
+                                        console.log('No bill type selected');
                                     }
                                 });
 
@@ -405,53 +471,73 @@
                                 });
 
                                 function showSalesSelection() {
+                                    console.log('Loading sales data...');
+
                                     let html = `
                 <div class="form-group">
-                    <label class="form-label">Select Sale</label>
-                    <select class="form-control" name="sale_id" id="sale_select">
-                        <option value="">Select a Sale (Optional)</option>
+                    <label class="form-label">Select Sale *</label>
+                    <select class="form-control" name="sale_id" id="sale_select" required>
+                        <option value="">Select a Sale</option>
                     </select>
                 </div>
             `;
                                     dynamicSelection.innerHTML = html;
 
-                                    if (loadedSalesData) {
-                                        populateSalesSelect(loadedSalesData);
-                                    } else {
-                                        fetch(`${baseUrl}/get-sales`)
-                                            .then(response => {
-                                                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                                                return response.json();
-                                            })
-                                            .then(data => {
-                                                loadedSalesData = data;
-                                                populateSalesSelect(data);
-                                            })
-                                            .catch(error => {
-                                                console.error('Error loading sales:', error);
-                                                document.getElementById('sale_select').innerHTML =
-                                                    '<option value="">Error loading sales</option>';
-                                            });
-                                    }
+                                    fetch(`${baseUrl}/get-sales`)
+                                        .then(response => {
+                                            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            console.log('Sales API Response:', data);
+                                            loadedSalesData = data;
+                                            populateSalesSelect(data);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error loading sales:', error);
+                                            document.getElementById('sale_select').innerHTML =
+                                                '<option value="">Error loading sales</option>';
+                                        });
                                 }
 
                                 function populateSalesSelect(data) {
                                     const select = document.getElementById('sale_select');
 
                                     if (data.sales && data.sales.length > 0) {
-                                        select.innerHTML = '<option value="">Select a Sale (Optional)</option>';
+                                        select.innerHTML = '<option value="">Select a Sale</option>';
 
-                                        data.sales.forEach(sale => {
-                                            const customerName = sale.customer?.name || 'Unknown Customer';
-                                            select.innerHTML +=
-                                                `<option value="${sale.id}">${sale.order_no} - ${customerName}</option>`;
+                                        console.log('All sales from API:', data.sales);
+
+                                        // Filter only INV-* orders
+                                        const invSales = data.sales.filter(sale => {
+                                            const isInv = sale.order_no && sale.order_no.startsWith('INV-');
+                                            console.log(`Sale ${sale.id}: ${sale.order_no} -> INV: ${isInv}`);
+                                            return isInv;
                                         });
+
+                                        console.log('Filtered INV sales:', invSales);
+
+                                        if (invSales.length > 0) {
+                                            invSales.forEach(sale => {
+                                                const customerName = sale.customer?.name || 'Unknown Customer';
+                                                const displayText = `${sale.order_no} - ${customerName}`;
+                                                select.innerHTML += `<option value="${sale.id}">${displayText}</option>`;
+                                            });
+                                            console.log(`Displayed ${invSales.length} INV sales`);
+                                        } else {
+                                            select.innerHTML = '<option value="">No invoice sales found</option>';
+                                            console.warn('No INV-* sales found');
+                                        }
 
                                         select.addEventListener('change', function() {
                                             const saleId = this.value;
                                             if (saleId) {
-                                                const sale = data.sales.find(s => s.id == saleId);
-                                                autoFillSaleData(sale);
+                                                const sale = invSales.find(s => s.id == saleId);
+                                                if (sale) {
+                                                    autoFillSaleData(sale);
+                                                } else {
+                                                    console.error('Sale not found:', saleId);
+                                                }
                                             } else {
                                                 autoInfoSection.style.display = 'none';
                                                 clearItems();
@@ -463,11 +549,13 @@
                                 }
 
                                 function showProjectsSelection() {
+                                    console.log('Loading projects data...');
+
                                     let html = `
                 <div class="form-group">
-                    <label class="form-label">Select Project</label>
-                    <select class="form-control" name="project_id" id="project_select">
-                        <option value="">Select a Project (Optional)</option>
+                    <label class="form-label">Select Project *</label>
+                    <select class="form-control" name="project_id" id="project_select" required>
+                        <option value="">Select a Project</option>
                     </select>
                 </div>
             `;
@@ -485,14 +573,14 @@
                                                 return response.json();
                                             })
                                             .then(data => {
-                                                console.log('Projects data loaded:', data);
+                                                console.log('Projects API Response:', data);
                                                 loadedProjectsData = data;
                                                 populateProjectsSelect(data);
                                             })
                                             .catch(error => {
                                                 console.error('Error loading projects:', error);
                                                 document.getElementById('project_select').innerHTML =
-                                                    '<option value="">Error loading projects - check console</option>';
+                                                    '<option value="">Error loading projects</option>';
                                             });
                                     }
                                 }
@@ -502,7 +590,7 @@
                                     console.log('Populating projects select with:', data);
 
                                     if (data.projects && data.projects.length > 0) {
-                                        select.innerHTML = '<option value="">Select a Project (Optional)</option>';
+                                        select.innerHTML = '<option value="">Select a Project</option>';
 
                                         data.projects.forEach(project => {
                                             const clientName = project.client?.name || project.client_name || 'Unknown Client';
@@ -564,20 +652,16 @@
                                     document.getElementById('detail-reference').textContent = project.reference || project.name ||
                                         'N/A';
                                     document.getElementById('detail-date').textContent = project.date || 'N/A';
-
-                                    // Use the budget amount from total_amount
                                     document.getElementById('detail-amount').textContent = parseFloat(project.total_amount || 0)
                                         .toFixed(2);
                                     document.getElementById('detail-due').textContent = parseFloat(project.due_payment || 0).toFixed(2);
 
                                     autoInfoSection.style.display = 'block';
-
-                                    const items = project.items || [];
-                                    populateItems(items, 'project');
+                                    populateItems(project.items || [], 'project');
                                 }
 
                                 function populateItems(items, type) {
-                                    noItemsMessage.style.display = 'none'; // Hide the "no items" message
+                                    noItemsMessage.style.display = 'none';
                                     itemsContainer.innerHTML = '';
 
                                     items.forEach((item, index) => {
@@ -634,15 +718,13 @@
 
                                 function clearItems() {
                                     itemsContainer.innerHTML = '';
-                                    noItemsMessage.style.display = 'block'; // Show the "no items" message
+                                    noItemsMessage.style.display = 'block';
                                     document.getElementById('items-count').textContent = '0 items';
                                     updateTotals([]);
                                 }
 
                                 function updateTotals(items) {
                                     const subtotal = items.reduce((sum, item) => sum + parseFloat(item.total || 0), 0);
-                                    // document.getElementById('subtotal-display').textContent = subtotal.toFixed(2);
-                                    // document.getElementById('total-display').textContent = subtotal.toFixed(2);
                                     document.getElementById('subtotal').value = subtotal;
                                     document.getElementById('total_amount').value = subtotal;
                                 }
@@ -660,9 +742,17 @@
                                     }
 
                                     // Validate required fields
+                                    const billType = document.getElementById('bill_type').value;
                                     const clientName = document.getElementById('client_name').value;
                                     const clientAddress = document.getElementById('client_address').value;
                                     const termsConditions = document.getElementById('terms_conditions').value;
+                                    const bankDetailId = document.getElementById('bank_detail_id').value;
+                                    const companyDetailId = document.getElementById('company_detail_id').value;
+
+                                    if (!billType) {
+                                        alert('Please select bill type');
+                                        return false;
+                                    }
 
                                     if (!clientName.trim()) {
                                         alert('Please enter client/company name');
@@ -676,6 +766,16 @@
 
                                     if (!termsConditions.trim()) {
                                         alert('Please enter terms and conditions');
+                                        return false;
+                                    }
+
+                                    if (!bankDetailId) {
+                                        alert('Please select a bank account');
+                                        return false;
+                                    }
+
+                                    if (!companyDetailId) {
+                                        alert('Please select a company');
                                         return false;
                                     }
 

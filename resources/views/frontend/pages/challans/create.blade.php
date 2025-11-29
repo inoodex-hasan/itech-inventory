@@ -98,7 +98,7 @@
                             </div>
 
                             <!-- Subject Section -->
-                            <div class="row mb-4">
+                            {{-- <div class="row mb-4">
                                 <div class="col-12">
                                     <h5 class="border-bottom pb-2 mb-3">Challan Subject</h5>
                                 </div>
@@ -111,7 +111,7 @@
                                             placeholder="Enter challan subject">
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <!-- Auto-filled Information Section -->
                             <div class="row mb-4 p-2" id="auto-info-section" style="display: none;">
@@ -164,71 +164,6 @@
                                 </div>
                             </div>
 
-                            <!-- Notes Section -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Additional Notes</label>
-                                        <textarea class="form-control" name="notes" rows="3" placeholder="Additional notes or comments..."></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Company & Signatory Details Section -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h5 class="border-bottom pb-2 mb-3">Company & Signatory Details</h5>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Company Name *</label>
-                                        <input type="text" class="form-control" name="company_name"
-                                            value="Intelligent Technology" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Signatory Name *</label>
-                                        <input type="text" class="form-control" name="signatory_name"
-                                            value="Engr. Shamsul Alam" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Signatory Designation *</label>
-                                        <input type="text" class="form-control" name="signatory_designation"
-                                            value="Director (Technical)" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Phone</label>
-                                        <input type="text" class="form-control" name="company_phone"
-                                            value="+880 XXXX-XXXXXX">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" name="company_email"
-                                            value="info@intelligenttech.com">
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Website</label>
-                                        <input type="text" class="form-control" name="company_website"
-                                            value="www.intelligenttech.com">
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Hidden fields to store selected data -->
                             <input type="hidden" name="selected_sale_id" id="selected_sale_id">
                             <input type="hidden" name="selected_project_id" id="selected_project_id">
@@ -237,14 +172,16 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-success btn-lg">
-                                            Generate Challan
+                                        <button type="submit" class="btn btn-success btn-lg" id="generateBtn">
+                                            <span class="spinner-border spinner-border-sm me-2 d-none" role="status"
+                                                aria-hidden="true"></span>
+                                            <span class="btn-text">Generate Challan</span>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </form>
-
+                        {{-- 
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
                                 console.log('Challan form script loaded');
@@ -534,6 +471,365 @@
                                 });
 
                                 console.log('Challan form handler ready');
+                            });
+                        </script> --}}
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                console.log('Challan form script loaded');
+
+                                const challanTypeSelect = document.getElementById('challan_type');
+                                const dynamicSelection = document.getElementById('dynamic-selection');
+                                const autoInfoSection = document.getElementById('auto-info-section');
+                                const itemsContainer = document.getElementById('items-container');
+                                const noItemsMessage = document.getElementById('no-items-message');
+                                const challanForm = document.getElementById('challanForm');
+                                const submitBtn = document.getElementById('generateBtn');
+
+                                const baseUrl = window.location.origin;
+                                let formSubmitted = false;
+
+                                // Challan type change handler
+                                challanTypeSelect.addEventListener('change', function() {
+                                    const challanType = this.value;
+                                    console.log('Challan type selected:', challanType);
+                                    dynamicSelection.innerHTML = '';
+                                    autoInfoSection.style.display = 'none';
+                                    clearItems();
+
+                                    if (challanType === 'sale') {
+                                        showSalesSelection();
+                                    } else if (challanType === 'project') {
+                                        showProjectsSelection();
+                                    }
+                                });
+
+                                function showSalesSelection() {
+                                    let html = `
+            <div class="form-group">
+                <label class="form-label">Select Sale *</label>
+                <select class="form-control" name="sale_id" id="sale_select" required>
+                    <option value="">Select a Sale</option>
+                </select>
+            </div>
+        `;
+                                    dynamicSelection.innerHTML = html;
+
+                                    fetch(`${baseUrl}/get-sales`)
+                                        .then(response => {
+                                            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            populateSalesSelect(data);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error loading sales:', error);
+                                            document.getElementById('sale_select').innerHTML =
+                                                '<option value="">Error loading sales</option>';
+                                        });
+                                }
+
+                                function populateSalesSelect(data) {
+                                    const select = document.getElementById('sale_select');
+
+                                    if (data.sales && data.sales.length > 0) {
+                                        select.innerHTML = '<option value="">Select a Sale</option>';
+
+                                        // Filter only INV-* orders
+                                        const invSales = data.sales.filter(sale => {
+                                            return sale.order_no && sale.order_no.startsWith('INV-');
+                                        });
+
+                                        if (invSales.length > 0) {
+                                            invSales.forEach(sale => {
+                                                const customerName = sale.customer?.name || 'Unknown Customer';
+                                                select.innerHTML +=
+                                                    `<option value="${sale.id}">${sale.order_no} - ${customerName}</option>`;
+                                            });
+                                        } else {
+                                            select.innerHTML = '<option value="">No invoice sales found</option>';
+                                        }
+
+                                        select.addEventListener('change', function() {
+                                            const saleId = this.value;
+                                            if (saleId) {
+                                                const sale = invSales.find(s => s.id == saleId);
+                                                autoFillSaleData(sale);
+                                            } else {
+                                                autoInfoSection.style.display = 'none';
+                                                clearItems();
+                                            }
+                                        });
+                                    } else {
+                                        select.innerHTML = '<option value="">No sales found</option>';
+                                    }
+                                }
+
+                                function showProjectsSelection() {
+                                    let html = `
+            <div class="form-group">
+                <label class="form-label">Select Project *</label>
+                <select class="form-control" name="project_id" id="project_select" required>
+                    <option value="">Select a Project</option>
+                </select>
+            </div>
+        `;
+                                    dynamicSelection.innerHTML = html;
+
+                                    fetch(`${baseUrl}/get-projects`)
+                                        .then(response => {
+                                            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            populateProjectsSelect(data);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error loading projects:', error);
+                                            document.getElementById('project_select').innerHTML =
+                                                '<option value="">Error loading projects</option>';
+                                        });
+                                }
+
+                                function populateProjectsSelect(data) {
+                                    const select = document.getElementById('project_select');
+
+                                    if (data.projects && data.projects.length > 0) {
+                                        select.innerHTML = '<option value="">Select a Project</option>';
+
+                                        data.projects.forEach(project => {
+                                            const clientName = project.client?.name || 'Unknown Client';
+                                            select.innerHTML +=
+                                                `<option value="${project.id}">${project.name} - ${clientName}</option>`;
+                                        });
+
+                                        select.addEventListener('change', function() {
+                                            const projectId = this.value;
+                                            if (projectId) {
+                                                const project = data.projects.find(p => p.id == projectId);
+                                                autoFillProjectData(project);
+                                            } else {
+                                                autoInfoSection.style.display = 'none';
+                                                clearItems();
+                                            }
+                                        });
+                                    } else {
+                                        select.innerHTML = '<option value="">No projects found</option>';
+                                    }
+                                }
+
+                                function autoFillSaleData(sale) {
+                                    document.getElementById('selected_sale_id').value = sale.id;
+                                    document.getElementById('selected_project_id').value = '';
+
+                                    // Auto-fill recipient information
+                                    if (sale.customer) {
+                                        document.getElementById('recipient_organization').value = sale.customer.name || '';
+                                        document.getElementById('recipient_address').value = sale.customer.address || '';
+                                    }
+
+                                    // Update auto-info section
+                                    document.getElementById('info-title').innerHTML = 'Sale Information';
+                                    document.getElementById('detail-reference').textContent = sale.order_no || 'N/A';
+                                    document.getElementById('detail-date').textContent = sale.date || 'N/A';
+                                    document.getElementById('detail-amount').textContent = (sale.items?.length || 0) + ' items';
+
+                                    autoInfoSection.style.display = 'block';
+                                    populateItems(sale.items || [], 'sale');
+                                }
+
+                                function autoFillProjectData(project) {
+                                    document.getElementById('selected_project_id').value = project.id;
+                                    document.getElementById('selected_sale_id').value = '';
+
+                                    // Auto-fill recipient information
+                                    if (project.client) {
+                                        document.getElementById('recipient_organization').value = project.client.name || '';
+                                        document.getElementById('recipient_address').value = project.client.address || '';
+                                    }
+
+                                    // Update auto-info section
+                                    document.getElementById('info-title').innerHTML = 'Project Information';
+                                    document.getElementById('detail-reference').textContent = project.reference || project.name ||
+                                        'N/A';
+                                    document.getElementById('detail-date').textContent = project.date || 'N/A';
+                                    document.getElementById('detail-amount').textContent = (project.items?.length || 0) + ' items';
+
+                                    autoInfoSection.style.display = 'block';
+                                    populateItems(project.items || [], 'project');
+                                }
+
+                                function populateItems(items, type) {
+                                    noItemsMessage.style.display = 'none';
+                                    itemsContainer.innerHTML = '';
+
+                                    if (!items || items.length === 0) {
+                                        itemsContainer.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    No items found in the selected ${type}.
+                </div>
+            `;
+                                        document.getElementById('items-count').textContent = '0 items';
+                                        return;
+                                    }
+
+                                    items.forEach((item, index) => {
+                                        const description = item.description || 'Item ' + (index + 1);
+                                        const quantity = item.quantity || 1;
+                                        const unit = item.unit || 'Piece';
+
+                                        const itemHtml = `
+                <div class="item-card card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Item Description *</label>
+                                    <textarea class="form-control item-description" name="items[${index}][description]" rows="3" required>${description}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="form-label">Quantity *</label>
+                                    <input type="number" class="form-control item-quantity" 
+                                        name="items[${index}][quantity]" value="${quantity}" min="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="form-label">Unit</label>
+                                    <input type="text" class="form-control" name="items[${index}][unit]" value="${unit}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                                        itemsContainer.innerHTML += itemHtml;
+                                    });
+
+                                    document.getElementById('items-count').textContent = items.length + ' item(s)';
+                                }
+
+                                function clearItems() {
+                                    itemsContainer.innerHTML = '';
+                                    noItemsMessage.style.display = 'block';
+                                    document.getElementById('items-count').textContent = '0 items';
+                                }
+
+                                function setLoadingState(isLoading) {
+                                    const spinner = submitBtn.querySelector('.spinner-border');
+                                    const btnText = submitBtn.querySelector('.btn-text');
+
+                                    if (isLoading) {
+                                        submitBtn.disabled = true;
+                                        spinner.classList.remove('d-none');
+                                        btnText.textContent = 'Generating Challan...';
+                                    } else {
+                                        submitBtn.disabled = false;
+                                        spinner.classList.add('d-none');
+                                        btnText.textContent = 'Generate Challan';
+                                    }
+                                }
+
+                                // Form submission handler
+                                function handleFormSubmit(e) {
+                                    e.preventDefault();
+                                    e.stopImmediatePropagation();
+
+                                    if (formSubmitted) {
+                                        return false;
+                                    }
+
+                                    // Check if items are present
+                                    const itemCards = document.querySelectorAll('.item-card');
+                                    if (itemCards.length === 0) {
+                                        alert('ERROR: No items found! Please select a sale or project first.');
+                                        return false;
+                                    }
+
+                                    // Validate required fields
+                                    const challanType = document.getElementById('challan_type').value;
+                                    const recipientOrganization = document.getElementById('recipient_organization').value;
+                                    const recipientAddress = document.getElementById('recipient_address').value;
+
+                                    if (!challanType) {
+                                        alert('Please select challan type');
+                                        return false;
+                                    }
+
+                                    if (!recipientOrganization.trim()) {
+                                        alert('Please enter organization name');
+                                        return false;
+                                    }
+
+                                    if (!recipientAddress.trim()) {
+                                        alert('Please enter recipient address');
+                                        return false;
+                                    }
+
+                                    formSubmitted = true;
+                                    setLoadingState(true);
+
+                                    const formData = new FormData(this);
+
+                                    fetch(this.action, {
+                                            method: 'POST',
+                                            body: formData,
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                            }
+                                        })
+                                        .then(response => {
+                                            if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
+
+                                            const contentType = response.headers.get('content-type');
+                                            if (contentType && contentType.includes('application/pdf')) {
+                                                return response.blob().then(blob => {
+                                                    const url = window.URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.style.display = 'none';
+                                                    a.href = url;
+
+                                                    const contentDisposition = response.headers.get('content-disposition');
+                                                    let filename = 'challan.pdf';
+                                                    if (contentDisposition) {
+                                                        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                                                        if (filenameMatch) filename = filenameMatch[1];
+                                                    }
+
+                                                    a.download = filename;
+                                                    document.body.appendChild(a);
+                                                    a.click();
+
+                                                    setTimeout(() => {
+                                                        window.URL.revokeObjectURL(url);
+                                                        document.body.removeChild(a);
+                                                        alert('Challan generated and downloaded successfully!');
+                                                        setLoadingState(false);
+                                                        formSubmitted = false;
+                                                    }, 100);
+                                                });
+                                            } else {
+                                                return response.text().then(text => {
+                                                    throw new Error('Server returned an unexpected response');
+                                                });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            alert('Error generating challan: ' + error.message);
+                                            setLoadingState(false);
+                                            formSubmitted = false;
+                                        });
+
+                                    return false;
+                                }
+
+                                // Add event listener to form
+                                challanForm.addEventListener('submit', handleFormSubmit);
                             });
                         </script>
 
