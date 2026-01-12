@@ -13,8 +13,7 @@ use App\Http\Controllers\{
     CompanyDetailController
 };
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\{Auth, Route};
 
 Auth::routes(['register' => false, 'reset' => false, 'verify' => false]);
 
@@ -53,7 +52,10 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
         Route::resource('inventory', InventoryController::class);
     });
     Route::resource('customers', CustomerController::class);
+    Route::get('/vendors/pdf', [VendorController::class, 'downloadPdf'])
+    ->name('vendors.pdf');
     Route::resource('vendors', VendorController::class);
+   
 
     Route::prefix('purchase')->group(function () {
         Route::resource('purchase', PurchaseController::class);

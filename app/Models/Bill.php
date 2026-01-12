@@ -3,17 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 class Bill extends Model
 {
     protected $fillable = [
-        'bill_number', 'reference_number', 'client_id', 'vendor_id', 
+        'bill_number', 'reference_number', 'sale_id', 'customer_id', 'client_id', 'vendor_id', 
         'project_id', 'purchase_id', 'work_order_number', 'bill_date',
         'subtotal', 'total_amount', 'amount_in_words', 'status', 'notes',  
         'bank_detail_id', 'company_detail_id', 'terms_conditions', 'subject',
-        'attention_to'
+        'attention_to', 'designation', 'type',
     ];
 
     protected $casts = [

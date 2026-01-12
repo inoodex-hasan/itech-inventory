@@ -42,7 +42,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="form-label">Attention To (Optional)</label>
+                                        <label class="form-label">Attention To</label>
                                         <input type="text" class="form-control" id="attention_to" name="attention_to"
                                             placeholder="Enter contact person name">
                                     </div>
@@ -339,7 +339,7 @@ Yours Sincerely,</textarea>
                                 <div class="col-12">
                                     <div class="d-flex justify-content-end">
                                         <button type="submit" class="btn btn-success btn-lg">
-                                            Generate Quotation
+                                            Save Quotation
                                         </button>
                                     </div>
                                 </div>

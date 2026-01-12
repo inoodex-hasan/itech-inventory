@@ -444,7 +444,7 @@ Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per governmen
                                     }
                                 }
 
-                                // Bill type change handler - FIXED
+                                // Bill type change handler
                                 billTypeSelect.addEventListener('change', function() {
                                     const billType = this.value;
                                     console.log('Bill type changed to:', billType);
@@ -601,6 +601,13 @@ Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per governmen
                                         select.innerHTML = '<option value="">Select a Project</option>';
 
                                         data.projects.forEach(project => {
+                                            // Debug each project's client data
+                                            console.log(`Project ${project.id} client data:`, {
+                                                client: project.client,
+                                                client_name: project.client_name,
+                                                client_address: project.client_address
+                                            });
+
                                             const clientName = project.client?.name || project.client_name || 'Unknown Client';
                                             select.innerHTML +=
                                                 `<option value="${project.id}">${project.name} - ${clientName}</option>`;
@@ -625,20 +632,40 @@ Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per governmen
 
                                 function autoFillSaleData(sale) {
                                     console.log('Auto-filling sale data:', sale);
+
+                                    // Set hidden fields
                                     document.getElementById('selected_sale_id').value = sale.id;
                                     document.getElementById('selected_project_id').value = '';
 
-                                    // Auto-fill client information if available
+                                    // Debug customer data
+                                    console.log('Sale customer data:', sale.customer);
+                                    console.log('Sale customer name:', sale.customer?.name);
+                                    console.log('Sale customer address:', sale.customer?.address);
+
+                                    // Auto-fill client information - MULTIPLE FALLBACKS
                                     if (sale.customer) {
+                                        // If customer data is nested in customer object
                                         document.getElementById('client_name').value = sale.customer.name || '';
                                         document.getElementById('client_address').value = sale.customer.address || '';
+                                    } else if (sale.customer_name || sale.customer_address) {
+                                        // If customer data is directly on sale
+                                        document.getElementById('client_name').value = sale.customer_name || '';
+                                        document.getElementById('client_address').value = sale.customer_address || '';
+                                    } else {
+                                        // Fallback - clear the fields
+                                        document.getElementById('client_name').value = '';
+                                        document.getElementById('client_address').value = '';
                                     }
+
+                                    // Debug the filled values
+                                    console.log('Filled client_name:', document.getElementById('client_name').value);
+                                    console.log('Filled client_address:', document.getElementById('client_address').value);
 
                                     document.getElementById('info-title').innerHTML = 'Sale Information';
                                     document.getElementById('detail-reference').textContent = sale.order_no || 'N/A';
                                     document.getElementById('detail-date').textContent = sale.date || 'N/A';
                                     document.getElementById('detail-amount').textContent = parseFloat(sale.total_amount || 0).toFixed(
-                                        2);
+                                    2);
                                     document.getElementById('detail-due').textContent = parseFloat(sale.due_payment || 0).toFixed(2);
 
                                     autoInfoSection.style.display = 'block';
@@ -647,18 +674,39 @@ Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per governmen
 
                                 function autoFillProjectData(project) {
                                     console.log('Auto-filling project data:', project);
+
+                                    // Set hidden fields
                                     document.getElementById('selected_project_id').value = project.id;
                                     document.getElementById('selected_sale_id').value = '';
 
-                                    // Auto-fill client information if available
+                                    // DEBUG: Check what client data is available
+                                    console.log('Project client data:', project.client);
+                                    console.log('Project client_name:', project.client_name);
+                                    console.log('Project client_address:', project.client_address);
+
+                                    // Auto-fill client information - MULTIPLE FALLBACKS
                                     if (project.client) {
-                                        document.getElementById('client_name').value = project.client.name || '';
-                                        document.getElementById('client_address').value = project.client.address || '';
+                                        // If client data is nested in client object
+                                        document.getElementById('client_name').value = project.client.name || project.client_name || '';
+                                        document.getElementById('client_address').value = project.client.address || project
+                                            .client_address || '';
+                                    } else if (project.client_name || project.client_address) {
+                                        // If client data is directly on project
+                                        document.getElementById('client_name').value = project.client_name || '';
+                                        document.getElementById('client_address').value = project.client_address || '';
+                                    } else {
+                                        // Fallback - clear the fields
+                                        document.getElementById('client_name').value = '';
+                                        document.getElementById('client_address').value = '';
                                     }
+
+                                    // Debug the filled values
+                                    console.log('Filled client_name:', document.getElementById('client_name').value);
+                                    console.log('Filled client_address:', document.getElementById('client_address').value);
 
                                     document.getElementById('info-title').innerHTML = 'Project Information';
                                     document.getElementById('detail-reference').textContent = project.reference || project.name ||
-                                        'N/A';
+                                    'N/A';
                                     document.getElementById('detail-date').textContent = project.date || 'N/A';
                                     document.getElementById('detail-amount').textContent = parseFloat(project.total_amount || 0)
                                         .toFixed(2);
@@ -737,6 +785,29 @@ Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per governmen
                                     document.getElementById('total_amount').value = subtotal;
                                 }
 
+                                // Debug function to check hidden fields
+                                function checkHiddenFields() {
+                                    console.log('=== CHECKING HIDDEN FIELDS ===');
+                                    console.log('selected_sale_id:', document.getElementById('selected_sale_id').value);
+                                    console.log('selected_project_id:', document.getElementById('selected_project_id').value);
+                                    console.log('bill_type:', document.getElementById('bill_type').value);
+                                    console.log('client_name:', document.getElementById('client_name').value);
+                                    console.log('client_address:', document.getElementById('client_address').value);
+                                }
+
+                                // Add debug calls to auto-fill functions
+                                const originalAutoFillSaleData = autoFillSaleData;
+                                autoFillSaleData = function(sale) {
+                                    originalAutoFillSaleData(sale);
+                                    checkHiddenFields();
+                                };
+
+                                const originalAutoFillProjectData = autoFillProjectData;
+                                autoFillProjectData = function(project) {
+                                    originalAutoFillProjectData(project);
+                                    checkHiddenFields();
+                                };
+
                                 // Form submission handler
                                 function handleFormSubmit(e) {
                                     e.preventDefault();
@@ -748,6 +819,14 @@ Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per governmen
                                         console.log('BLOCKED: Form already submitting');
                                         return false;
                                     }
+
+                                    // Debug form data before submission
+                                    console.log('=== FORM DATA BEFORE SUBMISSION ===');
+                                    const formData = new FormData(this);
+                                    for (let [key, value] of formData.entries()) {
+                                        console.log(key + ': ' + value);
+                                    }
+                                    checkHiddenFields();
 
                                     // Validate required fields
                                     const billType = document.getElementById('bill_type').value;
@@ -789,7 +868,6 @@ Govt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per governmen
 
                                     formSubmitted = true;
 
-                                    const formData = new FormData(this);
                                     const submitBtn = this.querySelector('button[type="submit"]');
 
                                     const originalText = submitBtn.innerHTML;

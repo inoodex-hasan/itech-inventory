@@ -2,19 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bill;
-use App\Models\BillItem;
-use App\Models\Client;
-use App\Models\Customer;
-use App\Models\Project;
-use App\Models\Purchase;
-use App\Models\Sale;
-use App\Models\Vendor;
-use App\Models\BankDetail;
-use App\Models\CompanyDetail;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use App\Models\{BankDetail, Bill, BillItem, Client, CompanyDetail, Customer, Project, Purchase, Sale, Vendor};
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BillController extends Controller
 {
@@ -66,21 +57,21 @@ public function getSales()
 {
     try {
         // DEBUG: Check what's happening
-        \Log::info('=== DEBUG GETSALES ===');
+        // \Log::info('=== DEBUG GETSALES ===');
         
-        // Test 1: Check raw query
-        $testQuery = Sale::where('order_no', 'LIKE', 'INV-%');
-        \Log::info('SQL Query: ' . $testQuery->toSql());
-        \Log::info('Query Bindings: ', $testQuery->getBindings());
+        // // Test 1: Check raw query
+        // $testQuery = Sale::where('order_no', 'LIKE', 'INV-%');
+        // \Log::info('SQL Query: ' . $testQuery->toSql());
+        // \Log::info('Query Bindings: ', $testQuery->getBindings());
         
-        $testResults = $testQuery->get();
-        \Log::info('Test results count: ' . $testResults->count());
-        \Log::info('Test order_nos: ' . $testResults->pluck('order_no')->implode(', '));
+        // $testResults = $testQuery->get();
+        // \Log::info('Test results count: ' . $testResults->count());
+        // \Log::info('Test order_nos: ' . $testResults->pluck('order_no')->implode(', '));
         
-        // Test 2: Check all sales in database
-        $allSales = Sale::all();
-        \Log::info('All sales in DB: ' . $allSales->count());
-        \Log::info('All order_nos: ' . $allSales->pluck('order_no')->implode(', '));
+        // // Test 2: Check all sales in database
+        // $allSales = Sale::all();
+        // \Log::info('All sales in DB: ' . $allSales->count());
+        // \Log::info('All order_nos: ' . $allSales->pluck('order_no')->implode(', '));
 
         // Your actual query
         $sales = Sale::where('order_no', 'LIKE', 'INV-%')
@@ -115,8 +106,8 @@ public function getSales()
                         ];
                     });
 
-        \Log::info('Final sales count: ' . $sales->count());
-        \Log::info('=== END DEBUG ===');
+        // \Log::info('Final sales count: ' . $sales->count());
+        // \Log::info('=== END DEBUG ===');
 
         return response()->json(['sales' => $sales]);
     } catch (\Exception $e) {
@@ -183,83 +174,131 @@ public function store(Request $request)
         'client_name' => 'required|string|max:255',
         'client_address' => 'required|string',
         'attention_to' => 'nullable|string|max:255',
+        'designation' => 'nullable|string|max:255',
         'terms_conditions' => 'required|string',
         'subject' => 'required|string|max:500',
-        // No bank/company fields - they come from relationships
+        'bank_detail_id' => 'required|exists:bank_details,id',
+        'company_detail_id' => 'required|exists:company_details,id',
     ]);
 
-    // Generate bill number
     $billNumber = 'BILL-' . date('Ymd') . '-' . str_pad(Bill::count() + 1, 4, '0', STR_PAD_LEFT);
 
     $customerId = null;
     $clientId = null;
+    $clientName = null;
+    $clientAddress = null;
 
-    // Auto-populate client info from selected sale/project
+    // Handle SALES
     if ($request->bill_type === 'sale' && $request->selected_sale_id) {
         $sale = Sale::with('customer')->find($request->selected_sale_id);
-        $customerId = $sale->customer_id ?? null;
-    } elseif ($request->bill_type === 'project' && $request->selected_project_id) {
+        if ($sale && $sale->customer) {
+            $customerId = $sale->customer_id;
+            $clientName = $sale->customer->name;
+            $clientAddress = $sale->customer->address;
+        }
+    } 
+    // Handle PROJECTS
+    elseif ($request->bill_type === 'project' && $request->selected_project_id) {
         $project = Project::with('client')->find($request->selected_project_id);
-        $clientId = $project->client_id ?? null;
+        if ($project && $project->client) {
+            $clientId = $project->client_id;
+            $clientName = $project->client->name;
+            $clientAddress = $project->client->address;
+        }
     }
 
-    // Get default bank and company details
-    $defaultBank = BankDetail::where('is_default', true)->where('is_active', true)->first();
-    $defaultCompany = CompanyDetail::where('is_default', true)->where('is_active', true)->first();
-
-    if (!$defaultBank) {
-        return back()->with('error', 'No default bank details found. Please set up bank details first.');
+    // Fallback to form values
+    if (empty($clientName)) {
+        $clientName = $request->client_name;
+    }
+    if (empty($clientAddress)) {
+        $clientAddress = $request->client_address;
     }
 
-    if (!$defaultCompany) {
-        return back()->with('error', 'No default company details found. Please set up company details first.');
+    // Get bank and company details
+    $bankDetail = BankDetail::find($request->bank_detail_id);
+    $companyDetail = CompanyDetail::find($request->company_detail_id);
+
+    if (!$bankDetail) {
+        return back()->with('error', 'Selected bank details not found.');
     }
 
-    $bill = Bill::create([
-        'bill_number' => $billNumber, 
-        'type' => $request->bill_type, // Your DB has 'type' field
+    if (!$companyDetail) {
+        return back()->with('error', 'Selected company details not found.');
+    }
+
+    // Create bill data
+    $billData = [
+        'bill_number' => $billNumber,
+        'type' => $request->bill_type,
         'reference_number' => $request->reference_number,
         'bill_date' => $request->bill_date,
-        'sale_id' => $request->selected_sale_id,
-        'project_id' => $request->selected_project_id,
+        'sale_id' => $request->bill_type === 'sale' ? (int)$request->selected_sale_id : null,
+        'project_id' => $request->bill_type === 'project' ? (int)$request->selected_project_id : null,
         'customer_id' => $customerId,
-        'client_id' => $clientId, 
+        'client_id' => $clientId,
         'work_order_number' => $request->work_order_number,
-        'subtotal' => $request->subtotal,
-        'total_amount' => $request->total_amount,
+        'subtotal' => (float)$request->subtotal,
+        'total_amount' => (float)$request->total_amount,
         'notes' => $request->notes,
-        
-        // Store the relationships
-        'bank_detail_id' => $defaultBank->id,
-        'company_detail_id' => $defaultCompany->id,
-        
-        // Store the essential user-entered data
+        'bank_detail_id' => (int)$bankDetail->id,
+        'company_detail_id' => (int)$companyDetail->id,
         'terms_conditions' => $request->terms_conditions,
         'subject' => $request->subject,
         'attention_to' => $request->attention_to,
-        
-        // Store client info (you mentioned you have these fields)
-        'client_name' => $request->client_name,
-        'client_address' => $request->client_address,
-    ]);
+        'designation' => $request->designation,
+    ];
 
+    // Create the bill
+    $bill = Bill::create($billData);
+
+    // Create bill items
     foreach ($request->items as $item) {
         BillItem::create([
             'bill_id' => $bill->id,
             'description' => $item['description'],
-            'quantity' => $item['quantity'],
+            'quantity' => (int)$item['quantity'],
             'unit' => $item['unit'],
-            'unit_price' => $item['unit_price'],
-            'total' => $item['total'],
+            'unit_price' => (float)$item['unit_price'],
+            'total' => (float)$item['total'],
         ]);
     }
 
-    $billWithRelations = Bill::with(['billItems', 'sale.customer', 'project.client', 'bankDetail', 'companyDetail'])->find($bill->id);
-    
+    // Generate PDF - Load relationships to get client data
+    $billWithRelations = Bill::with([
+        'billItems', 
+        'bankDetail', 
+        'companyDetail',
+        'sale.customer',
+        'project.client'
+    ])->find($bill->id);
+
+    // Determine client data for PDF
+    $pdfClientName = $clientName;
+    $pdfClientAddress = $clientAddress;
+
+    // If we don't have the data, try to get from relationships
+    if (empty($pdfClientName)) {
+        if ($billWithRelations->sale && $billWithRelations->sale->customer) {
+            $pdfClientName = $billWithRelations->sale->customer->name;
+            $pdfClientAddress = $billWithRelations->sale->customer->address;
+        } elseif ($billWithRelations->project && $billWithRelations->project->client) {
+            $pdfClientName = $billWithRelations->project->client->name;
+            $pdfClientAddress = $billWithRelations->project->client->address;
+        }
+    }
+
+    // Final fallback to form values
+    if (empty($pdfClientName)) {
+        $pdfClientName = $request->client_name ?: 'N/A';
+    }
+    if (empty($pdfClientAddress)) {
+        $pdfClientAddress = $request->client_address ?: 'N/A';
+    }
+
     $pdfData = [
         'bill' => $billWithRelations,
         'amount_in_words' => $this->convertToWords($billWithRelations->total_amount),
-        'subject' => $billWithRelations->subject,
         'bank_details' => [
             'account_name' => $billWithRelations->bankDetail->account_name,
             'bank_name' => $billWithRelations->bankDetail->bank_name,
@@ -277,9 +316,9 @@ public function store(Request $request)
             'website' => $billWithRelations->companyDetail->website,
             'address' => $billWithRelations->companyDetail->address,
         ],
-        'recipient_designation' => 'Director (IT)',
-        'recipient_organization' => $billWithRelations->client_name,
-        'recipient_address' => $billWithRelations->client_address,
+        'recipient_designation' => $billWithRelations->designation,
+        'recipient_organization' => $pdfClientName,
+        'recipient_address' => $pdfClientAddress,
         'attention_to' => $billWithRelations->attention_to,
         'terms_conditions' => $billWithRelations->terms_conditions,
     ];
@@ -496,6 +535,25 @@ public function download($id)
 {
     $bill = Bill::with(['billItems', 'sale.customer', 'project.client', 'bankDetail', 'companyDetail'])->findOrFail($id);
     
+    // Determine client name and address from relationships
+    $clientName = $bill->client_name;
+    $clientAddress = $bill->client_address;
+    
+    // If not stored directly, get from relationships
+    if (empty($clientName)) {
+        if ($bill->sale && $bill->sale->customer) {
+            $clientName = $bill->sale->customer->name;
+            $clientAddress = $bill->sale->customer->address;
+        } elseif ($bill->project && $bill->project->client) {
+            $clientName = $bill->project->client->name;
+            $clientAddress = $bill->project->client->address;
+        }
+    }
+    
+    // Final fallback
+    if (empty($clientName)) $clientName = 'N/A';
+    if (empty($clientAddress)) $clientAddress = 'N/A';
+
     $pdfData = [
         'bill' => $bill,
         'amount_in_words' => $this->convertToWords($bill->total_amount),
@@ -506,6 +564,7 @@ public function download($id)
             'branch' => $bill->bankDetail->branch,
             'account_number' => $bill->bankDetail->account_number,
             'account_type' => $bill->bankDetail->account_type,
+            'routing_number' => $bill->bankDetail->routing_number,
         ],
         'company' => [
             'name' => $bill->companyDetail->name,
@@ -516,17 +575,16 @@ public function download($id)
             'website' => $bill->companyDetail->website,
             'address' => $bill->companyDetail->address,
         ],
-        'recipient_designation' => 'Director (IT)',
-        'recipient_organization' => $bill->client_name,
-        'recipient_address' => $bill->client_address,
+        'recipient_designation' => $bill->designation ?: 'Director (IT)',
+        'recipient_organization' => $clientName,    // Use determined name
+        'recipient_address' => $clientAddress,      // Use determined address
         'attention_to' => $bill->attention_to,
         'terms_conditions' => $bill->terms_conditions,
     ];
 
     $pdf = Pdf::loadView('pdf.bill', $pdfData);
-    return $pdf->download('bill-' . $bill->bill_number . '.pdf');
+    return $pdf->download('Bill' . $bill->reference_number . '.pdf');
 }
-
     public function updateStatus(Bill $bill, Request $request)
     {
         $request->validate([
@@ -580,7 +638,7 @@ public function download($id)
     private function getDefaultData($sourceType, $source)
     {
         $defaults = [
-            'reference_number' => 'BIL-' . now()->format('Ymd-His'),
+            'reference_number' => 'BILL-' . now()->format('Ymd-His'),
             'bill_date' => now()->format('Y-m-d'),
         ];
 

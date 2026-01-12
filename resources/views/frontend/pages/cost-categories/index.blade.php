@@ -33,31 +33,32 @@
                                                 {{ $category->is_active ? 'Active' : 'Inactive' }}
                                             </span>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="d-flex justify-content-center align-items-center">
                                             <div class="dropdown">
-                                                <a href="#" class="btn btn-sm btn-light" data-bs-toggle="dropdown">
+                                                <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </a>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li>
-                                                        <a class="dropdown-item"
-                                                            href="{{ route('cost-categories.edit', $category->id) }}">
-                                                            <i class="far fa-edit me-2"></i>Edit
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="javascript:void(0)"
-                                                            onclick="if(confirm('Are you sure to delete?')) { document.getElementById('deleteCategory{{ $category->id }}').submit(); }">
-                                                            <i class="far fa-trash-alt me-2"></i>Delete
-                                                        </a>
-                                                        <form id="deleteCategory{{ $category->id }}"
-                                                            action="{{ route('cost-categories.destroy', $category->id) }}"
-                                                            method="POST" style="display:none;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
-                                                    </li>
-                                                </ul>
+
+                                                <div class="dropdown-menu dropdown-menu-end shadow-sm rounded-3">
+
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('cost-categories.edit', $category->id) }}">
+                                                        <i class="far fa-edit me-2"></i>Edit
+                                                    </a>
+
+                                                    <a onclick="if (confirm('Are you sure to delete this brand?')) { document.getElementById('deleteBrand{{ $category->id }}').submit(); }"
+                                                        class="dropdown-item" href="javascript:void(0)">
+                                                        <i class="far fa-trash-alt me-2"></i>Delete
+                                                    </a>
+
+                                                    <form id="deleteBrand{{ $category->id }}"
+                                                        action="{{ route('cost-categories.destroy', $category->id) }}"
+                                                        method="POST" style="display:none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>

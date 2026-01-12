@@ -24,9 +24,8 @@ class Challan extends Model
         'attention_to',
         'subject',
         'notes',
-        'company_name',
-        'signatory_name',
-        'signatory_designation',
+        'attention_to',
+        'designation',
     ];
 
     protected $casts = [

@@ -64,27 +64,27 @@
                                     <h5 class="border-bottom pb-2 mb-3 text-primary">Recipient Information</h5>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="form-label">Organization Name *</label>
                                         <input type="text" class="form-control" id="recipient_organization"
-                                            name="recipient_organization" placeholder="Enter organization name" required>
+                                            name="recipient_organization" placeholder="Enter organization name" readonly>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label class="form-label">Attention To (Optional)</label>
+                                        <label class="form-label">Attention To</label>
                                         <input type="text" class="form-control" id="attention_to" name="attention_to"
                                             placeholder="Enter contact person name">
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="form-label">Recipient Designation</label>
                                         <input type="text" class="form-control" id="recipient_designation"
-                                            name="recipient_designation" value="The Managing Director">
+                                            name="recipient_designation">
                                     </div>
                                 </div>
 
@@ -92,7 +92,7 @@
                                     <div class="form-group">
                                         <label class="form-label">Address *</label>
                                         <textarea class="form-control" id="recipient_address" name="recipient_address" rows="3"
-                                            placeholder="Enter recipient address" required></textarea>
+                                            placeholder="Enter recipient address" readonly></textarea>
                                     </div>
                                 </div>
                             </div>

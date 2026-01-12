@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Service;
-use App\Models\User;
-use App\Models\Vendor;
+use App\Models\{Service, User, Vendor};
+use App\Http\Controllers\Controller;
 use Input;
 use Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\PDF as DomPDFPDF;
 
 class VendorController extends Controller
 {
@@ -116,4 +116,15 @@ class VendorController extends Controller
        $customer->delete();
        return redirect()->back()->with(['success' => getNotify(3)]);
     }
+
+    public function downloadPdf()
+    {
+        $vendors = Vendor::all(); // fetch all vendors
+
+        $pdf = Pdf::loadView('pdf.vendors', compact('vendors'))
+                ->setPaper('a4', 'portrait');
+
+        return $pdf->download('vendor-list.pdf'); // direct download
+    }
+
 }

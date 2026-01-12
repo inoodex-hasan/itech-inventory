@@ -27,6 +27,9 @@ class Sale extends Model
         'discount',
         'sales_by',
         'status',
+        'vat', 
+        'tax',
+        'delivery_charge',
     ];
 
     // protected static function boot()

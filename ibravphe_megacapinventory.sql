@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 29, 2025 at 01:50 PM
+-- Generation Time: Nov 30, 2025 at 12:03 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -119,7 +119,7 @@ CREATE TABLE `bank_details` (
 --
 
 INSERT INTO `bank_details` (`id`, `account_name`, `bank_name`, `branch`, `account_number`, `account_type`, `routing_number`, `is_default`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'ghjrtuj', 'rhyj', 'rthdrher', '321654', 'Current', '65584', 1, 1, '2025-11-29 10:21:26', '2025-11-29 10:24:34');
+(1, 'Intelligent Technology', 'Bank Asia Ltd.', 'Satmosjid Road', '06933000526', 'Current', '070264034', 1, 1, '2025-11-29 10:21:26', '2025-11-30 10:56:54');
 
 -- --------------------------------------------------------
 
@@ -147,15 +147,16 @@ CREATE TABLE `bills` (
   `company_detail_id` bigint(20) UNSIGNED DEFAULT NULL,
   `terms_conditions` text DEFAULT NULL,
   `subject` varchar(255) DEFAULT NULL,
-  `attention_to` varchar(255) DEFAULT NULL
+  `attention_to` varchar(255) DEFAULT NULL,
+  `designation` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `bills`
 --
 
-INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `sale_id`, `project_id`, `customer_id`, `client_id`, `type`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`, `bank_detail_id`, `company_detail_id`, `terms_conditions`, `subject`, `attention_to`) VALUES
-(12, 'BILL-20251129-0001', 'BIL-20251129-172600', NULL, 10, NULL, 9, 'sale', 'rytkytuk', '2025-11-29', 116000.00, 116000.00, NULL, '2025-11-29 11:26:11', '2025-11-29 11:26:11', 1, 1, 'The products come with a 1-year limited warranty. Please note that the warranty does not cover physical damage or burn cases.\r\nThe delivered products & accessories will not be changeable after use.\r\n The party will pay by Cash/ an account Payee Cheque/DD/Pay Order in favor of our company with a work order.\r\nGovt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per government rule.', 'Bill for Supplying of Products/Services', 'kytuytuk');
+INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `sale_id`, `project_id`, `customer_id`, `client_id`, `type`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`, `bank_detail_id`, `company_detail_id`, `terms_conditions`, `subject`, `attention_to`, `designation`) VALUES
+(32, 'BILL-20251130-0001', 'BIL-20251130-125803', 26, NULL, 16, NULL, 'sale', 'fgjhfgj', '2025-11-30', 32400.00, 32400.00, NULL, '2025-11-30 06:58:20', '2025-11-30 06:58:20', 1, 1, 'The products come with a 1-year limited warranty. Please note that the warranty does not cover physical damage or burn cases.\r\nThe delivered products & accessories will not be changeable after use.\r\n The party will pay by Cash/ an account Payee Cheque/DD/Pay Order in favor of our company with a work order.\r\nGovt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per government rule.', 'Bill for Supplying of Products/Services', 'fgjfgj', 'fgjhfgj');
 
 -- --------------------------------------------------------
 
@@ -179,8 +180,7 @@ CREATE TABLE `bill_items` (
 --
 
 INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(15, 12, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 16000.00, 32000.00, '2025-11-29 11:26:11', '2025-11-29 11:26:11'),
-(16, 12, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 28000.00, 84000.00, '2025-11-29 11:26:11', '2025-11-29 11:26:11');
+(40, 32, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 16200.00, 32400.00, '2025-11-30 06:58:20', '2025-11-30 06:58:20');
 
 -- --------------------------------------------------------
 
@@ -247,20 +247,16 @@ CREATE TABLE `challans` (
   `client_id` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `attention_to` varchar(255) DEFAULT NULL
+  `attention_to` varchar(255) DEFAULT NULL,
+  `designation` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `challans`
 --
 
-INSERT INTO `challans` (`id`, `challan_number`, `reference_number`, `challan_date`, `type`, `sale_id`, `project_id`, `customer_id`, `client_id`, `created_at`, `updated_at`, `attention_to`) VALUES
-(31, 'CHALLAN-20251129-0001', 'CHL-20251129-182634', '2025-11-29', 'sale', 26, NULL, 16, NULL, '2025-11-29 12:26:56', '2025-11-29 12:26:56', NULL),
-(32, 'CHALLAN-20251129-0002', 'CHL-20251129-183106', '2025-11-29', 'project', NULL, 10, NULL, 9, '2025-11-29 12:31:15', '2025-11-29 12:31:15', NULL),
-(33, 'CHALLAN-20251129-0003', 'CHL-20251129-183228', '2025-11-29', 'sale', 26, NULL, 16, NULL, '2025-11-29 12:32:34', '2025-11-29 12:32:34', NULL),
-(34, 'CHALLAN-20251129-0004', 'CHL-20251129-183800', '2025-11-29', 'sale', 26, NULL, 16, NULL, '2025-11-29 12:38:09', '2025-11-29 12:38:09', NULL),
-(35, 'CHALLAN-20251129-0005', 'CHL-20251129-183918', '2025-11-29', 'sale', 26, NULL, 16, NULL, '2025-11-29 12:39:24', '2025-11-29 12:39:24', NULL),
-(36, 'CHALLAN-20251129-0006', 'CHL-20251129-184053', '2025-11-29', 'project', NULL, 10, NULL, 9, '2025-11-29 12:41:02', '2025-11-29 12:41:02', NULL);
+INSERT INTO `challans` (`id`, `challan_number`, `reference_number`, `challan_date`, `type`, `sale_id`, `project_id`, `customer_id`, `client_id`, `created_at`, `updated_at`, `attention_to`, `designation`) VALUES
+(44, 'CHALLAN-20251130-0001', 'CHL-20251130-133231', '2025-11-30', 'sale', 26, NULL, 16, NULL, '2025-11-30 07:32:42', '2025-11-30 07:32:42', 'dsfgsdg', 'dsfgsdfg');
 
 -- --------------------------------------------------------
 
@@ -283,14 +279,7 @@ CREATE TABLE `challan_items` (
 --
 
 INSERT INTO `challan_items` (`id`, `challan_id`, `description`, `quantity`, `unit`, `created_at`, `updated_at`) VALUES
-(32, 31, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-29 12:26:56', '2025-11-29 12:26:56'),
-(33, 32, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Unit', '2025-11-29 12:31:15', '2025-11-29 12:31:15'),
-(34, 32, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Unit', '2025-11-29 12:31:15', '2025-11-29 12:31:15'),
-(35, 33, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-29 12:32:34', '2025-11-29 12:32:34'),
-(36, 34, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-29 12:38:09', '2025-11-29 12:38:09'),
-(37, 35, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-29 12:39:24', '2025-11-29 12:39:24'),
-(38, 36, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Unit', '2025-11-29 12:41:02', '2025-11-29 12:41:02'),
-(39, 36, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Unit', '2025-11-29 12:41:02', '2025-11-29 12:41:02');
+(49, 44, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-30 07:32:42', '2025-11-30 07:32:42');
 
 -- --------------------------------------------------------
 
@@ -342,7 +331,7 @@ CREATE TABLE `company_details` (
 --
 
 INSERT INTO `company_details` (`id`, `name`, `signatory_name`, `signatory_designation`, `phone`, `email`, `website`, `address`, `is_default`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'ABC', 'abc', 'abcd', '216421644', 'hasan@example.com', 'www.abc.com', 'dlkgnoisdgjldkgn', 1, 1, '2025-11-29 09:54:32', '2025-11-29 10:00:54');
+(1, 'Intelligent Technology', 'Engr. Shamsul Alam', 'Director (Technical)', '+88 01904400202', 'info.itechbd@yahoo.com', 'www.itechbd.net', '187(3rd Floor), Green Road, Dhanmondi Dhaka-1205, Bangladesh', 1, 1, '2025-11-29 09:54:32', '2025-11-30 10:58:20');
 
 -- --------------------------------------------------------
 
@@ -675,7 +664,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (87, '2025_11_29_153146_create_company_details_table', 56),
 (88, '2025_11_29_153309_add_fields_to_bills_table', 56),
 (89, '2025_11_29_163131_create_bank_details_table', 57),
-(90, '2025_11_29_173929_add_fields_to_challans_table', 58);
+(90, '2025_11_29_173929_add_fields_to_challans_table', 58),
+(91, '2025_11_30_113802_add_designation_to_bills_table', 59),
+(92, '2025_11_30_132753_add_designation_to_challans_table', 60);
 
 -- --------------------------------------------------------
 
@@ -862,7 +853,8 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`id`, `name`, `brand_id`, `model`, `photos`, `status`, `warranty`, `created_at`, `updated_at`) VALUES
 (3, 'Brother HL-L2320D Auto Duplex Laser Printer (30 PPM)', 5, 'Brother HL-L2320D', '[\"products\\/MvogjUxGJxkpdJ81qlvcw0xvNkNP359uJMsQmYeJ.jpg\"]', '1', 365, '2025-11-02 18:39:59', '2025-11-25 12:56:30'),
 (4, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 4, 'EcoTank L3250', '[\"products\\/tASNTtO44wLOcacQJD3c4OY1RlN6BeKvD0syvHAu.jpg\"]', '1', 365, '2025-11-02 18:40:49', '2025-11-25 11:48:20'),
-(5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '[\"products\\/hRkUJ44b4qhFOjjeeyCMtSqfHQQWxBekLq60T9eE.jpg\"]', '1', 365, '2025-11-02 18:41:22', '2025-11-25 11:48:08');
+(5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '[\"products\\/hRkUJ44b4qhFOjjeeyCMtSqfHQQWxBekLq60T9eE.jpg\"]', '1', 365, '2025-11-02 18:41:22', '2025-11-25 11:48:08'),
+(11, 'HP Smart Tank 670 Wi-Fi Duplexer All-in-One Color Printer', 2, 'Smart Tank 670', '[\"products\\/rwOhbDFkwmB4cKCGCa54ASsHxqCUit2k3qREQIrG.jpg\"]', '1', 365, '2025-11-30 10:54:46', '2025-11-30 10:55:28');
 
 -- --------------------------------------------------------
 
@@ -998,13 +990,6 @@ CREATE TABLE `quotations` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `quotations`
---
-
-INSERT INTO `quotations` (`id`, `quotation_number`, `customer_id`, `client_id`, `quotation_date`, `expiry_date`, `notes`, `sub_total`, `discount_amount`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
-(20, 'QT-20251129-0001', NULL, NULL, '2025-11-29', '2025-12-14', 'thrtj', 65800.00, 0.00, 65800.00, 'draft', '2025-11-29 12:46:27', '2025-11-29 12:46:27');
-
 -- --------------------------------------------------------
 
 --
@@ -1022,14 +1007,6 @@ CREATE TABLE `quotation_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `quotation_items`
---
-
-INSERT INTO `quotation_items` (`id`, `quotation_id`, `product_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(21, 20, 4, NULL, 2, 12500.00, 25000.00, '2025-11-29 12:46:27', '2025-11-29 12:46:27'),
-(22, 20, 5, NULL, 3, 13600.00, 40800.00, '2025-11-29 12:46:27', '2025-11-29 12:46:27');
 
 -- --------------------------------------------------------
 
@@ -1760,13 +1737,13 @@ ALTER TABLE `bank_details`
 -- AUTO_INCREMENT for table `bills`
 --
 ALTER TABLE `bills`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `bill_items`
 --
 ALTER TABLE `bill_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `bookings`
@@ -1784,13 +1761,13 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `challans`
 --
 ALTER TABLE `challans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `challan_items`
 --
 ALTER TABLE `challan_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `clients`
@@ -1868,7 +1845,7 @@ ALTER TABLE `inventories`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1898,7 +1875,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `projects`
@@ -1928,13 +1905,13 @@ ALTER TABLE `purchases`
 -- AUTO_INCREMENT for table `quotations`
 --
 ALTER TABLE `quotations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `quotation_items`
 --
 ALTER TABLE `quotation_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `revenues`

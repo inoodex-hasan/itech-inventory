@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 @section('content')
-    <div class="content container-fluid">
+    <div class="content container-fluid col-sm-10">
         <div class="page-header d-flex justify-content-between align-items-center">
             <h5>My TA/DA List</h5>
             {{-- <a href="{{ route('employee.tada.create') }}" class="btn btn-primary">+ New Request</a> --}}
@@ -15,7 +15,7 @@
                     <th>Payment Type</th>
                     <th>Amount</th>
                     <th>Used Amount</th>
-                    <th>Reamaining Amount</th>
+                    <th>Remaining Amount</th>
                     <th>Purpose</th>
                     <th>Action</th>
                 </tr>

@@ -44,7 +44,6 @@
                                                 @endif
                                             </td>
 
-                                            <!-- Perfectly centered dropdown -->
                                             <td class="d-flex justify-content-center align-items-center">
                                                 <div class="dropdown">
                                                     <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">

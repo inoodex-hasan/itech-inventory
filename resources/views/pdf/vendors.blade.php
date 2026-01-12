@@ -7,7 +7,7 @@
      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
      <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
          rel="stylesheet" />
-     <title>Bill {{ $bill->reference_number }}</title>
+     <title>Vendor List</title>
      <style>
          body {
              font-family: "Montserrat", sans-serif;
@@ -269,120 +269,37 @@
 
      <div class="container">
 
-         <div class="reference">
-             <div>Ref: {{ $bill->reference_number }}</div>
-             <div class="ref-date">{{ $bill->bill_date->format('F d, Y') }}</div>
-         </div>
-
-         <div class="to-section">
-             <p>To,</p>
-             <p>{{ $recipient_designation ?: 'Director (IT)' }}</p>
-             <p><strong>{{ $recipient_organization }}</strong></p>
-             <p>{{ $recipient_address }}</p>
-             @if (!empty($attention_to))
-                 <p>Attention: {{ $attention_to }}</p>
-             @endif
-         </div>
-         @if ($bill->work_order_number)
-             <div class="work-order">
-                 Work order # {{ $bill->work_order_number }}
-             </div>
-         @endif
-
-
-         <div class="subject">
-             Sub: <span class="underline">Bill for Supplying of Products/Services</span>
-         </div>
-
-
-         <div class="letter-body">
-             <p>Dear Sir,</p>
-             <p>
-                 Regarding the previously mentioned subject, I am pleased to inform you
-                 that we have successfully delivered the product in accordance with
-                 your specifications. Kindly proceed with the settlement of the
-                 invoice.
-             </p>
-         </div>
-
-         <div class="bill-title">BILL</div>
+         <div class="bill-title">Vendor List</div>
 
          <table>
              <thead>
                  <tr>
                      <th>S/L</th>
-                     <th>PRODUCT DESCRIPTION</th>
-                     <th>QTY.</th>
-                     <th>UNIT PRICE</th>
-                     <th>TOTAL PRICE</th>
+                     <th>Vendor Name</th>
+                     <th>Phone</th>
+                     <th>Email</th>
+                     <th>Address</th>
                  </tr>
              </thead>
              <tbody>
-                 @foreach ($bill->billItems as $index => $item)
+                 @foreach ($vendors->sortBy('name') as $index => $vendors)
                      <tr>
                          <td>{{ $loop->iteration }}</td>
                          <td>
                              <div class="product-specs">
-                                 {!! nl2br(e($item->description)) !!}
+                                 {{ $vendors->name }}
                              </div>
                          </td>
-                         <td>{{ number_format($item->quantity) }} {{ $item->unit ?? 'No' }}</td>
-                         <td>{{ number_format($item->unit_price, 2) }}</td>
-                         <td>{{ number_format($item->total, 2) }}</td>
+                         <td>{{ $vendors->phone }} </td>
+                         <td>{{ $vendors->email }}</td>
+                         <td>{{ $vendors->address }}</td>
                      </tr>
                  @endforeach
 
-                 <tr class="total-row">
-                     <td colspan="4">Subtotal</td>
-                     <td>{{ number_format($bill->subtotal, 2) }}</td>
-                 </tr>
-                 <tr class="total-row">
-                     <td colspan="4">Total Amount</td>
-                     <td>{{ number_format($bill->total_amount, 2) }}</td>
-                 </tr>
              </tbody>
          </table>
 
-         <div class="amount-in-words">In Word: {{ $amount_in_words }}</div>
-
-         <!-- Fixed Terms & Conditions Section -->
-         @if (!empty($terms_conditions))
-             <div class="terms-title">Terms and Conditions</div>
-             <table class="terms-table">
-                 @foreach (explode("\n", $terms_conditions) as $index => $term)
-                     @if (trim($term) !== '')
-                         <tr>
-                             <td>{{ $index + 1 }}.</td>
-                             <td>{{ trim($term) }}</td>
-                         </tr>
-                     @endif
-                 @endforeach
-             </table>
-         @endif
-
-         <!-- Bank Details -->
-         @if (!empty($bank_details))
-             <div class="bank-details">
-                 <p>Please take necessary step to clear the bill to the following account details.</p>
-                 <br>
-                 <p><strong>Account Name:</strong> {{ $bank_details['account_name'] ?? 'N/A' }}</p>
-                 <p><strong>Bank Name:</strong> {{ $bank_details['bank_name'] ?? 'N/A' }}</p>
-                 <p><strong>Branch:</strong> {{ $bank_details['branch'] ?? 'N/A' }}</p>
-                 <p><strong>Account Number:</strong> {{ $bank_details['account_number'] ?? 'N/A' }}</p>
-                 <p><strong>Account Type:</strong> {{ $bank_details['account_type'] ?? 'N/A' }}</p>
-                 <p><strong>Receiving Bank Routing Number:</strong> {{ $bank_details['routing_number'] ?? 'N/A' }}
-                 </p>
-             </div>
-         @endif
-
-         <div class="closing">
-             <p>Thank you for your prompt attention to this matter. We assure you that we provide our best service at
-                 all times.</p>
-             <p>Thank you once again.</p>
-             <p>Yours Sincerely,</p>
-         </div>
-
-         <div class="signature-section">
+         {{-- <div class="signature-section">
              <div class="signature-content">
 
                  <div class="signature-line"></div>
@@ -405,7 +322,7 @@
              <div class="sil">
                  <img src="{{ public_path('sil.png') }}" alt="logo">
              </div>
-         </div>
+         </div> --}}
 
      </div>
 

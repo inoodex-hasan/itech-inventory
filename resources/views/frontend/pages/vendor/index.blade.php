@@ -28,6 +28,11 @@
                 <div class="list-btn">
                     <ul class="filter-list">
                         <li>
+                            <a href="{{ route('vendors.pdf') }}" target="_blank" class="btn btn-info">
+                                Download Vendor List
+                            </a>
+
+
                             <a class="btn btn-primary" href="{{ route('vendors.create') }}">
                                 <i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Add Vendor </a>
                         </li>

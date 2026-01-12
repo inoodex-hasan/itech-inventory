@@ -42,100 +42,102 @@ public function index(Request $request)
         return view('frontend.pages.challans.create');
     }
 
-public function store(Request $request)
-{
-    \Log::info('Challan store method called', $request->all());
+    public function store(Request $request)
+    {
+        \Log::info('Challan store method called', $request->all());
 
-    try {
-        $validated = $request->validate([
-            'type' => 'required|in:sale,project',
-            'reference_number' => 'required',
-            'challan_date' => 'required|date',
-            'selected_sale_id' => 'required_if:type,sale',
-            'selected_project_id' => 'required_if:type,project',
-            'items' => 'required|array|min:1',
-            'items.*.description' => 'required|string',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit' => 'required|string',
-        ]);
-
-        // Generate challan number
-        $challanNumber = 'CHALLAN-' . date('Ymd') . '-' . str_pad(Challan::count() + 1, 4, '0', STR_PAD_LEFT);
-
-        // Set customer_id and client_id based on type
-        $customerId = null;
-        $clientId = null;
-
-        if ($request->type === 'sale' && $request->selected_sale_id) {
-            $sale = Sale::find($request->selected_sale_id);
-            $customerId = $sale->customer_id ?? null;
-        } elseif ($request->type === 'project' && $request->selected_project_id) {
-            $project = Project::find($request->selected_project_id);
-            $clientId = $project->client_id ?? null;
-        }
-
-        // Create the challan
-        $challan = Challan::create([
-            'challan_number' => $challanNumber,
-            'reference_number' => $validated['reference_number'],
-            'challan_date' => $validated['challan_date'],
-            'type' => $validated['type'],
-            'sale_id' => $request->type === 'sale' ? $validated['selected_sale_id'] : null,
-            'project_id' => $request->type === 'project' ? $validated['selected_project_id'] : null,
-            'customer_id' => $customerId,
-            'client_id' => $clientId,
-        ]);
-
-        // Add challan items
-        foreach ($validated['items'] as $item) {
-            ChallanItem::create([
-                'challan_id' => $challan->id,
-                'description' => $item['description'],
-                'quantity' => $item['quantity'],
-                'unit' => $item['unit'],
-                'serial' => $item['serial'] ?? null,
+        try {
+            $validated = $request->validate([
+                'type' => 'required|in:sale,project',
+                'reference_number' => 'required',
+                'challan_date' => 'required|date',
+                'selected_sale_id' => 'required_if:type,sale',
+                'selected_project_id' => 'required_if:type,project',
+                'items' => 'required|array|min:1',
+                'items.*.description' => 'required|string',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.unit' => 'required|string',
             ]);
+
+            // Generate challan number
+            $challanNumber = 'CHALLAN-' . date('Ymd') . '-' . str_pad(Challan::count() + 1, 4, '0', STR_PAD_LEFT);
+
+            // Set customer_id and client_id based on type
+            $customerId = null;
+            $clientId = null;
+
+            if ($request->type === 'sale' && $request->selected_sale_id) {
+                $sale = Sale::find($request->selected_sale_id);
+                $customerId = $sale->customer_id ?? null;
+            } elseif ($request->type === 'project' && $request->selected_project_id) {
+                $project = Project::find($request->selected_project_id);
+                $clientId = $project->client_id ?? null;
+            }
+
+            // Create the challan
+            $challan = Challan::create([
+                'challan_number' => $challanNumber,
+                'reference_number' => $validated['reference_number'],
+                'challan_date' => $validated['challan_date'],
+                'type' => $validated['type'],
+                'sale_id' => $request->type === 'sale' ? $validated['selected_sale_id'] : null,
+                'project_id' => $request->type === 'project' ? $validated['selected_project_id'] : null,
+                'customer_id' => $customerId,
+                'client_id' => $clientId,
+                'attention_to' => $request->attention_to,
+                'designation' => $request->recipient_designation,
+            ]);
+
+            // Add challan items
+            foreach ($validated['items'] as $item) {
+                ChallanItem::create([
+                    'challan_id' => $challan->id,
+                    'description' => $item['description'],
+                    'quantity' => $item['quantity'],
+                    'unit' => $item['unit'],
+                    'serial' => $item['serial'] ?? null,
+                ]);
+            }
+
+            // Load challan with relationships for PDF
+            $challan->load('challanItems');
+
+            // Prepare data for PDF
+            $pdfData = [
+                'challan' => $challan,
+                'challan_items' => $challan->challanItems,
+                'recipient_organization' => $request->recipient_organization,
+                'recipient_designation' => $request->recipient_designation ?? 'The Managing Director',
+                'recipient_address' => $request->recipient_address,
+                'attention_to' => $request->attention_to,
+                'subject' => $request->subject,
+                'notes' => $request->notes,
+                'company_name' => $request->company_name,
+                'signatory_name' => $request->signatory_name,
+                'signatory_designation' => $request->signatory_designation,
+                'company_phone' => $request->company_phone,
+                'company_email' => $request->company_email,
+                'company_website' => $request->company_website,
+            ];
+
+            \Log::info('PDF data prepared', $pdfData);
+
+            // Generate PDF with proper headers
+            $pdf = PDF::loadView('pdf.challan', $pdfData);
+            
+            return $pdf->download('challan-' . $challan->challan_number . '.pdf');
+
+        } catch (\Exception $e) {
+            \Log::error('Challan creation error: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            if ($request->ajax()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+            
+            return back()->with('error', 'Error creating challan: ' . $e->getMessage())->withInput();
         }
-
-        // Load challan with relationships for PDF
-        $challan->load('challanItems');
-
-        // Prepare data for PDF
-        $pdfData = [
-            'challan' => $challan,
-            'challan_items' => $challan->challanItems,
-            'recipient_organization' => $request->recipient_organization,
-            'recipient_designation' => $request->recipient_designation ?? 'The Managing Director',
-            'recipient_address' => $request->recipient_address,
-            'attention_to' => $request->attention_to,
-            'subject' => $request->subject,
-            'notes' => $request->notes,
-            'company_name' => $request->company_name,
-            'signatory_name' => $request->signatory_name,
-            'signatory_designation' => $request->signatory_designation,
-            'company_phone' => $request->company_phone,
-            'company_email' => $request->company_email,
-            'company_website' => $request->company_website,
-        ];
-
-        \Log::info('PDF data prepared', $pdfData);
-
-        // Generate PDF with proper headers
-        $pdf = PDF::loadView('pdf.challan', $pdfData);
-        
-        return $pdf->download('challan-' . $challan->challan_number . '.pdf');
-
-    } catch (\Exception $e) {
-        \Log::error('Challan creation error: ' . $e->getMessage());
-        \Log::error('Stack trace: ' . $e->getTraceAsString());
-        
-        if ($request->ajax()) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-        
-        return back()->with('error', 'Error creating challan: ' . $e->getMessage())->withInput();
     }
-}
     public function show($id)
     {
         $challan = Challan::with(['challanItems', 'sale.customer', 'project.client'])->findOrFail($id);
@@ -150,28 +152,25 @@ public function download($id)
         'project.client'
     ])->findOrFail($id);
 
-    // Auto-populate recipient info from relationships
-    $recipientOrganization = $challan->recipient_organization;
-    $recipientAddress = $challan->recipient_address;
-    
-    // If not set in challan, get from relationships
-    if (!$recipientOrganization) {
-        if ($challan->type === 'sale' && $challan->sale && $challan->sale->customer) {
-            $recipientOrganization = $challan->sale->customer->name;
-            $recipientAddress = $challan->sale->customer->address ?? $recipientAddress;
-        } elseif ($challan->type === 'project' && $challan->project && $challan->project->client) {
-            $recipientOrganization = $challan->project->client->name;
-            $recipientAddress = $challan->project->client->address ?? $recipientAddress;
-        }
+    // Get client name from relationships (not from stored fields)
+    $clientName = null;
+    $clientAddress = null;
+
+    if ($challan->type === 'sale' && $challan->sale && $challan->sale->customer) {
+        $clientName = $challan->sale->customer->name;
+        $clientAddress = $challan->sale->customer->address;
+    } elseif ($challan->type === 'project' && $challan->project && $challan->project->client) {
+        $clientName = $challan->project->client->name;
+        $clientAddress = $challan->project->client->address;
     }
 
     $pdfData = [
         'challan' => $challan,
         'challan_items' => $challan->challanItems,
-        'recipient_organization' => $recipientOrganization ?? 'N/A',
-        'recipient_designation' => $challan->recipient_designation ?? 'The Managing Director',
-        'recipient_address' => $recipientAddress ?? 'N/A',
-        'attention_to' => $challan->attention_to,
+        'recipient_organization' => $clientName ?? 'N/A',           // From relationship
+        'recipient_designation' => $challan->designation ?? 'The Managing Director', // From database
+        'recipient_address' => $clientAddress ?? 'N/A',            // From relationship
+        'attention_to' => $challan->attention_to,                  // From database
         'subject' => $challan->subject ?? 'Delivery Challan',
         'notes' => $challan->notes ?? '',
         'company_name' => $challan->company_name ?? 'Intelligent Technology',
@@ -185,26 +184,10 @@ public function download($id)
     $pdf = PDF::loadView('pdf.challan', $pdfData);
     return $pdf->download('challan-' . $challan->challan_number . '.pdf');
 }
-
 public function getSales()
 {
     try {
-        // DEBUG: Check what's happening
-        \Log::info('=== DEBUG GETSALES ===');
-        
-        // Test 1: Check raw query
-        $testQuery = Sale::where('order_no', 'LIKE', 'INV-%');
-        \Log::info('SQL Query: ' . $testQuery->toSql());
-        \Log::info('Query Bindings: ', $testQuery->getBindings());
-        
-        $testResults = $testQuery->get();
-        \Log::info('Test results count: ' . $testResults->count());
-        \Log::info('Test order_nos: ' . $testResults->pluck('order_no')->implode(', '));
-        
-        // Test 2: Check all sales in database
-        $allSales = Sale::all();
-        \Log::info('All sales in DB: ' . $allSales->count());
-        \Log::info('All order_nos: ' . $allSales->pluck('order_no')->implode(', '));
+      
 
         // Your actual query
         $sales = Sale::where('order_no', 'LIKE', 'INV-%')
@@ -249,44 +232,6 @@ public function getSales()
     }
 }
 
-//     public function getSales()
-// {
-//     try {
-//         $sales = Sale::with(['customer', 'product']) // Load product relationship
-//                     ->get()
-//                     ->map(function($sale) {
-//                         return [
-//                             'id' => $sale->id,
-//                             'order_no' => $sale->order_no,
-//                             'date' => $sale->created_at->format('Y-m-d'),
-//                             'total_amount' => $sale->payble ?? $sale->total,
-//                             'due_payment' => $sale->due_payment,
-//                             'status' => $sale->status,
-//                             'customer' => $sale->customer ? [
-//                                 'id' => $sale->customer->id,
-//                                 'name' => $sale->customer->name ?? 'Unknown',
-//                                 'email' => $sale->customer->email ?? 'N/A',
-//                                 'phone' => $sale->customer->phone ?? 'N/A',
-//                                 'address' => $sale->customer->address ?? 'N/A',
-//                             ] : null,
-//                             'items' => [
-//                                 [
-//                                     'id' => $sale->product_id ?? $sale->id,
-//                                     'description' => $sale->product->name ?? 'Product #' . $sale->order_no, // Use product name
-//                                     'quantity' => $sale->qty ?? 1,
-//                                     'unit' => 'Piece', // Adjust based on your product data
-//                                     'unit_price' => $sale->qty ? ($sale->total / $sale->qty) : $sale->total,
-//                                     'total' => $sale->total,
-//                                 ]
-//                             ]
-//                         ];
-//                     });
-
-//         return response()->json(['sales' => $sales]);
-//     } catch (\Exception $e) {
-//         return response()->json(['error' => $e->getMessage()], 500);
-//     }
-// } 
 
 public function getProjects()
 {

@@ -128,6 +128,9 @@
                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
                                             rowspan="1" colspan="1"
                                             aria-label="Status: activate to sort column ascending">Type</th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
+                                            rowspan="1" colspan="1"
+                                            aria-label="Status: activate to sort column ascending">Sales By</th>
                                         <th class="no-sort sorting_disabled" rowspan="1" colspan="1"
                                             aria-label="Actions">Actions</th>
                                     </tr>
@@ -153,7 +156,7 @@
 
                                             <td> {{ $service->payble }} </td>
                                             <td>{{ ucfirst($service->sale_type) }}</td>
-
+                                            <td>{{ $service->salesPerson->name ?? 'N/A' }}</td>
                                             <td class="d-flex align-items-center">
                                                 <div class="dropdown dropdown-action">
                                                     <a href="#" class=" btn-action-icon " data-bs-toggle="dropdown"
