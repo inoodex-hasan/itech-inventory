@@ -5,7 +5,7 @@
 
     <div class="container-fluid mt-4">
         <div class="row justify-content-center">
-            <div class="col-sm-8">
+            <div class="col-sm-12">
 
                 <!-- Page Title -->
                 <div class="mb-3 d-flex justify-content-between align-items-center">

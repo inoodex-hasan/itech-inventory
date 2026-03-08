@@ -20,7 +20,7 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="search" class="form-label">Search</label>
-                                        <input type="text" class="form-control" id="search" name="search" 
+                                        <input type="text" class="form-control" id="search" name="search"
                                             value="{{ request('search') }}" placeholder="Search by name, phone, email...">
                                     </div>
                                 </div>

@@ -5,7 +5,7 @@
 
     <div class="container-fluid mt-4">
         <div class="row justify-content-center">
-            <div class="col-sm-8">
+            <div class="col-sm-12">
 
                 <!-- Page Title -->
                 <div class="mb-3 d-flex justify-content-between align-items-center">
@@ -27,7 +27,7 @@
                                         required>
                                 </div>
 
-                                <div class="col-md-6 mb-3"> 
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label">Phone</label>
                                     <input type="tel" class="form-control" name="phone" pattern="[0-9]{11}"
                                         maxlength="11" placeholder="Enter phone number" required>
