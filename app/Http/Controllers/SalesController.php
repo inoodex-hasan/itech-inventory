@@ -17,46 +17,28 @@ class SalesController extends Controller
 {
     public function index(Request $request)
     {
+        $query = Sale::with(['customer', 'client', 'salesBy']);
 
-        // $services = Sale::join('customers', 'customers.id', 'sales.customer_id')
-        // ->leftjoin('users', 'users.id', '=', 'sales.sales_by')
-        //  ->leftJoin('clients', 'clients.id', '=', 'sales.client_id');
-
-        $services = Sale::with(['customer', 'client', 'salesBy'])->get();
-
-
-        $defaultFilter = true;
-
-        if ($request->from != "" && $request->to != "") {
+        // Filter by date range
+        if ($request->filled('from') && $request->filled('to')) {
             $from = date('Y-m-d 00:00:00', strtotime($request->from));
             $to = date('Y-m-d 23:59:59', strtotime($request->to));
-            $services = $services->whereBetween('sales.created_at', [$from, $to]);
-            $defaultFilter = false;
+            $query->whereBetween('sales.created_at', [$from, $to]);
         }
 
-        if ($request->search_by == 'order_no' && $request->key != "") {
-            $services = $services->where('sales.order_no', 'like', '%' . $request->key . '%');
-            $defaultFilter = false;
+        // Filter by order number
+        if ($request->search_by == 'order_no' && $request->filled('key')) {
+            $query->where('sales.order_no', 'like', '%' . $request->key . '%');
         }
 
-        if (in_array($request->search_by, ['name', 'phone', 'email']) && $request->key != "") {
-            $services = $services->where('customers.' . $request->search_by, 'like', '%' . $request->key . '%');
-            $defaultFilter = false;
+        // Filter by customer details
+        if (in_array($request->search_by, ['name', 'phone', 'email']) && $request->filled('key')) {
+            $query->whereHas('customer', function ($q) use ($request) {
+                $q->where($request->search_by, 'like', '%' . $request->key . '%');
+            });
         }
 
-        if ($defaultFilter) {
-            $startOfMonth = date('Y-m-01 00:00:00');
-            $endOfMonth = date('Y-m-t 23:59:59');
-            $services = $services->whereBetween('sales.created_at', [$startOfMonth, $endOfMonth]);
-        }
-
-        // $services = $services->select('sales.*', 'users.name as sales_by', 'customers.name', 'customers.phone', 'customers.address', 'clients.name as client_name', 'clients.phone as client_phone')
-        //     ->orderBy('sales.id', 'desc')->get();
-
-        $services = Sale::with(['customer', 'client', 'salesBy'])
-        ->orderBy('id', 'desc')
-        ->get();
-
+        $services = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
         $users = lib_salesMan();
         if ($request->search_for == 'pdf') {

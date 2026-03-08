@@ -15,12 +15,44 @@ class PurchaseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {  
-        $purchases  = Purchase::latest()->get();
-        $products = Product::with('latestPurchase')->latest()->get();
+    public function index(Request $request)
+    {
+        $query = Purchase::with(['product', 'vendor']);
+
+        // Filter by search term
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('product', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })->orWhereHas('vendor', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Filter by vendor
+        if ($request->filled('vendor_id')) {
+            $query->where('vendor_id', $request->vendor_id);
+        }
+
+        // Filter by product
+        if ($request->filled('product_id')) {
+            $query->where('product_id', $request->product_id);
+        }
+
+        // Filter by date range
+        if ($request->filled('from') && $request->filled('to')) {
+            $from = date('Y-m-d 00:00:00', strtotime($request->from));
+            $to = date('Y-m-d 23:59:59', strtotime($request->to));
+            $query->whereBetween('created_at', [$from, $to]);
+        }
+
+        $purchases = $query->latest()->paginate(10)->withQueryString();
+        $products = Product::latest()->get();
         $vendors = Vendor::latest()->get();
-        return view('frontend.pages.purchase.index', compact('purchases','products','vendors'));
+        
+        return view('frontend.pages.purchase.index', compact('purchases', 'products', 'vendors'));
     }
 
     /**

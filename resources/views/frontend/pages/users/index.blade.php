@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    <div class="content container-fluid col-sm-10">
+    <div class="content container-fluid">
         <div class="page-header">
             <div class="content-page-header">
                 <h5> Users</h5>
@@ -52,13 +52,12 @@
                                                 <td>{{ $loop->index + 1 }}</td>
                                                 <td>
                                                     <img width="60px" height="60px"
-                                                        src="{{ asset('frontend/users/' . $item->images) }}"
-                                                        alt="Users Image">
+                                                        src="{{ asset('frontend/users/' . $item->images) }}" alt="Users Image">
                                                 </td>
-                                                <td>{{ $item->name }}</td>
-                                                <td>{{ $item->email }}</td>
-                                                <td>{{ $item->phone }}</td>
-                                                <td>{{ $item->roleName ?? 'N/A' }}</td>
+                                                <td>{{ Str::limit($item->name, 20) }}</td>
+                                                <td>{{ Str::limit($item->email, 20) }}</td>
+                                                <td>{{ Str::limit($item->phone, 20) }}</td>
+                                                <td>{{ Str::limit($item->roleName ?? 'N/A', 20) }}</td>
                                                 <td class="{{ $item->status == '1' ? 'text-success' : 'text-danger' }}">
                                                     {{ $item->status == '1' ? 'Active' : 'Inactive' }}
                                                 </td>
@@ -76,19 +75,17 @@
 
                                                 <!-- Default Modals -->
                                                 <div id="myModal{{ $item->id }}" class="modal fade" tabindex="-1"
-                                                    aria-labelledby="myModalLabel" aria-hidden="true"
-                                                    style="display: none;">
+                                                    aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title" id="myModalLabel">Delete</h5>
-                                                                <button type="button" class="btn-close"
-                                                                    data-bs-dismiss="modal" aria-label="Close"> </button>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                    aria-label="Close"> </button>
                                                             </div>
                                                             <div class="modal-body">
                                                                 Are you sure you want to delete this Users:
-                                                                <strong
-                                                                    style="color: darkorange">{{ $item->name }}</strong>
+                                                                <strong style="color: darkorange">{{ $item->name }}</strong>
                                                                 ?
                                                             </div>
                                                             <div class="modal-footer">
@@ -124,6 +121,6 @@
     </div>
     <!-- container-fluid -->
 
-@section('script')
-@endsection
+    @section('script')
+    @endsection
 @endsection

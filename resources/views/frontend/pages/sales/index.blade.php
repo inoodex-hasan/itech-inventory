@@ -99,168 +99,110 @@
         </div>
     </div>
     <!-- /Search Filter -->
-    <div class="row">
+    <div class="row p-3">
         <div class="col-sm-12">
             <div class="card-table">
                 <div class="card-body">
-                    <div class="table-fluid p-3">
-                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                            <table class="table table-center table-hover no-footer" id="DataTables_Table_0" role="grid"
-                                aria-describedby="DataTables_Table_0_info">
-                                <thead class="thead-light">
-                                    <tr role="row">
-                                        <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0"
-                                            rowspan="1" colspan="1" aria-sort="ascending"
-                                            aria-label="#: activate to sort column descending">#</th>
-                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
-                                            colspan="1" aria-label="Name: activate to sort column ascending">Date</th>
-                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
-                                            colspan="1" aria-label="Name: activate to sort column ascending">Order No
-                                        </th>
-                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
-                                            colspan="1" aria-label="Name: activate to sort column ascending">Name</th>
-                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
-                                            colspan="1" aria-label="Phone: activate to sort column ascending">Phone
-                                        </th>
-                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
-                                            rowspan="1" colspan="1"
-                                            aria-label="Phone: activate to sort column ascending">Payble</th>
-                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
-                                            rowspan="1" colspan="1"
-                                            aria-label="Status: activate to sort column ascending">Type</th>
-                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
-                                            rowspan="1" colspan="1"
-                                            aria-label="Status: activate to sort column ascending">Sales By</th>
-                                        <th class="no-sort sorting_disabled" rowspan="1" colspan="1"
-                                            aria-label="Actions">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($services as $service)
-                                        <tr role="row" class="odd">
-                                            <td class="sorting_1">{{ $loop->index + 1 }}</td>
-                                            <td>
-                                                <h2 class="table-avatar">
-                                                    <span>{{ $service->created_at->format('Y-m-d') }}</span>
-                                                </h2>
-                                            </td>
-                                            <td>
-                                                <h2 class="table-avatar"> <span>{{ $service->order_no }}</span></h2>
-                                            </td>
-                                            <td>
-                                                {{ $service->sale_type == 'project' ? $service->client->name ?? 'N/A' : $service->customer->name ?? 'N/A' }}
-                                            </td>
-                                            <td>
-                                                {{ $service->sale_type == 'project' ? $service->client->phone ?? 'N/A' : $service->customer->phone ?? 'N/A' }}
-                                            </td>
+                    <div class="table-responsive">
+                        <table class="table table-center table-hover" id="salesTable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Order No</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Payable</th>
+                                    <th>Type</th>
+                                    <th>Sales By</th>
+                                    <th class="no-sort">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($services as $service)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>
+                                            <h2 class="table-avatar">
+                                                <span>{{ $service->created_at->format('Y-m-d') }}</span>
+                                            </h2>
+                                        </td>
+                                        <td>
+                                            <h2 class="table-avatar"> <span>{{ $service->order_no }}</span></h2>
+                                        </td>
+                                        <td>
+                                            {{ $service->sale_type == 'project' ? $service->client->name ?? 'N/A' : $service->customer->name ?? 'N/A' }}
+                                        </td>
+                                        <td>
+                                            {{ $service->sale_type == 'project' ? $service->client->phone ?? 'N/A' : $service->customer->phone ?? 'N/A' }}
+                                        </td>
 
-                                            <td> {{ $service->payble }} </td>
-                                            <td>{{ ucfirst($service->sale_type) }}</td>
-                                            <td>{{ $service->salesPerson->name ?? 'N/A' }}</td>
-                                            <td class="d-flex align-items-center">
-                                                <div class="dropdown dropdown-action">
-                                                    <a href="#" class=" btn-action-icon " data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <ul>
+                                        <td> {{ $service->payble }} </td>
+                                        <td>{{ ucfirst($service->sale_type) }}</td>
+                                        <td>{{ $service->salesPerson->name ?? 'N/A' }}</td>
+                                        <td class="d-flex align-items-center">
+                                            <div class="dropdown dropdown-action">
+                                                <a href="#" class=" btn-action-icon " data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <ul>
 
-                                                            @if ($service->sale_type == 'retail')
-                                                                {{-- Invoice / Bill --}}
-                                                                <li>
-                                                                    <a class="dropdown-item" target="_blank"
-                                                                        href="{{ route('sales.invoice', $service->id) }}">
-                                                                        <i class="far fa-file-alt me-2"></i>
-                                                                        Invoice
-                                                                    </a>
-                                                                </li>
-
-                                                                {{-- Edit --}}
-                                                                <li>
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('sales.edit', $service->id) }}">
-                                                                        <i class="far fa-edit me-2"></i> Edit
-                                                                    </a>
-                                                                </li>
-                                                            @endif
-
-
-                                                            {{-- DELETE ( always show for both retail & project ) --}}
+                                                        @if ($service->sale_type == 'retail')
+                                                            {{-- Invoice / Bill --}}
                                                             <li>
-                                                                <a onclick="if (confirm('Are you sure to delete the Sales?')) { document.getElementById('serviceDelete{{ $service->id }}').submit(); }"
-                                                                    class="dropdown-item" href="javascript:void(0)">
-                                                                    <i class="far fa-trash-alt me-2"></i>Delete
+                                                                <a class="dropdown-item" target="_blank"
+                                                                    href="{{ route('sales.invoice', $service->id) }}">
+                                                                    <i class="far fa-file-alt me-2"></i>
+                                                                    Invoice
                                                                 </a>
-                                                                <form id="serviceDelete{{ $service->id }}"
-                                                                    action="{{ route('sales.destroy', $service->id) }}"
-                                                                    method="post">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                </form>
                                                             </li>
 
-                                                        </ul>
+                                                            {{-- Edit --}}
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('sales.edit', $service->id) }}">
+                                                                    <i class="far fa-edit me-2"></i> Edit
+                                                                </a>
+                                                            </li>
+                                                        @endif
 
-                                                    </div>
+
+                                                        {{-- DELETE ( always show for both retail & project ) --}}
+                                                        <li>
+                                                            <a onclick="if (confirm('Are you sure to delete the Sales?')) { document.getElementById('serviceDelete{{ $service->id }}').submit(); }"
+                                                                class="dropdown-item" href="javascript:void(0)">
+                                                                <i class="far fa-trash-alt me-2"></i>Delete
+                                                            </a>
+                                                            <form id="serviceDelete{{ $service->id }}"
+                                                                action="{{ route('sales.destroy', $service->id) }}"
+                                                                method="post">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                            </form>
+                                                        </li>
+
+                                                    </ul>
+
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <!-- Sale Details Modal -->
-                                <div class="modal fade" id="saleDetailsModal" tabindex="-1"
-                                    aria-labelledby="saleDetailsModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="saleDetailsModalLabel">Sale Details</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
                                             </div>
-                                            <div class="modal-body" id="saleDetailsContent">
-                                                <!-- Content loaded dynamically -->
-                                                <p>Loading...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center py-4">
+                                            <i class="fe fe-inbox fa-3x text-muted mb-3 d-block"></i>
+                                            <span class="text-muted">No sales found</span>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
 
-                            </table>
-
-                            <div class="dataTables_length" id="DataTables_Table_0_length">
-                                <label>
-                                    <select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0"
-                                        class="custom-select custom-select-sm form-control form-control-sm">
-                                        <option value="10">10</option>
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </label>
-                            </div>
-                            <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
-                                <ul class="pagination">
-                                    <li class="paginate_button page-item previous disabled"
-                                        id="DataTables_Table_0_previous">
-                                        <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="0"
-                                            tabindex="0" class="page-link">
-                                            <i class="fa fa-angle-double-left me-2"></i> Previous </a>
-                                    </li>
-                                    <li class="paginate_button page-item active">
-                                        <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="1"
-                                            tabindex="0" class="page-link">1</a>
-                                    </li>
-                                    <li class="paginate_button page-item next disabled" id="DataTables_Table_0_next">
-                                        <a href="#" aria-controls="DataTables_Table_0" data-dt-idx="2"
-                                            tabindex="0" class="page-link">Next <i
-                                                class=" fa fa-angle-double-right ms-2"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
-                                Showing 1 to 6 of 6 entries</div>
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-end mt-3">
+                            {{ $services->links('pagination::bootstrap-5') }}
                         </div>
                     </div>
                 </div>

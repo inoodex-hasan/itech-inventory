@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\{
-    BillController, BrandController, ChallanController, ClientController,
+    BillController, BrandController, CategoryController, ChallanController, ClientController,
     CostCategoryController, CustomerController, EmployeeController,
     EmployeeTaDaController, ExpenseCategoryController, ExpenseController,
     FrontendController, InventoryController, ProductContoller,
@@ -9,7 +9,7 @@ use App\Http\Controllers\{
     ProjectItemController, PurchaseController, QuotationController,
     RevenueController, RoleController, PermissionController,
     SalaryController, SalesController, ServiceController,
-    TaDaController, UserController, VendorController, BankDetailController, 
+    TaDaController, UserController, VendorController, BankDetailController,
     CompanyDetailController
 };
 
@@ -40,6 +40,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('role', RoleController::class);
     Route::resource('permission', PermissionController::class);
+    Route::resource('categories', CategoryController::class);
     Route::get('/user/pin', [UserController::class, 'pin'])->name('users.pin');
     Route::post('/user/pin', [UserController::class, 'pinStore'])->name('users.pin_store');
 

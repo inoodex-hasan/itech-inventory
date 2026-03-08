@@ -268,7 +268,7 @@
                                     <!-- Product Selection -->
                                     <div class="form-field">
                                         <label for="product1" class="form-label">Product Name</label>
-                                        <select onchange="selectProduct(1)" id="product1" class="form-select" required>
+                                        <select onchange="selectProduct(1)" id="product1" class="form-select select2-product" required>
                                             <option value="">-- Select Product --</option>
                                             @foreach ($products as $product)
                                                 <option value="{{ $product->id }}"
@@ -957,14 +957,14 @@
 					<div class="row align-items-end">
 						<div class="col-md-4 p-4">
 							<input  type="hidden" name="product[]" value="${product}">
-							<select onchange="selectProduct(${itemNumber})" style="height: 30px;"  id="product${itemNumber}" class="product${product} form-control product-select js-example-basic-single d-none" required disabled>
+							<select onchange="selectProduct(${itemNumber})" style="height: 30px;"  id="product${itemNumber}" class="product${product} form-control product-select select2-product d-none" required disabled>
 								<option value=""></option>
 								@foreach ($products as $product)`;
 
                 var select = (product == {{ $product->id }} ? 'selected' : '');
 
                 html += `
-									<option value="{{ $product->id }}" data-price="{{ $product->latestPurchase->unit_price ?? 0 }}" ${select}>
+									<option value="{{ $product->id }}" data-price="{{ $product->latestPurchase->unit_price ?? 0 }}" data-stock="{{ $product->inventory->current_stock ?? 0 }}" data-warranty="{{ $product->warranty ?? 0 }}" ${select}>
 										{{ $product->name }}({{ $product->model }})
 									</option>
 								@endforeach
@@ -987,6 +987,14 @@
 				</div>
 			`;
                 $('#item_container').append(html);
+
+                // Initialize Select2 for the newly added product dropdown
+                $(`#product${itemNumber}`).select2({
+                    placeholder: 'Search product...',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#item_container')
+                });
 
                 itemNumber++;
             }
@@ -1080,5 +1088,19 @@
 
         // Optional: recalc Due Payment whenever Advanced Payment changes
         document.getElementById('advancedPayment').addEventListener('input', calculateTotal);
+
+        // Initialize Select2 with search for product dropdown
+        $(document).ready(function() {
+            $('.select2-product').select2({
+                placeholder: 'Search product by name or model...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "No product found";
+                    }
+                }
+            });
+        });
     </script>
 @endsection

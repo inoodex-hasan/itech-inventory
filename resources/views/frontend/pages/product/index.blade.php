@@ -20,7 +20,7 @@
             width: 0;
         }
     </style>
-    <div class="content container-fluid col-sm-10">
+    <div class="content container-fluid">
         <div class="page-header">
             <div class="content-page-header">
                 <h5>Products</h5>
@@ -113,6 +113,74 @@
             </div>
         </div>
         <!-- /Page Header -->
+        
+        <!-- Filter Section -->
+        <div class="row mb-3">
+            <div class="col-sm-12">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body p-3">
+                        <form action="{{ route('products.index') }}" method="GET">
+                            <div class="row align-items-end">
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="search" class="form-label">Search</label>
+                                        <input type="text" class="form-control" id="search" name="search" 
+                                            value="{{ request('search') }}" placeholder="Search by name, model...">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="brand_id" class="form-label">Brand</label>
+                                        <select class="form-select select2" id="brand_id" name="brand_id">
+                                            <option value="">All Brands</option>
+                                            @foreach($brands as $brand)
+                                                <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
+                                                    {{ $brand->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="category_id" class="form-label">Category</label>
+                                        <select class="form-select select2" id="category_id" name="category_id">
+                                            <option value="">All Categories</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="status" class="form-label">Status</label>
+                                        <select class="form-select" id="status" name="status">
+                                            <option value="">All Status</option>
+                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Active</option>
+                                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3 d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary flex-fill">
+                                            <i class="fe fe-filter me-1"></i>Filter
+                                        </button>
+                                        <a href="{{ route('products.index') }}" class="btn btn-secondary">
+                                            <i class="fe fe-refresh-ccw"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Search Filter -->
         <div class="row">
             <div class="col-sm-12">
@@ -133,12 +201,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($products as $product)
+                                    @forelse ($products as $product)
                                         <tr>
                                             <td>{{ $loop->index + 1 }}</td>
                                             <td>{{ $product->brand->name ?? 'N/A' }}</td>
-                                            <td>{{ $product->name }}</td>
-                                            <td>{{ $product->model ?? 'N/A' }}</td>
+                                            <td>{{ Str::limit($product->name, 20) }}</td>
+                                            <td>{{ Str::limit($product->model, 20) }}</td>
                                             <td>
                                                 @if ($product->photos && count($product->photos) > 0)
                                                     <div class="d-flex gap-1 align-items-center">
@@ -201,7 +269,14 @@
                                             </td>
 
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center py-4">
+                                                <i class="fe fe-inbox fa-3x text-muted mb-3 d-block"></i>
+                                                <span class="text-muted">No products found</span>
+                                            </td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
 
@@ -432,6 +507,11 @@
 
                         </div>
                     </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-end mt-3">
+                    {{ $products->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>

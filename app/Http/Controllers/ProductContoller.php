@@ -35,9 +35,37 @@ class ProductContoller extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::with('brand')->latest()->get();
+        $query = Product::with('brand', 'category');
+
+        // Filter by search term
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('model', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by brand
+        if ($request->filled('brand_id')) {
+            $query->where('brand_id', $request->brand_id);
+        }
+
+        // Filter by category
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $products = $query->latest()->paginate(10)->withQueryString();
         $brands = Brand::where('status', '1')->latest()->get();
-        return view('frontend.pages.product.index', compact('products', 'brands'));
+        $categories = Category::where('status', '1')->latest()->get();
+        
+        return view('frontend.pages.product.index', compact('products', 'brands', 'categories'));
     }
 
     /**

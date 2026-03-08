@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 @section('content')
-    <div class="content container-fluid col-sm-10">
+    <div class="content container-fluid">
 
         <div class="page-header">
             <h5>Customers</h5>
@@ -44,19 +44,19 @@
                 @foreach ($customers as $key => $customer)
                     <tr>
                         <td>{{ $key + 1 }}</td>
-                        <td>{{ $customer->name }}</td>
-                        <td>{{ $customer->email }}</td>
-                        <td>{{ $customer->phone }}</td>
+                        <td>{{ Str::limit($customer->name, 20) }}</td>
+                        <td>{{ Str::limit($customer->email, 20) }}</td>
+                        <td>{{ Str::limit($customer->phone, 20) }}</td>
                         {{-- <td>
                             @if ($customer->image ?? 'N/A')
-                                <img src="{{ asset('uploads/customers/' . $customer->image) }}" width="50">
+                            <img src="{{ asset('uploads/customers/' . $customer->image) }}" width="50">
                             @endif
                         </td> --}}
                         {{-- <td>
                             @if ($customer->status == 'active')
-                                <span class="badge bg-success">Active</span>
+                            <span class="badge bg-success">Active</span>
                             @else
-                                <span class="badge bg-danger">Inactive</span>
+                            <span class="badge bg-danger">Inactive</span>
                             @endif
                         </td> --}}
                         <td class="d-flex align-items-center">

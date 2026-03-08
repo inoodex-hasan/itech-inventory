@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 30, 2025 at 12:03 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost:3306
+-- Generation Time: Mar 08, 2026 at 10:14 AM
+-- Server version: 8.4.3
+-- PHP Version: 8.3.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `ibravphe_megacapinventory`
+-- Database: `itech_inventory`
 --
 
 -- --------------------------------------------------------
@@ -28,17 +28,17 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `addresses` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `customer_id` bigint(20) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) NOT NULL,
-  `alternative_phone` varchar(255) DEFAULT NULL,
-  `state` bigint(20) NOT NULL,
-  `area` bigint(20) NOT NULL,
-  `address_details` text NOT NULL,
-  `comment` text DEFAULT NULL,
-  `address_type` enum('1','2') NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `customer_id` bigint NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alternative_phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `state` bigint NOT NULL,
+  `area` bigint NOT NULL,
+  `address_details` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `comment` text COLLATE utf8mb4_unicode_ci,
+  `address_type` enum('1','2') COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -50,12 +50,12 @@ CREATE TABLE `addresses` (
 --
 
 CREATE TABLE `advance_salaries` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `employee_id` bigint UNSIGNED NOT NULL,
   `amount` decimal(10,2) NOT NULL,
-  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `request_date` date NOT NULL,
-  `notes` text DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -67,10 +67,10 @@ CREATE TABLE `advance_salaries` (
 --
 
 CREATE TABLE `areas` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `district_id` bigint(20) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `id` bigint UNSIGNED NOT NULL,
+  `district_id` bigint NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -82,14 +82,14 @@ CREATE TABLE `areas` (
 --
 
 CREATE TABLE `attendances` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint NOT NULL,
   `date` date NOT NULL,
   `check_in` time DEFAULT NULL,
   `check_out` time DEFAULT NULL,
-  `attendance_status` int(11) NOT NULL DEFAULT 1,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
-  `remarks` text DEFAULT NULL,
+  `attendance_status` int NOT NULL DEFAULT '1',
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
+  `remarks` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -101,15 +101,15 @@ CREATE TABLE `attendances` (
 --
 
 CREATE TABLE `bank_details` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `account_name` varchar(255) NOT NULL,
-  `bank_name` varchar(255) NOT NULL,
-  `branch` varchar(255) NOT NULL,
-  `account_number` varchar(255) NOT NULL,
-  `account_type` varchar(255) NOT NULL,
-  `routing_number` varchar(255) DEFAULT NULL,
-  `is_default` tinyint(1) NOT NULL DEFAULT 0,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `id` bigint UNSIGNED NOT NULL,
+  `account_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bank_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `branch` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `account_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `account_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `routing_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_default` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -128,27 +128,27 @@ INSERT INTO `bank_details` (`id`, `account_name`, `bank_name`, `branch`, `accoun
 --
 
 CREATE TABLE `bills` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `bill_number` varchar(255) NOT NULL,
-  `reference_number` varchar(255) DEFAULT NULL,
-  `sale_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `type` enum('sale','project') NOT NULL,
-  `work_order_number` varchar(255) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `bill_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sale_id` bigint UNSIGNED DEFAULT NULL,
+  `project_id` bigint UNSIGNED DEFAULT NULL,
+  `customer_id` bigint UNSIGNED DEFAULT NULL,
+  `client_id` bigint UNSIGNED DEFAULT NULL,
+  `type` enum('sale','project') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `work_order_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `bill_date` date NOT NULL,
-  `subtotal` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `notes` text DEFAULT NULL,
+  `subtotal` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `total_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `notes` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `bank_detail_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `company_detail_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `terms_conditions` text DEFAULT NULL,
-  `subject` varchar(255) DEFAULT NULL,
-  `attention_to` varchar(255) DEFAULT NULL,
-  `designation` varchar(255) DEFAULT NULL
+  `bank_detail_id` bigint UNSIGNED DEFAULT NULL,
+  `company_detail_id` bigint UNSIGNED DEFAULT NULL,
+  `terms_conditions` text COLLATE utf8mb4_unicode_ci,
+  `subject` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attention_to` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -165,10 +165,10 @@ INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `sale_id`, `projec
 --
 
 CREATE TABLE `bill_items` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `bill_id` bigint(20) UNSIGNED NOT NULL,
-  `description` varchar(255) NOT NULL,
-  `quantity` int(11) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `bill_id` bigint UNSIGNED NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `quantity` int NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
   `total` decimal(10,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -189,17 +189,17 @@ INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_pric
 --
 
 CREATE TABLE `bookings` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `customer_id` bigint(20) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `country_code` varchar(255) NOT NULL,
-  `phone` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `address` text DEFAULT NULL,
-  `product_name` varchar(255) NOT NULL,
-  `product_number` varchar(255) DEFAULT NULL,
-  `details` text DEFAULT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `id` bigint UNSIGNED NOT NULL,
+  `customer_id` bigint NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `country_code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `product_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `product_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `details` text COLLATE utf8mb4_unicode_ci,
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -211,9 +211,9 @@ CREATE TABLE `bookings` (
 --
 
 CREATE TABLE `brands` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `status` tinyint(4) NOT NULL DEFAULT 1,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` tinyint NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -232,23 +232,51 @@ INSERT INTO `brands` (`id`, `name`, `status`, `created_at`, `updated_at`, `delet
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `order_by` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `image`, `status`, `order_by`, `created_at`, `updated_at`) VALUES
+(1, 'Electronics', 'electronics', NULL, NULL, 1, 1, '2026-03-08 09:28:49', '2026-03-08 09:28:49'),
+(3, 'Laptops', 'laptops', NULL, NULL, 1, 2, '2026-03-08 09:28:49', '2026-03-08 09:28:49'),
+(4, 'Tablets', 'tablets', NULL, NULL, 1, 3, '2026-03-08 09:28:49', '2026-03-08 09:28:49'),
+(5, 'Accessories', 'accessories', NULL, NULL, 1, 4, '2026-03-08 09:28:49', '2026-03-08 09:28:49');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `challans`
 --
 
 CREATE TABLE `challans` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `challan_number` varchar(255) NOT NULL,
-  `reference_number` varchar(255) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `challan_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `challan_date` date NOT NULL,
-  `type` enum('sale','project') NOT NULL,
-  `sale_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `type` enum('sale','project') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sale_id` bigint UNSIGNED DEFAULT NULL,
+  `project_id` bigint UNSIGNED DEFAULT NULL,
+  `customer_id` bigint UNSIGNED DEFAULT NULL,
+  `client_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `attention_to` varchar(255) DEFAULT NULL,
-  `designation` varchar(255) DEFAULT NULL
+  `attention_to` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -265,11 +293,11 @@ INSERT INTO `challans` (`id`, `challan_number`, `reference_number`, `challan_dat
 --
 
 CREATE TABLE `challan_items` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `challan_id` bigint(20) UNSIGNED NOT NULL,
-  `description` text NOT NULL,
-  `quantity` int(11) NOT NULL DEFAULT 1,
-  `unit` varchar(255) NOT NULL DEFAULT 'Piece',
+  `id` bigint UNSIGNED NOT NULL,
+  `challan_id` bigint UNSIGNED NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `unit` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Piece',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -288,11 +316,11 @@ INSERT INTO `challan_items` (`id`, `challan_id`, `description`, `quantity`, `uni
 --
 
 CREATE TABLE `clients` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `phone` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `address` text NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -312,16 +340,16 @@ INSERT INTO `clients` (`id`, `name`, `phone`, `email`, `address`, `created_at`, 
 --
 
 CREATE TABLE `company_details` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `signatory_name` varchar(255) NOT NULL,
-  `signatory_designation` varchar(255) NOT NULL,
-  `phone` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `website` varchar(255) DEFAULT NULL,
-  `address` text DEFAULT NULL,
-  `is_default` tinyint(1) NOT NULL DEFAULT 0,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `signatory_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `signatory_designation` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `website` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `is_default` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -340,10 +368,10 @@ INSERT INTO `company_details` (`id`, `name`, `signatory_name`, `signatory_design
 --
 
 CREATE TABLE `cost_categories` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -363,20 +391,20 @@ INSERT INTO `cost_categories` (`id`, `name`, `description`, `is_active`, `create
 --
 
 CREATE TABLE `customers` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `country_code` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `country_code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `address` text DEFAULT NULL,
-  `images` varchar(255) DEFAULT NULL,
-  `verification_code` int(11) DEFAULT NULL,
-  `is_verified` tinyint(1) NOT NULL DEFAULT 0,
-  `billing_address` bigint(20) DEFAULT NULL,
-  `shipping_address` bigint(20) DEFAULT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
-  `remember_token` varchar(100) DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `images` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `verification_code` int DEFAULT NULL,
+  `is_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `billing_address` bigint DEFAULT NULL,
+  `shipping_address` bigint DEFAULT NULL,
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -397,14 +425,14 @@ INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_
 --
 
 CREATE TABLE `daily_expenses` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL,
-  `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `employee_id` bigint UNSIGNED NOT NULL,
   `date` date NOT NULL,
-  `expense_category_id` bigint(20) UNSIGNED NOT NULL,
+  `expense_category_id` bigint UNSIGNED NOT NULL,
   `amount` decimal(15,2) NOT NULL,
-  `spend_method` enum('cash','card','bank_transfer') NOT NULL,
-  `remarks` text DEFAULT NULL,
+  `spend_method` enum('cash','card','bank_transfer') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remarks` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -423,15 +451,15 @@ INSERT INTO `daily_expenses` (`id`, `user_id`, `employee_id`, `date`, `expense_c
 --
 
 CREATE TABLE `daily_sales` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
   `date` date NOT NULL,
-  `description` text DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
   `card_amount` decimal(8,2) DEFAULT NULL,
   `cash_amount` decimal(8,2) DEFAULT NULL,
   `others_amount` decimal(8,2) DEFAULT NULL,
   `total_amount` decimal(8,2) DEFAULT NULL,
-  `assigned_person_id` text NOT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `assigned_person_id` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -443,9 +471,9 @@ CREATE TABLE `daily_sales` (
 --
 
 CREATE TABLE `districts` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -457,17 +485,17 @@ CREATE TABLE `districts` (
 --
 
 CREATE TABLE `employees` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL,
-  `employee_id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL,
-  `designation` varchar(255) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `employee_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `join_date` date DEFAULT NULL,
-  `salary` decimal(12,2) NOT NULL DEFAULT 0.00,
-  `status` varchar(255) NOT NULL DEFAULT 'active',
+  `salary` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -487,9 +515,9 @@ INSERT INTO `employees` (`id`, `user_id`, `employee_id`, `name`, `email`, `phone
 --
 
 CREATE TABLE `expense_categories` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -509,10 +537,10 @@ INSERT INTO `expense_categories` (`id`, `name`, `status`, `created_at`, `updated
 --
 
 CREATE TABLE `extras` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` decimal(8,2) DEFAULT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -524,13 +552,13 @@ CREATE TABLE `extras` (
 --
 
 CREATE TABLE `failed_jobs` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `uuid` varchar(255) NOT NULL,
-  `connection` text NOT NULL,
-  `queue` text NOT NULL,
-  `payload` longtext NOT NULL,
-  `exception` longtext NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -540,11 +568,11 @@ CREATE TABLE `failed_jobs` (
 --
 
 CREATE TABLE `inventories` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `product_id` bigint(20) UNSIGNED NOT NULL,
-  `opening_stock` int(11) NOT NULL DEFAULT 0,
-  `current_stock` int(11) NOT NULL DEFAULT 0,
-  `notes` text DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `opening_stock` int NOT NULL DEFAULT '0',
+  `current_stock` int NOT NULL DEFAULT '0',
+  `notes` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -555,8 +583,8 @@ CREATE TABLE `inventories` (
 
 INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`, `notes`, `created_at`, `updated_at`) VALUES
 (1, 4, 10, 9, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-26 05:54:14'),
-(3, 5, 20, 7, 'Opening stock entry', '2025-11-03 02:05:12', '2025-11-26 05:54:14'),
-(4, 3, 12, 3, 'Opening stock entry', '2025-11-03 02:11:45', '2025-11-24 10:56:34');
+(3, 5, 20, 3, 'Opening stock entry', '2025-11-03 02:05:12', '2026-01-12 06:54:44'),
+(4, 3, 12, 1, 'Opening stock entry', '2025-11-03 02:11:45', '2026-01-12 06:51:32');
 
 -- --------------------------------------------------------
 
@@ -565,9 +593,9 @@ INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`,
 --
 
 CREATE TABLE `migrations` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `migration` varchar(255) NOT NULL,
-  `batch` int(11) NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -666,7 +694,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (89, '2025_11_29_163131_create_bank_details_table', 57),
 (90, '2025_11_29_173929_add_fields_to_challans_table', 58),
 (91, '2025_11_30_113802_add_designation_to_bills_table', 59),
-(92, '2025_11_30_132753_add_designation_to_challans_table', 60);
+(92, '2025_11_30_132753_add_designation_to_challans_table', 60),
+(93, '2026_01_12_121918_add_fields_to_sales_table', 61),
+(94, '2026_03_08_152251_create_categories_table', 62),
+(95, '2026_03_08_152751_add_category_id_to_products_table', 63),
+(96, '2026_03_08_153755_remove_parent_id_from_categories_table', 64);
 
 -- --------------------------------------------------------
 
@@ -675,9 +707,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `model_has_permissions` (
-  `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -687,9 +719,9 @@ CREATE TABLE `model_has_permissions` (
 --
 
 CREATE TABLE `model_has_roles` (
-  `role_id` bigint(20) UNSIGNED NOT NULL,
-  `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
+  `role_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -709,12 +741,12 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 --
 
 CREATE TABLE `notifications` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `type` int(11) NOT NULL DEFAULT 1,
-  `message` varchar(255) NOT NULL,
-  `url` varchar(255) NOT NULL,
-  `isSeen` enum('0','1') NOT NULL DEFAULT '0',
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `id` bigint UNSIGNED NOT NULL,
+  `type` int NOT NULL DEFAULT '1',
+  `message` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `isSeen` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -726,8 +758,8 @@ CREATE TABLE `notifications` (
 --
 
 CREATE TABLE `password_resets` (
-  `email` varchar(255) NOT NULL,
-  `token` varchar(255) NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -738,8 +770,8 @@ CREATE TABLE `password_resets` (
 --
 
 CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) NOT NULL,
-  `token` varchar(255) NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -750,14 +782,14 @@ CREATE TABLE `password_reset_tokens` (
 --
 
 CREATE TABLE `payments` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `payment_for` int(11) NOT NULL,
-  `customer_id` bigint(20) NOT NULL,
-  `sale_id` bigint(20) NOT NULL,
-  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `payment_method` enum('cash','card','bank_transfer') NOT NULL DEFAULT 'cash',
+  `id` bigint UNSIGNED NOT NULL,
+  `payment_for` int NOT NULL,
+  `customer_id` bigint NOT NULL,
+  `sale_id` bigint NOT NULL,
+  `project_id` bigint UNSIGNED DEFAULT NULL,
+  `payment_method` enum('cash','card','bank_transfer') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'cash',
   `amount` double NOT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -778,9 +810,9 @@ INSERT INTO `payments` (`id`, `payment_for`, `customer_id`, `sale_id`, `project_
 --
 
 CREATE TABLE `permissions` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `guard_name` varchar(255) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -807,7 +839,8 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (17, 'Project Management', 'web', '2025-11-11 19:05:43', '2025-11-11 19:05:43'),
 (18, 'Client Management', 'web', '2025-11-17 23:16:07', '2025-11-17 23:16:07'),
 (19, 'Cost Management', 'web', '2025-11-18 00:22:52', '2025-11-18 00:22:52'),
-(20, 'Company Management', 'web', '2025-11-29 09:49:27', '2025-11-29 09:49:27');
+(20, 'Company Management', 'web', '2025-11-29 09:49:27', '2025-11-29 09:49:27'),
+(21, 'Category Management', 'web', '2026-03-08 09:30:25', '2026-03-08 09:30:25');
 
 -- --------------------------------------------------------
 
@@ -816,12 +849,12 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 --
 
 CREATE TABLE `personal_access_tokens` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `tokenable_type` varchar(255) NOT NULL,
-  `tokenable_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `token` varchar(64) NOT NULL,
-  `abilities` text DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text COLLATE utf8mb4_unicode_ci,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -835,26 +868,27 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 CREATE TABLE `products` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `brand_id` bigint(20) UNSIGNED NOT NULL,
-  `model` varchar(255) NOT NULL,
-  `photos` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`photos`)),
-  `status` enum('0','1') NOT NULL DEFAULT '1',
-  `warranty` int(11) NOT NULL DEFAULT 0,
+  `id` bigint UNSIGNED NOT NULL,
+  `category_id` bigint UNSIGNED DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `brand_id` bigint UNSIGNED NOT NULL,
+  `model` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `photos` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
+  `warranty` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `brand_id`, `model`, `photos`, `status`, `warranty`, `created_at`, `updated_at`) VALUES
-(3, 'Brother HL-L2320D Auto Duplex Laser Printer (30 PPM)', 5, 'Brother HL-L2320D', '[\"products\\/MvogjUxGJxkpdJ81qlvcw0xvNkNP359uJMsQmYeJ.jpg\"]', '1', 365, '2025-11-02 18:39:59', '2025-11-25 12:56:30'),
-(4, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 4, 'EcoTank L3250', '[\"products\\/tASNTtO44wLOcacQJD3c4OY1RlN6BeKvD0syvHAu.jpg\"]', '1', 365, '2025-11-02 18:40:49', '2025-11-25 11:48:20'),
-(5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '[\"products\\/hRkUJ44b4qhFOjjeeyCMtSqfHQQWxBekLq60T9eE.jpg\"]', '1', 365, '2025-11-02 18:41:22', '2025-11-25 11:48:08'),
-(11, 'HP Smart Tank 670 Wi-Fi Duplexer All-in-One Color Printer', 2, 'Smart Tank 670', '[\"products\\/rwOhbDFkwmB4cKCGCa54ASsHxqCUit2k3qREQIrG.jpg\"]', '1', 365, '2025-11-30 10:54:46', '2025-11-30 10:55:28');
+INSERT INTO `products` (`id`, `category_id`, `name`, `brand_id`, `model`, `photos`, `status`, `warranty`, `created_at`, `updated_at`) VALUES
+(3, NULL, 'Brother HL-L2320D Auto Duplex Laser Printer (30 PPM)', 5, 'Brother HL-L2320D', '[\"products\\/MvogjUxGJxkpdJ81qlvcw0xvNkNP359uJMsQmYeJ.jpg\"]', '1', 365, '2025-11-02 18:39:59', '2025-11-25 12:56:30'),
+(4, NULL, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 4, 'EcoTank L3250', '[\"products\\/tASNTtO44wLOcacQJD3c4OY1RlN6BeKvD0syvHAu.jpg\"]', '1', 365, '2025-11-02 18:40:49', '2025-11-25 11:48:20'),
+(5, NULL, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '[\"products\\/hRkUJ44b4qhFOjjeeyCMtSqfHQQWxBekLq60T9eE.jpg\"]', '1', 365, '2025-11-02 18:41:22', '2025-11-25 11:48:08'),
+(11, NULL, 'HP Smart Tank 670 Wi-Fi Duplexer All-in-One Color Printer', 2, 'Smart Tank 670', '[\"products\\/rwOhbDFkwmB4cKCGCa54ASsHxqCUit2k3qREQIrG.jpg\"]', '1', 365, '2025-11-30 10:54:46', '2025-11-30 10:55:28');
 
 -- --------------------------------------------------------
 
@@ -863,17 +897,17 @@ INSERT INTO `products` (`id`, `name`, `brand_id`, `model`, `photos`, `status`, `
 --
 
 CREATE TABLE `projects` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `project_name` varchar(255) NOT NULL,
-  `client_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `project_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `client_id` bigint UNSIGNED NOT NULL,
   `budget` decimal(12,2) DEFAULT NULL,
-  `sub_total` decimal(12,2) NOT NULL DEFAULT 0.00,
-  `discount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `sub_total` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `discount` decimal(10,2) NOT NULL DEFAULT '0.00',
   `grand_total` decimal(12,2) NOT NULL,
-  `advanced_payment` decimal(12,2) NOT NULL DEFAULT 0.00,
-  `due_payment` decimal(12,2) NOT NULL DEFAULT 0.00,
-  `description` text DEFAULT NULL,
-  `status` enum('pending','in_progress','completed','cancelled') NOT NULL DEFAULT 'pending',
+  `advanced_payment` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `due_payment` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `status` enum('pending','in_progress','completed','cancelled') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -894,10 +928,10 @@ INSERT INTO `projects` (`id`, `project_name`, `client_id`, `budget`, `sub_total`
 --
 
 CREATE TABLE `project_costs` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `project_id` bigint(20) UNSIGNED NOT NULL,
-  `cost_category_id` bigint(20) UNSIGNED NOT NULL,
-  `description` text DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `project_id` bigint UNSIGNED NOT NULL,
+  `cost_category_id` bigint UNSIGNED NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
   `amount` decimal(12,2) NOT NULL,
   `cost_date` date NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -918,11 +952,11 @@ INSERT INTO `project_costs` (`id`, `project_id`, `cost_category_id`, `descriptio
 --
 
 CREATE TABLE `project_items` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `project_id` bigint(20) UNSIGNED NOT NULL,
-  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `project_id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
-  `quantity` int(11) NOT NULL,
+  `quantity` int NOT NULL,
   `total` decimal(10,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -943,17 +977,17 @@ INSERT INTO `project_items` (`id`, `project_id`, `product_id`, `unit_price`, `qu
 --
 
 CREATE TABLE `purchases` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `product_id` bigint(20) UNSIGNED NOT NULL,
-  `vendor_id` bigint(20) UNSIGNED NOT NULL,
-  `quantity` int(11) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `vendor_id` bigint UNSIGNED NOT NULL,
+  `quantity` int NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
   `sub_price` decimal(10,2) DEFAULT NULL,
   `total_price` decimal(10,2) NOT NULL,
   `payment` decimal(10,2) DEFAULT NULL,
   `due` decimal(10,2) DEFAULT NULL,
-  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
-  `updated_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_by` bigint UNSIGNED DEFAULT NULL,
+  `updated_by` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -975,20 +1009,27 @@ INSERT INTO `purchases` (`id`, `product_id`, `vendor_id`, `quantity`, `unit_pric
 --
 
 CREATE TABLE `quotations` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `quotation_number` varchar(255) NOT NULL,
-  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `quotation_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `customer_id` bigint UNSIGNED DEFAULT NULL,
+  `client_id` bigint UNSIGNED DEFAULT NULL,
   `quotation_date` date NOT NULL,
   `expiry_date` date NOT NULL,
-  `notes` text DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
   `sub_total` decimal(10,2) NOT NULL,
-  `discount_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `discount_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
   `total_amount` decimal(10,2) NOT NULL,
-  `status` enum('draft','sent','accepted','rejected','expired') NOT NULL DEFAULT 'draft',
+  `status` enum('draft','sent','accepted','rejected','expired') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `quotations`
+--
+
+INSERT INTO `quotations` (`id`, `quotation_number`, `customer_id`, `client_id`, `quotation_date`, `expiry_date`, `notes`, `sub_total`, `discount_amount`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
+(22, 'QT-20260208-0001', NULL, 2, '2026-02-08', '2026-02-23', 'gjdgj', 1500.00, 0.00, 1500.00, 'draft', '2026-02-08 13:50:50', '2026-02-08 13:50:50');
 
 -- --------------------------------------------------------
 
@@ -997,16 +1038,23 @@ CREATE TABLE `quotations` (
 --
 
 CREATE TABLE `quotation_items` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `quotation_id` bigint(20) UNSIGNED NOT NULL,
-  `product_id` bigint(20) UNSIGNED NOT NULL,
-  `description` text DEFAULT NULL,
-  `quantity` int(11) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `quotation_id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `quantity` int NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
   `total` decimal(10,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `quotation_items`
+--
+
+INSERT INTO `quotation_items` (`id`, `quotation_id`, `product_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
+(24, 22, 4, NULL, 1, 1500.00, 1500.00, '2026-02-08 13:50:50', '2026-02-08 13:50:50');
 
 -- --------------------------------------------------------
 
@@ -1015,14 +1063,14 @@ CREATE TABLE `quotation_items` (
 --
 
 CREATE TABLE `revenues` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `year` int(11) NOT NULL,
-  `month` int(11) NOT NULL,
-  `total_sales` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `total_purchases` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `total_expenses` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `net_profit` decimal(15,2) GENERATED ALWAYS AS (`total_sales` - `total_purchases` - `total_expenses`) VIRTUAL,
-  `remarks` varchar(255) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `year` int NOT NULL,
+  `month` int NOT NULL,
+  `total_sales` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `total_purchases` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `total_expenses` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `net_profit` decimal(15,2) GENERATED ALWAYS AS (((`total_sales` - `total_purchases`) - `total_expenses`)) VIRTUAL,
+  `remarks` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1041,9 +1089,9 @@ INSERT INTO `revenues` (`id`, `year`, `month`, `total_sales`, `total_purchases`,
 --
 
 CREATE TABLE `roles` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `guard_name` varchar(255) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1063,8 +1111,8 @@ INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VAL
 --
 
 CREATE TABLE `role_has_permissions` (
-  `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `role_id` bigint(20) UNSIGNED NOT NULL
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `role_id` bigint UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -1085,11 +1133,12 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (11, 1),
 (12, 1),
 (13, 1),
-(16, 2),
 (17, 1),
 (18, 1),
 (19, 1),
-(20, 1);
+(20, 1),
+(21, 1),
+(16, 2);
 
 -- --------------------------------------------------------
 
@@ -1098,17 +1147,17 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 --
 
 CREATE TABLE `salaries` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `employee_id` bigint(20) UNSIGNED NOT NULL,
-  `month` varchar(255) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `employee_id` bigint UNSIGNED NOT NULL,
+  `month` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `basic_salary` decimal(10,2) NOT NULL,
   `advance` decimal(10,2) DEFAULT NULL,
   `allowance` decimal(10,2) DEFAULT NULL,
   `deduction` decimal(10,2) DEFAULT NULL,
   `net_salary` decimal(10,2) NOT NULL,
-  `payment_status` enum('paid','unpaid') NOT NULL DEFAULT 'unpaid',
+  `payment_status` enum('paid','unpaid') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unpaid',
   `payment_date` date DEFAULT NULL,
-  `note` text DEFAULT NULL,
+  `note` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1127,12 +1176,12 @@ INSERT INTO `salaries` (`id`, `employee_id`, `month`, `basic_salary`, `advance`,
 --
 
 CREATE TABLE `salary_advances` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `employee_id` bigint UNSIGNED NOT NULL,
   `amount` decimal(10,2) NOT NULL,
-  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `request_date` date NOT NULL,
-  `notes` text DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1144,22 +1193,25 @@ CREATE TABLE `salary_advances` (
 --
 
 CREATE TABLE `sales` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `order_no` varchar(255) NOT NULL,
-  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `client_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `product_id` bigint(20) UNSIGNED NOT NULL,
-  `sale_type` varchar(255) NOT NULL DEFAULT 'retail',
-  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `order_no` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `customer_id` bigint UNSIGNED DEFAULT NULL,
+  `client_id` bigint UNSIGNED DEFAULT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `sale_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'retail',
+  `project_id` bigint UNSIGNED DEFAULT NULL,
   `qty` double NOT NULL,
   `total` double NOT NULL,
+  `vat` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `tax` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `delivery_charge` decimal(10,2) NOT NULL DEFAULT '0.00',
   `payble` double NOT NULL,
   `bill` double NOT NULL,
   `advanced_payment` decimal(15,2) DEFAULT NULL,
   `due_payment` decimal(15,2) DEFAULT NULL,
   `discount` double DEFAULT NULL,
-  `sales_by` varchar(255) DEFAULT NULL,
-  `status` enum('paid','partial','credit') NOT NULL DEFAULT 'credit',
+  `sales_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('paid','partial','credit') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'credit',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1168,10 +1220,10 @@ CREATE TABLE `sales` (
 -- Dumping data for table `sales`
 --
 
-INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`, `sale_type`, `project_id`, `qty`, `total`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
-(26, 'INV-69268F83DF752', 16, NULL, 4, 'retail', NULL, 2, 32400, 33000, 33000, 23000.00, 10000.00, 0, '2', 'partial', '2025-11-26 05:26:27', '2025-11-26 11:02:09'),
-(35, 'PRJ-10-0B4C22CF0487', NULL, 9, 4, 'project', 10, 2, 32000, 32000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14'),
-(36, 'PRJ-10-E7F592F03244', NULL, 9, 5, 'project', 10, 3, 84000, 84000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14');
+INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`, `sale_type`, `project_id`, `qty`, `total`, `vat`, `tax`, `delivery_charge`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
+(26, 'INV-69268F83DF752', 16, NULL, 4, 'retail', NULL, 2, 32400, 0.00, 0.00, 0.00, 33000, 33000, 23000.00, 10000.00, 0, '2', 'partial', '2025-11-26 05:26:27', '2025-11-26 11:02:09'),
+(35, 'PRJ-10-0B4C22CF0487', NULL, 9, 4, 'project', 10, 2, 32000, 0.00, 0.00, 0.00, 32000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14'),
+(36, 'PRJ-10-E7F592F03244', NULL, 9, 5, 'project', 10, 3, 84000, 0.00, 0.00, 0.00, 84000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14');
 
 -- --------------------------------------------------------
 
@@ -1180,12 +1232,12 @@ INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`,
 --
 
 CREATE TABLE `sales_items` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `order_id` bigint(20) UNSIGNED NOT NULL,
-  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `order_id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
   `unit_price` double NOT NULL,
-  `warranty` int(11) NOT NULL DEFAULT 0 COMMENT 'in days',
-  `qty` int(11) NOT NULL,
+  `warranty` int NOT NULL DEFAULT '0' COMMENT 'in days',
+  `qty` int NOT NULL,
   `total_price` double NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1211,7 +1263,10 @@ INSERT INTO `sales_items` (`id`, `order_id`, `product_id`, `unit_price`, `warran
 (13, 11, 5, 28000, 365, 8, 224000, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
 (14, 11, 2, 16000, 365, 2, 32000, '2025-11-03 02:06:48', '2025-11-03 02:06:48'),
 (15, 12, 3, 14500, 365, 2, 29000, '2025-11-23 06:05:15', '2025-11-23 06:05:15'),
-(17, 26, 4, 16500, 365, 2, 33000, '2025-11-26 05:29:49', '2025-11-26 05:29:49');
+(17, 26, 4, 16500, 365, 2, 33000, '2025-11-26 05:29:49', '2025-11-26 05:29:49'),
+(18, 37, 3, 100, 365, 2, 200, '2026-01-12 06:51:32', '2026-01-12 06:51:32'),
+(19, 37, 5, 100, 365, 3, 300, '2026-01-12 06:51:32', '2026-01-12 06:51:32'),
+(20, 38, 5, 100, 365, 1, 100, '2026-01-12 06:54:44', '2026-01-12 06:54:44');
 
 -- --------------------------------------------------------
 
@@ -1220,23 +1275,23 @@ INSERT INTO `sales_items` (`id`, `order_id`, `product_id`, `unit_price`, `warran
 --
 
 CREATE TABLE `services` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `customer_id` bigint(20) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `country_code` varchar(255) NOT NULL,
-  `phone` varchar(255) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `address` text DEFAULT NULL,
-  `product_name` varchar(255) NOT NULL,
-  `product_number` varchar(255) DEFAULT NULL,
-  `details` text DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `customer_id` bigint NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `country_code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `product_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `product_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `details` text COLLATE utf8mb4_unicode_ci,
   `total` double NOT NULL,
   `bill` double NOT NULL,
   `discount` double DEFAULT NULL,
   `due_amount` double NOT NULL,
-  `warranty_duration` int(11) NOT NULL,
-  `repaired_by` bigint(20) NOT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `warranty_duration` int NOT NULL,
+  `repaired_by` bigint NOT NULL,
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `complated_date` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1249,16 +1304,16 @@ CREATE TABLE `services` (
 --
 
 CREATE TABLE `ta_das` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `employee_id` bigint UNSIGNED NOT NULL,
   `date` date NOT NULL,
   `amount` decimal(10,2) NOT NULL,
-  `used_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `remaining_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `purpose` text DEFAULT NULL,
-  `type` enum('TA','DA') NOT NULL DEFAULT 'TA',
-  `payment_type` enum('Advance','Claim') NOT NULL DEFAULT 'Advance',
+  `used_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `remaining_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `purpose` text COLLATE utf8mb4_unicode_ci,
+  `type` enum('TA','DA') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'TA',
+  `payment_type` enum('Advance','Claim') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Advance',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1280,22 +1335,22 @@ INSERT INTO `ta_das` (`id`, `user_id`, `employee_id`, `date`, `amount`, `used_am
 --
 
 CREATE TABLE `users` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `phone` varchar(255) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `role_id` int(11) NOT NULL DEFAULT 1,
-  `images` varchar(255) DEFAULT NULL,
-  `verification_code` int(11) DEFAULT NULL,
-  `is_verified` tinyint(1) NOT NULL DEFAULT 0,
-  `billing_address` bigint(20) DEFAULT NULL,
-  `shipping_address` bigint(20) DEFAULT NULL,
-  `is_guest` enum('0','1') NOT NULL DEFAULT '0',
-  `status` enum('0','1') NOT NULL DEFAULT '1',
-  `type` enum('1','2','3','4') NOT NULL DEFAULT '1',
-  `remember_token` varchar(100) DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `role_id` int NOT NULL DEFAULT '1',
+  `images` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `verification_code` int DEFAULT NULL,
+  `is_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `billing_address` bigint DEFAULT NULL,
+  `shipping_address` bigint DEFAULT NULL,
+  `is_guest` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
+  `type` enum('1','2','3','4') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1317,12 +1372,12 @@ INSERT INTO `users` (`id`, `name`, `email`, `phone`, `email_verified_at`, `passw
 --
 
 CREATE TABLE `vendors` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `address` text NOT NULL,
-  `status` enum('0','1') NOT NULL DEFAULT '1',
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1404,6 +1459,13 @@ ALTER TABLE `bookings`
 --
 ALTER TABLE `brands`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `categories_slug_unique` (`slug`);
 
 --
 -- Indexes for table `challans`
@@ -1566,7 +1628,8 @@ ALTER TABLE `personal_access_tokens`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `products_brand_id_foreign` (`brand_id`);
+  ADD KEY `products_brand_id_foreign` (`brand_id`),
+  ADD KEY `products_category_id_foreign` (`category_id`);
 
 --
 -- Indexes for table `projects`
@@ -1707,271 +1770,277 @@ ALTER TABLE `vendors`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `advance_salaries`
 --
 ALTER TABLE `advance_salaries`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `areas`
 --
 ALTER TABLE `areas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `attendances`
 --
 ALTER TABLE `attendances`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bank_details`
 --
 ALTER TABLE `bank_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `bills`
 --
 ALTER TABLE `bills`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `bill_items`
 --
 ALTER TABLE `bill_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `challans`
 --
 ALTER TABLE `challans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `challan_items`
 --
 ALTER TABLE `challan_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `company_details`
 --
 ALTER TABLE `company_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `cost_categories`
 --
 ALTER TABLE `cost_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `daily_expenses`
 --
 ALTER TABLE `daily_expenses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `daily_sales`
 --
 ALTER TABLE `daily_sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `districts`
 --
 ALTER TABLE `districts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `expense_categories`
 --
 ALTER TABLE `expense_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `extras`
 --
 ALTER TABLE `extras`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `inventories`
 --
 ALTER TABLE `inventories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `project_costs`
 --
 ALTER TABLE `project_costs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `project_items`
 --
 ALTER TABLE `project_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `purchases`
 --
 ALTER TABLE `purchases`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `quotations`
 --
 ALTER TABLE `quotations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `quotation_items`
 --
 ALTER TABLE `quotation_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `revenues`
 --
 ALTER TABLE `revenues`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `salaries`
 --
 ALTER TABLE `salaries`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `salary_advances`
 --
 ALTER TABLE `salary_advances`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `sales_items`
 --
 ALTER TABLE `sales_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `ta_das`
 --
 ALTER TABLE `ta_das`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `vendors`
 --
 ALTER TABLE `vendors`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -2043,7 +2112,8 @@ ALTER TABLE `model_has_roles`
 -- Constraints for table `products`
 --
 ALTER TABLE `products`
-  ADD CONSTRAINT `products_brand_id_foreign` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `products_brand_id_foreign` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `products_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `projects`

@@ -88,6 +88,64 @@
             </div>
         </div>
         <!-- /Page Header -->
+        
+        <!-- Filter Section -->
+        <div class="row mb-3">
+            <div class="col-sm-12">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body p-3">
+                        <form action="{{ route('purchase.index') }}" method="GET">
+                            <div class="row align-items-end">
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="search" class="form-label">Search</label>
+                                        <input type="text" class="form-control" id="search" name="search" 
+                                            value="{{ request('search') }}" placeholder="Search by product or vendor...">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="product_id" class="form-label">Product</label>
+                                        <select class="form-select select2" id="product_id" name="product_id">
+                                            <option value="">All Products</option>
+                                            @foreach($products as $product)
+                                                <option value="{{ $product->id }}" {{ request('product_id') == $product->id ? 'selected' : '' }}>
+                                                    {{ $product->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="vendor_id" class="form-label">Vendor</label>
+                                        <select class="form-select select2" id="vendor_id" name="vendor_id">
+                                            <option value="">All Vendors</option>
+                                            @foreach($vendors as $vendor)
+                                                <option value="{{ $vendor->id }}" {{ request('vendor_id') == $vendor->id ? 'selected' : '' }}>
+                                                    {{ $vendor->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3 d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary flex-fill">
+                                            <i class="fe fe-filter me-1"></i>Filter
+                                        </button>
+                                        <a href="{{ route('purchase.index') }}" class="btn btn-secondary">
+                                            <i class="fe fe-refresh-ccw"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Search Filter -->
         <div class="row">
             <div class="card-table">
@@ -109,13 +167,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($purchases as $purchase)
+                                @forelse ($purchases as $purchase)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $purchase->created_at->format('Y-m-d') }}</td>
-                                        <td>{{ $purchase->product->name ?? 'N/A' }}({{ $purchase->product->model ?? 'N/A' }})
+                                        <td>{{ Str::limit($purchase->product->name ?? 'N/A', 20) }}({{ $purchase->product->model ?? 'N/A' }})
                                         </td>
-                                        <td>{{ $purchase->vendor->name ?? 'N/A' }}</td>
+                                        <td>{{ Str::limit($purchase->vendor->name ?? 'N/A', 20) }}</td>
                                         <td>{{ $purchase->quantity }}</td>
                                         <td>{{ $purchase->unit_price }}</td>
                                         <td>{{ $purchase->total_price }}</td>
@@ -249,8 +307,21 @@
                                         </div>
                                     </div>
                                 @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="10" class="text-center py-4">
+                                            <i class="fe fe-inbox fa-3x text-muted mb-3 d-block"></i>
+                                            <span class="text-muted">No purchases found</span>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
+
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-end mt-3">
+                            {{ $purchases->links('pagination::bootstrap-5') }}
+                        </div>
                     </div>
                 </div>
             </div>
