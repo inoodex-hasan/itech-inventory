@@ -88,7 +88,7 @@
             </div>
         </div>
         <!-- /Page Header -->
-        
+
         <!-- Filter Section -->
         <div class="row mb-3">
             <div class="col-sm-12">
@@ -99,7 +99,7 @@
                                 <div class="col-md-3">
                                     <div class="mb-3">
                                         <label for="search" class="form-label">Search</label>
-                                        <input type="text" class="form-control" id="search" name="search" 
+                                        <input type="text" class="form-control" id="search" name="search"
                                             value="{{ request('search') }}" placeholder="Search by product or vendor...">
                                     </div>
                                 </div>
@@ -108,8 +108,9 @@
                                         <label for="product_id" class="form-label">Product</label>
                                         <select class="form-select select2" id="product_id" name="product_id">
                                             <option value="">All Products</option>
-                                            @foreach($products as $product)
-                                                <option value="{{ $product->id }}" {{ request('product_id') == $product->id ? 'selected' : '' }}>
+                                            @foreach ($products as $product)
+                                                <option value="{{ $product->id }}"
+                                                    {{ request('product_id') == $product->id ? 'selected' : '' }}>
                                                     {{ $product->name }}
                                                 </option>
                                             @endforeach
@@ -121,8 +122,9 @@
                                         <label for="vendor_id" class="form-label">Vendor</label>
                                         <select class="form-select select2" id="vendor_id" name="vendor_id">
                                             <option value="">All Vendors</option>
-                                            @foreach($vendors as $vendor)
-                                                <option value="{{ $vendor->id }}" {{ request('vendor_id') == $vendor->id ? 'selected' : '' }}>
+                                            @foreach ($vendors as $vendor)
+                                                <option value="{{ $vendor->id }}"
+                                                    {{ request('vendor_id') == $vendor->id ? 'selected' : '' }}>
                                                     {{ $vendor->name }}
                                                 </option>
                                             @endforeach
@@ -145,7 +147,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Search Filter -->
         <div class="row">
             <div class="card-table">
@@ -306,7 +308,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
+                                    {{-- @endforeach --}}
                                 @empty
                                     <tr>
                                         <td colspan="10" class="text-center py-4">
