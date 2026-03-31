@@ -95,7 +95,7 @@ class ProductContoller extends Controller
         'brand_id' => 'required|exists:brands,id',
         'name' => 'required|string|max:255',
         'model_name' => 'required|string|max:255',
-        'warranty' => 'required|integer',
+        'warranty' => 'nullable|integer',
         'status' => 'required|boolean',
         'photos' => 'nullable|array',
         'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
@@ -114,7 +114,7 @@ class ProductContoller extends Controller
         'brand_id' => $validated['brand_id'],
         'name' => $validated['name'],
         'model' => $validated['model_name'],
-        'warranty' => $validated['warranty'],
+        'warranty' => $validated['warranty'] ?? 0,
         'status' => $validated['status'],
         'photos' => !empty($photoPaths) ? $photoPaths : null,
     ]);
@@ -159,7 +159,7 @@ public function update(Request $request, Product $product)
         'brand_id' => 'required|exists:brands,id',
         'name' => 'required|string|max:255',
         'model_name' => 'required|string|max:255',
-        'warranty' => 'required|integer',
+        'warranty' => 'nullable|integer',
         'status' => 'required|boolean',
         'photos' => 'nullable|array',
         'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -198,7 +198,7 @@ public function update(Request $request, Product $product)
         'brand_id' => $validated['brand_id'],
         'name' => $validated['name'],
         'model' => $validated['model_name'],
-        'warranty' => $validated['warranty'],
+        'warranty' => $validated['warranty'] ?? 0,
         'status' => $validated['status'],
         'photos' => !empty($allPhotos) ? $allPhotos : null,
     ]);

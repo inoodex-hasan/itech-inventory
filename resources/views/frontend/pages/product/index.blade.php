@@ -88,10 +88,9 @@
                                                 multiple accept="image/*">
                                         </div>
                                         <div class="mb-3">
-                                            <label for="warranty" class="form-label">Warranty(Days)<span
-                                                    class="text-danger">*</span></label>
+                                            <label for="warranty" class="form-label">Warranty (Days)</label>
                                             <input type="text" name="warranty" id="warranty" class="form-control"
-                                                placeholder="Enter how many days" value="{{ old('warranty') }}" required>
+                                                placeholder="Enter how many days" value="{{ old('warranty') }}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="status" class="form-label">Status</label>
@@ -113,7 +112,7 @@
             </div>
         </div>
         <!-- /Page Header -->
-        
+
         <!-- Filter Section -->
         <div class="row mb-3">
             <div class="col-sm-12">
@@ -124,7 +123,7 @@
                                 <div class="col-md-3">
                                     <div class="mb-3">
                                         <label for="search" class="form-label">Search</label>
-                                        <input type="text" class="form-control" id="search" name="search" 
+                                        <input type="text" class="form-control" id="search" name="search"
                                             value="{{ request('search') }}" placeholder="Search by name, model...">
                                     </div>
                                 </div>
@@ -133,8 +132,9 @@
                                         <label for="brand_id" class="form-label">Brand</label>
                                         <select class="form-select select2" id="brand_id" name="brand_id">
                                             <option value="">All Brands</option>
-                                            @foreach($brands as $brand)
-                                                <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
+                                            @foreach ($brands as $brand)
+                                                <option value="{{ $brand->id }}"
+                                                    {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
                                                     {{ $brand->name }}
                                                 </option>
                                             @endforeach
@@ -146,8 +146,9 @@
                                         <label for="category_id" class="form-label">Category</label>
                                         <select class="form-select select2" id="category_id" name="category_id">
                                             <option value="">All Categories</option>
-                                            @foreach($categories as $category)
-                                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}"
+                                                    {{ request('category_id') == $category->id ? 'selected' : '' }}>
                                                     {{ $category->name }}
                                                 </option>
                                             @endforeach
@@ -159,8 +160,10 @@
                                         <label for="status" class="form-label">Status</label>
                                         <select class="form-select" id="status" name="status">
                                             <option value="">All Status</option>
-                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inactive</option>
+                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Active
+                                            </option>
+                                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>
+                                                Inactive</option>
                                         </select>
                                     </div>
                                 </div>
@@ -180,7 +183,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Search Filter -->
         <div class="row">
             <div class="col-sm-12">
@@ -280,97 +283,6 @@
                                 </tbody>
                             </table>
 
-                            <!-- Modals should be outside the table -->
-                            {{-- @foreach ($products as $product)
-                                <div id="edit-product-modal{{ $product->id }}" class="modal fade" tabindex="-1"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="edit-product-modal{{ $product->id }}">Edit
-                                                    Product</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-
-                                                <form class="px-3" method="POST"
-                                                    action="{{ route('products.update', $product->id) }}">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="mb-3">
-                                                        <label for="name" class="form-label">Brand Name <span
-                                                                class="text-danger">*</span></label>
-                                                        <select class="form-control select2" name="brand_id"
-                                                            id="brand_id" required>
-                                                            <option value="">Select Brand</option>
-                                                            @foreach ($brands as $brand)
-                                                                <option
-                                                                    {{ $brand->id == $product->brand_id ? 'selected' : '' }}
-                                                                    value="{{ $brand->id }}">{{ $brand->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <!-- Product Name -->
-                                                    <div class="mb-3">
-                                                        <label for="name{{ $product->id }}" class="form-label">Product
-                                                            Name <span class="text-danger">*</span></label>
-                                                        <input type="text" name="name"
-                                                            id="name{{ $product->id }}" class="form-control"
-                                                            placeholder="Enter product name"
-                                                            value="{{ old('name', $product->name) }}" required>
-                                                    </div>
-
-                                                    <!-- Product Model Name -->
-                                                    <div class="mb-3">
-                                                        <label for="model_name{{ $product->id }}"
-                                                            class="form-label">Product Model Name <span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" name="model_name"
-                                                            id="model_name{{ $product->id }}" class="form-control"
-                                                            placeholder="Enter product model name"
-                                                            value="{{ old('model_name', $product->model ?? '') }}"
-                                                            required>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <label for="warranty{{ $product->id }}"
-                                                            class="form-label">Warranty (Days)<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" name="warranty"
-                                                            id="warranty{{ $product->id }}" class="form-control"
-                                                            placeholder="Enter how many days"
-                                                            value="{{ old('model_name', $product->warranty ?? '') }}"
-                                                            required>
-                                                    </div>
-
-                                                    <!-- Status -->
-                                                    <div class="mb-3">
-                                                        <label for="status{{ $product->id }}"
-                                                            class="form-label">Status</label>
-                                                        <select class="form-select mb-3" name="status"
-                                                            id="status{{ $product->id }}" required>
-                                                            <option value="1"
-                                                                {{ old('status', $product->status) == 1 ? 'selected' : '' }}>
-                                                                Active</option>
-                                                            <option value="0"
-                                                                {{ old('status', $product->status) == 0 ? 'selected' : '' }}>
-                                                                Inactive</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <button type="submit" class="btn btn-primary">Update</button>
-                                                    </div>
-                                                </form>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach --}}
-
                             @foreach ($products as $product)
                                 <div id="edit-product-modal{{ $product->id }}" class="modal fade" tabindex="-1"
                                     aria-hidden="true">
@@ -430,13 +342,11 @@
                                                     <!-- Warranty -->
                                                     <div class="mb-3">
                                                         <label for="warranty{{ $product->id }}"
-                                                            class="form-label">Warranty (Days)<span
-                                                                class="text-danger">*</span></label>
+                                                            class="form-label">Warranty (Days)</label>
                                                         <input type="text" name="warranty"
                                                             id="warranty{{ $product->id }}" class="form-control"
                                                             placeholder="Enter how many days"
-                                                            value="{{ old('model_name', $product->warranty ?? '') }}"
-                                                            required>
+                                                            value="{{ old('model_name', $product->warranty ?? '') }}">
                                                     </div>
 
                                                     <!-- Existing Photos with Delete Buttons -->
