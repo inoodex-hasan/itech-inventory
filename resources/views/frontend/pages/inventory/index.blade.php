@@ -119,10 +119,10 @@
                                                 {{ $inventory->product?->name ?? 'Product Not Found' }}
                                             </td>
                                             <td>
-                                                ({{ $inventory->product->model ?? 'N/A' }})
+                                                ({{ $inventory->product?->model ?? 'N/A' }})
                                             </td>
                                             <td>
-                                                @if ($inventory->product->photos && count($inventory->product->photos) > 0)
+                                                @if ($inventory->product?->photos && count($inventory->product->photos) > 0)
                                                     <div class="d-flex gap-1 align-items-center">
                                                         @foreach ($inventory->product->photos as $index => $photo)
                                                             @if ($index < 2)
