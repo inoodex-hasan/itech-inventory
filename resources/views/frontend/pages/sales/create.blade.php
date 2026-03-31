@@ -268,7 +268,8 @@
                                     <!-- Product Selection -->
                                     <div class="form-field">
                                         <label for="product1" class="form-label">Product Name</label>
-                                        <select onchange="selectProduct(1)" id="product1" class="form-select select2-product" required>
+                                        <select onchange="selectProduct(1)" id="product1"
+                                            class="form-select select2-product" required>
                                             <option value="">-- Select Product --</option>
                                             @foreach ($products as $product)
                                                 <option value="{{ $product->id }}"
@@ -307,9 +308,9 @@
                                     <div class="order-row">
                                         <div class="input-field">
                                             <label for="unit_price1" class="form-label">Unit Price</label>
-                                            <input onchange="calculateTotal()" type="number" id="unit_price1"
-                                                class="form-input price-input" step="0.01" min="0"
-                                                placeholder="0.00">
+                                            <input oninput="calculateTotal()" onchange="calculateTotal()" type="number"
+                                                id="unit_price1" class="form-input price-input" step="0.01"
+                                                min="0" placeholder="0.00">
                                         </div>
 
                                         <div class="input-field">
@@ -317,8 +318,9 @@
                                             <div class="quantity-box">
                                                 <button type="button" class="qty-btn"
                                                     onclick="adjustQty(1, -1)">-</button>
-                                                <input onchange="calculateTotal()" type="number" id="qty1"
-                                                    class="qty-input" min="0" value="0">
+                                                <input oninput="calculateTotal()" onchange="calculateTotal()"
+                                                    type="number" id="qty1" class="qty-input" min="0"
+                                                    value="0">
                                                 <button type="button" class="qty-btn"
                                                     onclick="adjustQty(1, 1)">+</button>
                                             </div>
@@ -328,7 +330,8 @@
                                             <label class="form-label">Total</label>
                                             <div class="total-box">
                                                 <span class="currency-symbol"></span>
-                                                <input type="number" id="total1" class="total-input" readonly>
+                                                <input type="text" id="total1" class="total-input" readonly
+                                                    value="0.00">
                                             </div>
                                         </div>
 
@@ -515,12 +518,18 @@
 
                                     .total-input {
                                         flex: 1;
+                                        width: 100% !important;
+                                        min-width: 80px;
+                                        display: block;
                                         border: none;
-                                        background: transparent;
+                                        background: transparent !important;
                                         font-size: 16px;
-                                        color: #198754;
+                                        color: #198754 !important;
+                                        -webkit-text-fill-color: #198754;
                                         font-weight: 600;
                                         padding: 0;
+                                        opacity: 1;
+                                        line-height: 1.4;
                                     }
 
                                     /* Stock level colors */
@@ -670,13 +679,24 @@
 
                                     .total-input {
                                         flex: 1;
+                                        width: 100% !important;
+                                        min-width: 80px;
+                                        display: block;
                                         border: none;
-                                        background: transparent;
+                                        background: transparent !important;
                                         font-size: 16px;
-                                        color: #198754;
+                                        color: #198754 !important;
+                                        -webkit-text-fill-color: #198754;
                                         font-weight: 600;
                                         padding: 0;
                                         text-align: right;
+                                        opacity: 1;
+                                        line-height: 1.4;
+                                    }
+
+                                    .total-input[readonly] {
+                                        color: #198754 !important;
+                                        -webkit-text-fill-color: #198754;
                                     }
 
                                     .currency-symbol {
@@ -703,49 +723,6 @@
                                         box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.1);
                                     }
                                 </style>
-
-                                <script>
-                                    function adjustQty(itemNumber, change) {
-                                        const qtyInput = document.getElementById(`qty${itemNumber}`);
-                                        let currentQty = parseInt(qtyInput.value) || 0;
-                                        const newQty = Math.max(0, currentQty + change);
-                                        qtyInput.value = newQty;
-                                        calculateTotal();
-                                    }
-
-                                    function selectProduct(itemNumber) {
-                                        const select = document.getElementById(`product${itemNumber}`);
-                                        const option = select.options[select.selectedIndex];
-
-                                        if (option.value) {
-                                            const stock = parseInt(option.getAttribute('data-stock')) || 0;
-                                            document.getElementById(`stock${itemNumber}`).value = stock;
-                                            document.getElementById(`warranty${itemNumber}`).value = option.getAttribute('data-warranty') || 0;
-                                            document.getElementById(`purchase_price${itemNumber}`).value = option.getAttribute('data-price') || 0;
-
-                                            // Update quantity max attribute based on stock
-                                            document.getElementById(`qty${itemNumber}`).max = stock;
-
-                                            // Auto-fill unit price with purchase price + markup (optional)
-                                            const purchasePrice = parseFloat(option.getAttribute('data-price')) || 0;
-                                            if (purchasePrice > 0) {
-                                                // Add 20% markup by default
-                                                const unitPrice = purchasePrice * 1.2;
-                                                document.getElementById(`unit_price${itemNumber}`).value = unitPrice.toFixed(2);
-                                                calculateTotal();
-                                            }
-                                        }
-                                    }
-
-                                    function calculateTotal() {
-                                        const itemNumber = 1; // This would be dynamic in a multi-item setup
-                                        const unitPrice = parseFloat(document.getElementById(`unit_price${itemNumber}`).value) || 0;
-                                        const quantity = parseInt(document.getElementById(`qty${itemNumber}`).value) || 0;
-                                        const total = unitPrice * quantity;
-                                        document.getElementById(`total${itemNumber}`).value = total.toFixed(2);
-                                    }
-                                </script>
-
 
                                 <hr>
 
@@ -949,8 +926,10 @@
                     qEles[0].value = parseInt(old_qty) + parseInt(qty);
                 }
 
-            } else {
+                toggleSummarySection();
 
+            } else {
+                const rowTotal = (parseFloat(price) || 0) * (parseFloat(qty) || 0);
 
                 var html = `
 				<div class="item${product} group-item mt-2" data-itemnumber="${itemNumber}" id="form-group-item${itemNumber}">
@@ -978,7 +957,7 @@
 							<input onchange="calculateTotal()" type="number" name="qty[]" id="qty${itemNumber}" style="height: 30px;" class="qty${product} form-control qty" min="0" value="${qty}">
 						</div>
 						<div class="col-md-2">
-							<input type="number" name="total" id="total${itemNumber}" style="height: 30px;" class="form-control total" readonly>
+							<input type="number" name="total" id="total${itemNumber}" style="height: 30px;" class="form-control total" readonly value="${rowTotal.toFixed(2)}">
 						</div>
 						<div class="col-md-2 text-end btn-holder p-4">
 							<button onclick="removeItem(${itemNumber})" type="button" class="btn btn-danger remove-item me-1 ">×</button>
@@ -987,14 +966,7 @@
 				</div>
 			`;
                 $('#item_container').append(html);
-
-                // Initialize Select2 for the newly added product dropdown
-                $(`#product${itemNumber}`).select2({
-                    placeholder: 'Search product...',
-                    allowClear: true,
-                    width: '100%',
-                    dropdownParent: $('#item_container')
-                });
+                toggleSummarySection();
 
                 itemNumber++;
             }
@@ -1005,7 +977,45 @@
 
         function removeItem(item) {
             document.getElementById('form-group-item' + item).remove();
+            toggleSummarySection();
             calculateTotal();
+        }
+
+        function toggleSummarySection() {
+            const hasItems = document.querySelectorAll('.group-item[data-itemnumber]:not([data-itemnumber="1"])').length >
+            0;
+            document.getElementById('summerySection').classList.toggle('d-none', !hasItems);
+        }
+
+        function adjustQty(itemNumber, change) {
+            const qtyInput = document.getElementById(`qty${itemNumber}`);
+            if (!qtyInput) {
+                return;
+            }
+
+            const currentQty = parseInt(qtyInput.value, 10) || 0;
+            const maxQty = parseInt(qtyInput.max, 10);
+            let nextQty = Math.max(0, currentQty + change);
+
+            if (!Number.isNaN(maxQty)) {
+                nextQty = Math.min(nextQty, maxQty);
+            }
+
+            qtyInput.value = nextQty;
+            calculateTotal();
+        }
+
+        function updatePreviewTotal() {
+            const previewUnitPrice = Number(document.getElementById('unit_price1')?.value || 0);
+            const previewQty = Number(document.getElementById('qty1')?.value || 0);
+            const previewTotal = previewUnitPrice * previewQty;
+            const previewTotalInput = document.getElementById('total1');
+
+            if (previewTotalInput) {
+                previewTotalInput.value = previewTotal.toFixed(2);
+            }
+
+            return previewTotal;
         }
 
         // function selectProduct(item) {
@@ -1037,6 +1047,7 @@
 
 
         function calculateTotal() {
+            updatePreviewTotal();
             let subTotal = 0;
 
             const eles = document.getElementsByClassName('group-item');
@@ -1054,12 +1065,6 @@
 
                 subTotal += total;
             }
-
-            const previewUnitPrice = parseFloat(document.getElementById('unit_price1')?.value) || 0;
-            const previewQty = parseFloat(document.getElementById('qty1')?.value) || 0;
-            const previewTotal = previewUnitPrice * previewQty;
-            const previewTotalInput = document.getElementById('total1');
-            if (previewTotalInput) previewTotalInput.value = previewTotal.toFixed(2);
 
             let discount = parseFloat(document.getElementById('discount').value) || 0;
             if (discount > subTotal) discount = subTotal;
@@ -1080,9 +1085,7 @@
             const due = grandTotal - advanced;
             document.getElementById('duePayment').value = due.toFixed(2);
 
-            const hasItems = document.querySelectorAll('.group-item[data-itemnumber]:not([data-itemnumber="1"])').length >
-                0;
-            document.getElementById("summerySection").classList.toggle('d-none', !hasItems);
+            toggleSummarySection();
         }
 
 
@@ -1101,6 +1104,13 @@
                     }
                 }
             });
+
+            $('#unit_price1, #qty1').on('input change', function() {
+                updatePreviewTotal();
+                calculateTotal();
+            });
+
+            updatePreviewTotal();
         });
     </script>
 @endsection
