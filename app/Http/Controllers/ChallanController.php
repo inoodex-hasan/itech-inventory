@@ -7,6 +7,8 @@ use App\Models\ChallanItem;
 use App\Models\Sale;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use PDF;
 
 class ChallanController extends Controller
@@ -124,8 +126,17 @@ public function index(Request $request)
 
             // Generate PDF with proper headers
             $pdf = PDF::loadView('pdf.challan', $pdfData);
-            
-            return $pdf->download('challan-' . $challan->challan_number . '.pdf');
+            $fileRecipientName = $challan->sale?->customer?->name
+                ?? $challan->project?->client?->name
+                ?? $request->recipient_organization
+                ?? 'client';
+            $recipientSlug = Str::slug($fileRecipientName);
+            $challanDate = $challan->challan_date
+                ? Carbon::parse($challan->challan_date)->format('d-m-Y')
+                : now()->format('d-m-Y');
+            $fileName = $recipientSlug . '-' . $challanDate . '.pdf';
+
+            return $pdf->download($fileName);
 
         } catch (\Exception $e) {
             \Log::error('Challan creation error: ' . $e->getMessage());
@@ -182,7 +193,17 @@ public function download($id)
     ];
 
     $pdf = PDF::loadView('pdf.challan', $pdfData);
-    return $pdf->download('challan-' . $challan->challan_number . '.pdf');
+    $fileRecipientName = $challan->sale?->customer?->name
+        ?? $challan->project?->client?->name
+        ?? $clientName
+        ?? 'client';
+    $recipientSlug = Str::slug($fileRecipientName);
+    $challanDate = $challan->challan_date
+        ? Carbon::parse($challan->challan_date)->format('d-m-Y')
+        : now()->format('d-m-Y');
+    $fileName = $recipientSlug . '-' . $challanDate . '.pdf';
+
+    return $pdf->download($fileName);
 }
 public function getSales()
 {

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Models\{BankDetail, Bill, BillItem, Client, CompanyDetail, Customer, Project, Purchase, Sale, Vendor};
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -270,7 +272,9 @@ public function store(Request $request)
         'bankDetail', 
         'companyDetail',
         'sale.customer',
-        'project.client'
+        'project.client',
+        'customer',
+        'client'
     ])->find($bill->id);
 
     // Determine client data for PDF
@@ -324,7 +328,18 @@ public function store(Request $request)
     ];
 
     $pdf = Pdf::loadView('pdf.bill', $pdfData);
-    return $pdf->download('bill-' . $bill->bill_number . '.pdf');
+    $fileRecipientName = $billWithRelations->customer->name
+        ?? $billWithRelations->client->name
+        ?? $pdfClientName
+        ?? 'client';
+
+    $clientSlug = Str::slug($fileRecipientName);
+    $billDate = $billWithRelations->bill_date
+        ? Carbon::parse($billWithRelations->bill_date)->format('d-m-Y')
+        : now()->format('d-m-Y');
+    $fileName = $clientSlug . '-' . $billDate . '.pdf';
+
+    return $pdf->download($fileName);
 }
 
 public function show($id)
@@ -533,7 +548,15 @@ private function updateRelatedEntities(Bill $bill, array $validated)
 
 public function download($id)
 {
-    $bill = Bill::with(['billItems', 'sale.customer', 'project.client', 'bankDetail', 'companyDetail'])->findOrFail($id);
+    $bill = Bill::with([
+        'billItems',
+        'sale.customer',
+        'project.client',
+        'bankDetail',
+        'companyDetail',
+        'customer',
+        'client'
+    ])->findOrFail($id);
     
     // Determine client name and address from relationships
     $clientName = $bill->client_name;
@@ -583,7 +606,18 @@ public function download($id)
     ];
 
     $pdf = Pdf::loadView('pdf.bill', $pdfData);
-    return $pdf->download('Bill' . $bill->reference_number . '.pdf');
+    $fileRecipientName = $bill->customer->name
+        ?? $bill->client->name
+        ?? $clientName
+        ?? 'client';
+
+    $clientSlug = Str::slug($fileRecipientName);
+    $billDate = $bill->bill_date
+        ? Carbon::parse($bill->bill_date)->format('d-m-Y')
+        : now()->format('d-m-Y');
+    $fileName = $clientSlug . '-' . $billDate . '.pdf';
+
+    return $pdf->download($fileName);
 }
     public function updateStatus(Bill $bill, Request $request)
     {

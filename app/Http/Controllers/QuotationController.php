@@ -7,7 +7,9 @@ use App\Models\QuotationItem;
 use App\Models\Client;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class QuotationController extends Controller
@@ -187,12 +189,19 @@ public function store(Request $request)
         return redirect()->route('quotations.index')->with('success', 'Quotation deleted successfully.');
     }
 
-    public function download(Quotation $quotation)
+public function download(Quotation $quotation)
 {
     $quotation->load(['client', 'items.product.brand']);
     $amount_in_words = $this->convertNumberToWords($quotation->total_amount). ' Taka Only';
     $pdf = PDF::loadView('pdf.quotations', compact('quotation'));
-    return $pdf->download('quotation-' . $quotation->quotation_number . '.pdf');
+    $fileRecipientName = $quotation->client?->name ?? 'client';
+    $clientSlug = Str::slug($fileRecipientName);
+    $quotationDate = $quotation->quotation_date
+        ? Carbon::parse($quotation->quotation_date)->format('d-m-Y')
+        : now()->format('d-m-Y');
+    $fileName = $clientSlug . '-' . $quotationDate . '.pdf';
+
+    return $pdf->download($fileName);
 
 }
 
@@ -226,7 +235,15 @@ public function generatePDF(Quotation $quotation)
     ];
 
     $pdf = Pdf::loadView('pdf.quotations', $data);
-    return $pdf->download('quotation-' . $quotation->quotation_number . '.pdf');
+    $fileRecipientName = $quotation->client?->name
+        ?? ($pdfData['client_name'] ?? 'client');
+    $clientSlug = Str::slug($fileRecipientName);
+    $quotationDate = $quotation->quotation_date
+        ? Carbon::parse($quotation->quotation_date)->format('d-m-Y')
+        : now()->format('d-m-Y');
+    $fileName = $clientSlug . '-' . $quotationDate . '.pdf';
+
+    return $pdf->download($fileName);
 }
     public function sendQuotation(Quotation $quotation)
     {
