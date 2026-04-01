@@ -64,9 +64,25 @@ public function store(Request $request)
         $discountAmount = $request->discount_amount ?? 0;
         $totalAmount = $subTotal - $discountAmount;
 
-        // Create quotation
+        // Create quotation with all client and company details
         $quotation = Quotation::create([
             'client_id' => $request->client_id,
+            'client_name' => $request->client_name,
+            'client_designation' => $request->client_designation,
+            'client_address' => $request->client_address,
+            'client_phone' => $request->client_phone,
+            'client_email' => $request->client_email,
+            'attention_to' => $request->attention_to,
+            'body_content' => $request->body_content,
+            'terms_conditions' => $request->terms_conditions,
+            'subject' => $request->subject,
+            'company_name' => $request->company_name,
+            'signatory_name' => $request->signatory_name,
+            'signatory_designation' => $request->signatory_designation,
+            'company_phone' => $request->company_phone,
+            'company_email' => $request->company_email,
+            'company_website' => $request->company_website,
+            'additional_enclosed' => $request->additional_enclosed,
             'quotation_date' => now(),
             'expiry_date' => now()->addDays(15),
             'notes' => $request->subject,
@@ -88,27 +104,7 @@ public function store(Request $request)
             ]);
         }
 
-        // Store PDF data (for manual input fields)
-        $pdfData = [
-            'client_name' => $request->client_name,
-            'client_designation' => $request->client_designation,
-            'client_address' => $request->client_address,
-            'client_phone' => $request->client_phone,
-            'client_email' => $request->client_email,
-            'attention_to' => $request->attention_to,
-            'body_content' => $request->body_content,
-            'terms_conditions' => $request->terms_conditions,
-            'subject' => $request->subject,
-            'company_name' => $request->company_name,
-            'signatory_name' => $request->signatory_name,
-            'signatory_designation' => $request->signatory_designation,
-            'company_phone' => $request->company_phone,
-            'company_email' => $request->company_email,
-            'company_website' => $request->company_website,
-            'additional_enclosed' => $request->additional_enclosed,
-        ];
-
-        session(['quotation_pdf_data_' . $quotation->id => $pdfData]);
+        // No need to store in session anymore - all data is in database
     });
 
     return redirect()->route('quotations.index')->with('success', 'Quotation created successfully.');
@@ -132,7 +128,23 @@ public function store(Request $request)
     public function update(Request $request, Quotation $quotation)
     {
         $request->validate([
-            'client_id' => 'required|exists:clients,id',
+            'client_id' => 'nullable|exists:clients,id',
+            'client_name' => 'required|string|max:255',
+            'client_designation' => 'nullable|string|max:255',
+            'client_address' => 'required|string',
+            'client_phone' => 'nullable|string|max:20',
+            'client_email' => 'nullable|email|max:255',
+            'attention_to' => 'nullable|string|max:255',
+            'body_content' => 'required|string',
+            'terms_conditions' => 'required|string',
+            'subject' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'signatory_name' => 'required|string|max:255',
+            'signatory_designation' => 'required|string|max:255',
+            'company_phone' => 'nullable|string|max:20',
+            'company_email' => 'nullable|email|max:255',
+            'company_website' => 'nullable|string|max:255',
+            'additional_enclosed' => 'nullable|string',
             'quotation_date' => 'required|date',
             'expiry_date' => 'required|date|after:quotation_date',
             'notes' => 'nullable|string',
@@ -148,7 +160,7 @@ public function store(Request $request)
             $quotation->items()->delete();
 
             $subTotal = 0;
-            
+
             // Calculate new subtotal
             foreach ($request->items as $item) {
                 $subTotal += $item['quantity'] * $item['unit_price'];
@@ -157,9 +169,25 @@ public function store(Request $request)
             $discountAmount = $request->discount_amount ?? 0;
             $totalAmount = $subTotal - $discountAmount;
 
-            // Update quotation
+            // Update quotation with all details
             $quotation->update([
                 'client_id' => $request->client_id,
+                'client_name' => $request->client_name,
+                'client_designation' => $request->client_designation,
+                'client_address' => $request->client_address,
+                'client_phone' => $request->client_phone,
+                'client_email' => $request->client_email,
+                'attention_to' => $request->attention_to,
+                'body_content' => $request->body_content,
+                'terms_conditions' => $request->terms_conditions,
+                'subject' => $request->subject,
+                'company_name' => $request->company_name,
+                'signatory_name' => $request->signatory_name,
+                'signatory_designation' => $request->signatory_designation,
+                'company_phone' => $request->company_phone,
+                'company_email' => $request->company_email,
+                'company_website' => $request->company_website,
+                'additional_enclosed' => $request->additional_enclosed,
                 'quotation_date' => $request->quotation_date,
                 'expiry_date' => $request->expiry_date,
                 'notes' => $request->notes,
@@ -176,6 +204,7 @@ public function store(Request $request)
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'total' => $item['quantity'] * $item['unit_price'],
+                    'description' => $item['description'] ?? null,
                 ]);
             }
         });
@@ -193,8 +222,31 @@ public function download(Quotation $quotation)
 {
     $quotation->load(['client', 'items.product.brand']);
     $amount_in_words = $this->convertNumberToWords($quotation->total_amount). ' Taka Only';
-    $pdf = PDF::loadView('pdf.quotations', compact('quotation'));
-    $fileRecipientName = $quotation->client?->name ?? 'client';
+    
+    // Prepare data from database
+    $data = [
+        'quotation' => $quotation,
+        'amount_in_words' => $amount_in_words,
+        'client_name' => $quotation->client_name ?? ($quotation->client?->name ?? ''),
+        'client_designation' => $quotation->client_designation ?? '',
+        'client_address' => $quotation->client_address ?? ($quotation->client?->address ?? ''),
+        'client_phone' => $quotation->client_phone ?? ($quotation->client?->phone ?? ''),
+        'client_email' => $quotation->client_email ?? ($quotation->client?->email ?? ''),
+        'attention_to' => $quotation->attention_to ?? '',
+        'body_content' => $quotation->body_content ?? '',
+        'terms_conditions' => $quotation->terms_conditions ?? '',
+        'subject' => $quotation->subject ?? '',
+        'company_name' => $quotation->company_name ?? '',
+        'signatory_name' => $quotation->signatory_name ?? '',
+        'signatory_designation' => $quotation->signatory_designation ?? '',
+        'company_phone' => $quotation->company_phone ?? '',
+        'company_email' => $quotation->company_email ?? '',
+        'company_website' => $quotation->company_website ?? '',
+        'additional_enclosed' => $quotation->additional_enclosed ?? '',
+    ];
+    
+    $pdf = PDF::loadView('pdf.quotations', $data);
+    $fileRecipientName = $quotation->client_name ?? $quotation->client?->name ?? 'client';
     $clientSlug = Str::slug($fileRecipientName);
     $quotationDate = $quotation->quotation_date
         ? Carbon::parse($quotation->quotation_date)->format('d-m-Y')
@@ -208,35 +260,33 @@ public function download(Quotation $quotation)
 public function generatePDF(Quotation $quotation)
 {
     $quotation->load(['items.product.brand']);
-    
-    $pdfData = session('quotation_pdf_data_' . $quotation->id, []);
-    
+
     $amount_in_words = $this->convertNumberToWords($quotation->total_amount) . ' Taka Only';
-    
+
+    // Use data from database instead of session
     $data = [
         'quotation' => $quotation,
         'amount_in_words' => $amount_in_words,
-        'client_name' => $pdfData['client_name'] ?? '',
-        'client_designation' => $pdfData['client_designation'] ?? '',
-        'client_address' => $pdfData['client_address'] ?? '',
-        'client_phone' => $pdfData['client_phone'] ?? '',
-        'client_email' => $pdfData['client_email'] ?? '',
-        'attention_to' => $pdfData['attention_to'] ?? '',
-        'body_content' => $pdfData['body_content'] ?? '',
-        'terms_conditions' => $pdfData['terms_conditions'] ?? '',
-        'subject' => $pdfData['subject'] ?? '',
-        'company_name' => $pdfData['company_name'] ?? '',
-        'signatory_name' => $pdfData['signatory_name'] ?? '',
-        'signatory_designation' => $pdfData['signatory_designation'] ?? '',
-        'company_phone' => $pdfData['company_phone'] ?? '',
-        'company_email' => $pdfData['company_email'] ?? '',
-        'company_website' => $pdfData['company_website'] ?? '',
-        'additional_enclosed' => $pdfData['additional_enclosed'] ?? '',
+        'client_name' => $quotation->client_name ?? '',
+        'client_designation' => $quotation->client_designation ?? '',
+        'client_address' => $quotation->client_address ?? '',
+        'client_phone' => $quotation->client_phone ?? '',
+        'client_email' => $quotation->client_email ?? '',
+        'attention_to' => $quotation->attention_to ?? '',
+        'body_content' => $quotation->body_content ?? '',
+        'terms_conditions' => $quotation->terms_conditions ?? '',
+        'subject' => $quotation->subject ?? '',
+        'company_name' => $quotation->company_name ?? '',
+        'signatory_name' => $quotation->signatory_name ?? '',
+        'signatory_designation' => $quotation->signatory_designation ?? '',
+        'company_phone' => $quotation->company_phone ?? '',
+        'company_email' => $quotation->company_email ?? '',
+        'company_website' => $quotation->company_website ?? '',
+        'additional_enclosed' => $quotation->additional_enclosed ?? '',
     ];
 
     $pdf = Pdf::loadView('pdf.quotations', $data);
-    $fileRecipientName = $quotation->client?->name
-        ?? ($pdfData['client_name'] ?? 'client');
+    $fileRecipientName = $quotation->client_name ?? $quotation->client?->name ?? 'client';
     $clientSlug = Str::slug($fileRecipientName);
     $quotationDate = $quotation->quotation_date
         ? Carbon::parse($quotation->quotation_date)->format('d-m-Y')

@@ -22,10 +22,15 @@ class Challan extends Model
         'recipient_designation',
         'recipient_address',
         'attention_to',
+        'designation',
         'subject',
         'notes',
-        'attention_to',
-        'designation',
+        'company_name',
+        'signatory_name',
+        'signatory_designation',
+        'company_phone',
+        'company_email',
+        'company_website',
     ];
 
     protected $casts = [

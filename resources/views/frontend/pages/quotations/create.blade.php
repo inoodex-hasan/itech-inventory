@@ -305,7 +305,7 @@ Yours Sincerely,</textarea>
                                     <div class="form-group">
                                         <label class="form-label">Phone</label>
                                         <input type="text" class="form-control" name="company_phone"
-                                            value="+880 XXXX-XXXXXX">
+                                            value="+880 1904400202">
                                     </div>
                                 </div>
 

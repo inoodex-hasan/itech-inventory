@@ -76,7 +76,7 @@ public function index(Request $request)
                 $clientId = $project->client_id ?? null;
             }
 
-            // Create the challan
+            // Create the challan with all details
             $challan = Challan::create([
                 'challan_number' => $challanNumber,
                 'reference_number' => $validated['reference_number'],
@@ -86,8 +86,19 @@ public function index(Request $request)
                 'project_id' => $request->type === 'project' ? $validated['selected_project_id'] : null,
                 'customer_id' => $customerId,
                 'client_id' => $clientId,
+                'recipient_organization' => $request->recipient_organization,
+                'recipient_designation' => $request->recipient_designation ?? 'The Managing Director',
+                'recipient_address' => $request->recipient_address,
                 'attention_to' => $request->attention_to,
                 'designation' => $request->recipient_designation,
+                'subject' => $request->subject ?? 'Delivery Challan',
+                'notes' => $request->notes,
+                'company_name' => $request->company_name ?? 'Intelligent Technology',
+                'signatory_name' => $request->signatory_name ?? 'Engr. Shamsul Alam',
+                'signatory_designation' => $request->signatory_designation ?? 'Director (Technical)',
+                'company_phone' => $request->company_phone ?? '+880 XXXX-XXXXXX',
+                'company_email' => $request->company_email ?? 'info@intelligenttech.com',
+                'company_website' => $request->company_website ?? 'www.intelligenttech.com',
             ]);
 
             // Add challan items
@@ -102,24 +113,24 @@ public function index(Request $request)
             }
 
             // Load challan with relationships for PDF
-            $challan->load('challanItems');
+            $challan->load('challanItems', 'sale.customer', 'project.client');
 
-            // Prepare data for PDF
+            // Prepare data for PDF from saved database records
             $pdfData = [
                 'challan' => $challan,
                 'challan_items' => $challan->challanItems,
-                'recipient_organization' => $request->recipient_organization,
-                'recipient_designation' => $request->recipient_designation ?? 'The Managing Director',
-                'recipient_address' => $request->recipient_address,
-                'attention_to' => $request->attention_to,
-                'subject' => $request->subject,
-                'notes' => $request->notes,
-                'company_name' => $request->company_name,
-                'signatory_name' => $request->signatory_name,
-                'signatory_designation' => $request->signatory_designation,
-                'company_phone' => $request->company_phone,
-                'company_email' => $request->company_email,
-                'company_website' => $request->company_website,
+                'recipient_organization' => $challan->recipient_organization,
+                'recipient_designation' => $challan->recipient_designation ?? 'The Managing Director',
+                'recipient_address' => $challan->recipient_address ?? '',
+                'attention_to' => $challan->attention_to ?? '',
+                'subject' => $challan->subject ?? 'Delivery Challan',
+                'notes' => $challan->notes ?? '',
+                'company_name' => $challan->company_name ?? 'Intelligent Technology',
+                'signatory_name' => $challan->signatory_name ?? 'Engr. Shamsul Alam',
+                'signatory_designation' => $challan->signatory_designation ?? 'Director (Technical)',
+                'company_phone' => $challan->company_phone ?? '+880 XXXX-XXXXXX',
+                'company_email' => $challan->company_email ?? 'info@intelligenttech.com',
+                'company_website' => $challan->company_website ?? 'www.intelligenttech.com',
             ];
 
             \Log::info('PDF data prepared', $pdfData);
@@ -158,30 +169,40 @@ public function index(Request $request)
 public function download($id)
 {
     $challan = Challan::with([
-        'challanItems', 
-        'sale.customer', 
+        'challanItems',
+        'sale.customer',
         'project.client'
     ])->findOrFail($id);
 
-    // Get client name from relationships (not from stored fields)
-    $clientName = null;
-    $clientAddress = null;
-
-    if ($challan->type === 'sale' && $challan->sale && $challan->sale->customer) {
-        $clientName = $challan->sale->customer->name;
-        $clientAddress = $challan->sale->customer->address;
-    } elseif ($challan->type === 'project' && $challan->project && $challan->project->client) {
-        $clientName = $challan->project->client->name;
-        $clientAddress = $challan->project->client->address;
+    // Use data from database first, fallback to relationships if needed
+    $recipientName = $challan->recipient_organization;
+    $recipientAddress = $challan->recipient_address;
+    
+    // If recipient_organization is not stored, try to get from relationships
+    if (!$recipientName) {
+        if ($challan->type === 'sale' && $challan->sale && $challan->sale->customer) {
+            $recipientName = $challan->sale->customer->name;
+        } elseif ($challan->type === 'project' && $challan->project && $challan->project->client) {
+            $recipientName = $challan->project->client->name;
+        }
+    }
+    
+    // If recipient_address is not stored, try to get from relationships
+    if (!$recipientAddress) {
+        if ($challan->type === 'sale' && $challan->sale && $challan->sale->customer) {
+            $recipientAddress = $challan->sale->customer->address;
+        } elseif ($challan->type === 'project' && $challan->project && $challan->project->client) {
+            $recipientAddress = $challan->project->client->address;
+        }
     }
 
     $pdfData = [
         'challan' => $challan,
         'challan_items' => $challan->challanItems,
-        'recipient_organization' => $clientName ?? 'N/A',           // From relationship
-        'recipient_designation' => $challan->designation ?? 'The Managing Director', // From database
-        'recipient_address' => $clientAddress ?? 'N/A',            // From relationship
-        'attention_to' => $challan->attention_to,                  // From database
+        'recipient_organization' => $recipientName ?? 'N/A',
+        'recipient_designation' => $challan->recipient_designation ?? 'The Managing Director',
+        'recipient_address' => $recipientAddress ?? 'N/A',
+        'attention_to' => $challan->attention_to ?? '',
         'subject' => $challan->subject ?? 'Delivery Challan',
         'notes' => $challan->notes ?? '',
         'company_name' => $challan->company_name ?? 'Intelligent Technology',
@@ -193,10 +214,7 @@ public function download($id)
     ];
 
     $pdf = PDF::loadView('pdf.challan', $pdfData);
-    $fileRecipientName = $challan->sale?->customer?->name
-        ?? $challan->project?->client?->name
-        ?? $clientName
-        ?? 'client';
+    $fileRecipientName = $recipientName ?? 'client';
     $recipientSlug = Str::slug($fileRecipientName);
     $challanDate = $challan->challan_date
         ? Carbon::parse($challan->challan_date)->format('d-m-Y')
