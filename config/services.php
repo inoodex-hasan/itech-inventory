@@ -33,6 +33,6 @@ return [
     'recaptcha' => [
         'site' => env('NOCAPTCHA_SITEKEY'),
         'secret' => env('NOCAPTCHA_SECRET'),
-    ]
+    ],
 
 ];

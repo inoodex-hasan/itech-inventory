@@ -7,7 +7,6 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Product;
-use Illuminate\Support\Facades\Http;
 class BookingController extends Controller
 {
     /**
@@ -15,26 +14,16 @@ class BookingController extends Controller
      */
     public function index()
     {
-        // $bookings = Booking::join('customers','customers.id','=','bookings.customer_id')
-        // ->select('bookings.*','customers.name','customers.phone','customers.email','customers.address')->get();
-        // return response()->json($bookings, 200);
-        $apiUrl = 'https://quickphonefixandmore.com/wp-json/jet-cct/booking_form_data';
-        $response = Http::get($apiUrl);
-        
-        // Check if the response is successful
-        if ($response->successful()) {
-            $bookingData = $response->json(); // Decode the JSON data
-        } else {
-            $bookingData = []; // Handle error or fallback
-        }
-
-        // return $bookingData;
-
+        /*
+        $bookingData = [];
         $bookings = Booking::pluck('id')->toArray();
-
         $users = lib_serviceMan();
         $products = Product::where('status','1')->where('type','1')->get();
-        return view('frontend.pages.booking.index',compact('bookingData','products','users','bookings'));
+
+        return view('frontend.pages.booking.index', compact('bookingData', 'products', 'users', 'bookings'));
+        */
+
+        abort(404);
     }
 
     /**
@@ -42,6 +31,7 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
+        /*
         $request->validate([
             'name' => 'required',
             'email' => 'nullable|email',
@@ -82,6 +72,9 @@ class BookingController extends Controller
         $booking->save();
 
         return response()->json($booking, 201);
+        */
+
+        abort(404);
     }
 
     /**
@@ -89,6 +82,7 @@ class BookingController extends Controller
      */
     public function show($id)
     {
+        /*
         $booking = Booking::join('customers','customers.id','=','bookings.customer_id')
                     ->where('bookings.id',$id)
                     ->select('bookings.*','customers.name','customers.phone','customers.email','customers.address')
@@ -99,6 +93,9 @@ class BookingController extends Controller
         }
 
         return response()->json($booking, 200);
+        */
+
+        abort(404);
     }
 
     /**
@@ -106,6 +103,7 @@ class BookingController extends Controller
      */
     public function update(Request $request, $id)
     {
+        /*
         $booking = Booking::find($id);
 
         if (!$booking) {
@@ -151,6 +149,9 @@ class BookingController extends Controller
         $booking->update();
 
         return response()->json($booking, 200);
+        */
+
+        abort(404);
     }
 
     /**
@@ -158,6 +159,7 @@ class BookingController extends Controller
      */
     public function destroy($id)
     {
+        /*
         $booking = Booking::find($id);
 
         if (!$booking) {
@@ -167,5 +169,8 @@ class BookingController extends Controller
         $booking->delete();
 
         return response()->json(['message' => 'Booking deleted successfully'], 200);
+        */
+
+        abort(404);
     }
 }

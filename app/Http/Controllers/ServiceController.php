@@ -81,13 +81,13 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-    
-       $attributes = $request->all();
+        $attributes = $request->all();
         $rules = [
-            'name' => 'required',
+            'client_type' => 'required|in:new,existing',
+            'name' => 'required_if:client_type,new',
             'email' => 'nullable|email',
-            'country_code' => 'required',
-            'phone' => 'required|numeric',
+            'country_code' => 'required_if:client_type,new',
+            'phone' => 'required_if:client_type,new|numeric',
             'address' => 'nullable',
             'product_name' => 'required',
             'product_number' => 'nullable',
@@ -103,48 +103,55 @@ class ServiceController extends Controller
             }],
             'warranty_duration' => 'required|numeric',
             'repaired_by' => 'required|numeric',
+            'existing_client_id' => 'required_if:client_type,existing|exists:customers,id',
         ];
+
         $validation = Validator::make($attributes, $rules);
         if ($validation->fails()) {
             return redirect()->back()->with(['error' => getNotify(4)])->withErrors($validation)->withInput();
         }
-        // return $request->all();
+
         if(!is_numeric($request->product_name)){
             $product = new Product;
             $product->name = $request->product_name;
             $product->type = '1';
             $product->save();
-        }else{
+        } else {
             $product = Product::where('id', $request->product_name)->first();
             if($product)$request->product_name =  $product->name;
         }
 
-        $customerByPhone = Customer::where('phone', $request->phone)->first();
-        $customerByEmail = Customer::where('email', $request->email)->first();
-        if($request->email == "") $customerByEmail = null;
-        $customer =  new Customer;
+        if ($request->client_type == 'existing') {
+            $customer = Customer::find($request->existing_client_id);
+        } else {
+            $customerByPhone = Customer::where('phone', $request->phone)->first();
+            $customerByEmail = Customer::where('email', $request->email)->first();
+            if($request->email == "") $customerByEmail = null;
 
-        if((!$customerByPhone && $customerByEmail)){
-            $customer = $customerByEmail;
-        }elseif(($customerByPhone && !$customerByEmail)){
-            $customer = $customerByPhone;
-        }elseif($customerByPhone && $customerByEmail && $customerByPhone->id == $customerByEmail->id){
-            $customer = $customerByPhone;
-        }elseif($customerByPhone && $customerByEmail && $customerByPhone->id != $customerByEmail->id){
-            return redirect()->back()->with(['error' => 'The email is added for another customer.'])->withInput();
+            if((!$customerByPhone && $customerByEmail)){
+                $customer = $customerByEmail;
+            }elseif(($customerByPhone && !$customerByEmail)){
+                $customer = $customerByPhone;
+            }elseif($customerByPhone && $customerByEmail && $customerByPhone->id == $customerByEmail->id){
+                $customer = $customerByPhone;
+            }elseif($customerByPhone && $customerByEmail && $customerByPhone->id != $customerByEmail->id){
+                return redirect()->back()->with(['error' => 'The email is added for another customer.'])->withInput();
+            } else {
+                $customer = new Customer;
+            }
+
+            $customer->name = $request->name;
+            if($request->email != "" )$customer->email = $request->email;
+            $customer->country_code = $request->country_code;
+            $customer->phone = $request->phone;
+            $customer->address = $request->address;
+            $customer->save();
         }
-
-        $customer->name = $request->name;
-        if($request->email != "" )$customer->email = $request->email;
-        $customer->country_code = $request->country_code;
-        $customer->phone = $request->phone;
-        $customer->address = $request->address;
-        $customer->save();
 
         $service = new Service;
         $service->customer_id = $customer->id;
         $service->name = $customer->name;
-        $service->country_code = $request->country_code;
+        $service->country_code = $customer->country_code ?? $request->country_code;
         $service->phone = $customer->phone;
         $service->email = $customer->email;
         $service->address = $customer->address;

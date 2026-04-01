@@ -22,29 +22,11 @@ use App\Models\Admin\Coupon;
 use App\Models\Admin\Area;
 use App\Models\Admin\District;
 use App\Models\Admin\DeliveryPercentage;
-use Illuminate\Support\Facades\Http;
 use App\Models\Booking;
 
 function pendingBooking()
 {
-  $apiUrl = 'https://quickphonefixandmore.com/wp-json/jet-cct/booking_form_data';
-  $response = Http::get($apiUrl);
-
-  // Check if the response is successful
-  if ($response->successful()) {
-    $bookingData = $response->json(); // Decode the JSON data
-  } else {
-    $bookingData = []; // Handle error or fallback
-  }
-
-  $bookings = Booking::pluck('id')->toArray();
-
-  $cnt = 0;
-  foreach ($bookingData as $data) {
-    if (!in_array($data['_ID'], $bookings)) $cnt++;
-  }
-
-  return $cnt;
+  return Booking::count();
 }
 
 function getProductImage($id)

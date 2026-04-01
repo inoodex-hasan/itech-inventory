@@ -1,5 +1,6 @@
 @extends('frontend.layouts.app') 
 @section('content')
+{{-- Booking page disabled for now. Original markup kept below for reference.
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
 <style>
@@ -32,10 +33,6 @@
                 <img src="assets/img/icons/filter-icon.svg" alt="filter">
               </span>Filter </a>
           </li>          
-          <li>
-            <a class="btn btn-primary" href="https://quickphonefixandmore.com/adminLogin" target="_blank">
-              <i class="fa fa-trash me-2" aria-hidden="true"></i>Clear Booking </a>
-          </li>
         </ul>
       </div>
     </div>
@@ -89,6 +86,11 @@
                       </tr>
                     </thead>
                     <tbody>
+                      @if (count($bookingData) === 0)
+                        <tr>
+                          <td colspan="10" class="text-center py-4">No booking API data is configured.</td>
+                        </tr>
+                      @endif
                       @foreach ($bookingData as $index => $entry)
                         @if(!in_array($entry['_ID'] , $bookings))
                           <tr role="row" class="{{ $loop->odd ? 'odd' : 'even' }}">
@@ -362,4 +364,20 @@
   }
 </script>
 
+@endsection
+--}}
+
+<div class="content container-fluid">
+  <div class="page-header">
+    <div class="content-page-header">
+      <h5>Bookings</h5>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body text-center py-5">
+      Booking page is currently disabled.
+    </div>
+  </div>
+</div>
 @endsection

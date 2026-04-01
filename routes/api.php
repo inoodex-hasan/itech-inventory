@@ -19,4 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('bookings', BookingController::class);
+// Booking API disabled for now. Keeping the route definition here for reference.
+// Route::apiResource('bookings', BookingController::class);

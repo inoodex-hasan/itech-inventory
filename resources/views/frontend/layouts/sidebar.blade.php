@@ -28,8 +28,9 @@
                 <li>
                     <a href="{{ route('index') }}"><i class="fe fe-grid"></i><span> Dashboard</span></a>
                 </li>
-                {{-- 			
-				@can('Booking')
+
+                {{--
+                @can('Booking')
 					<li class="menu-title"><span>Booking</span></li>
 					<li>
 						@php
@@ -46,6 +47,7 @@
 						</a>									
 					</li>
 				@endcan
+                --}}
 
 				@can('Service Management')
 					<li class="menu-title"><span>Services</span></li>
@@ -55,7 +57,8 @@
 						<a href="{{ route('service.complated') }}" class="{{ Route::currentRouteName() == 'service.complated' ? 'active' : '' }}"><i class="fe fe-check-square"></i> <span>Completed Service</span></a>
 						<a href="{{ route('products.index',['type' => 'service']) }}" class="{{ Route::currentRouteName() == 'products.index' ? 'active' : '' }}"><i class="fe fe-server"></i> <span>Service List</span></a>									
 					</li>
-				@endcan --}}
+				@endcan
+
 
                 @can('Product Management')
                     <li class="menu-title "><span>Product Management</span></li>
