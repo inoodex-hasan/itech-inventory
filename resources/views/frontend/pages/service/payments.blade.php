@@ -161,7 +161,8 @@
                                             <tr role="row">
                                                 <td>{{ $loop->index + 1 }}</td>
                                                 <td>{{ $payment->created_at->format('Y-m-d') }}</td>
-                                                <td>{{ getArrayData(paymentMethods(), $payment->payment_method) }}</td>
+                                                <td>{{ getArrayData(paymentMethods(), $payment->payment_method) ?: ($payment->payment_method == 'cash' ? 'cash' : $payment->payment_method) }}
+                                                </td>
                                                 <td>{{ $payment->amount }}</td>
                                             </tr>
                                             @php
@@ -180,7 +181,8 @@
                                             @foreach ($methodWise as $key => $value)
                                                 <tr>
                                                     <th colspan="3" style="text-align:right;">
-                                                        {{ getArrayData(paymentMethods(), $key) }}</th>
+                                                        {{ getArrayData(paymentMethods(), $key) ?: ($key == 'cash' ? 'cash' : $key) }}
+                                                    </th>
                                                     <th>{{ $value }}</th>
                                                 </tr>
                                             @endforeach

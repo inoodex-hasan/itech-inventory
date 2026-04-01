@@ -7,19 +7,15 @@ use Validator;
 use Carbon\Carbon;
 use App\Models\Sale;
 use App\Models\User;
-use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\Admin\Category;
-use Twilio\Rest\Client;
 use App\Models\Customer;
 use App\Models\DailySale;
-use App\Mail\PlaceOrderMail;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
 
 class ServiceController extends Controller
 {
@@ -113,7 +109,7 @@ class ServiceController extends Controller
             }],
             'warranty_duration' => 'nullable|numeric',
             'repaired_by' => 'nullable|numeric',
-            'existing_client_id' => 'required_if:client_type,existing|exists:customers,id',
+            'existing_client_id' => 'nullable|integer',
         ];
 
         $validation = Validator::make($attributes, $rules);
@@ -121,11 +117,21 @@ class ServiceController extends Controller
             return redirect()->back()->with(['error' => getNotify(4)])->withErrors($validation)->withInput();
         }
 
-        $product = Product::findOrFail($request->product_id);
+        // Additional validation for existing client
+        if ($request->client_type == 'existing' && !$request->existing_client_id) {
+            return redirect()->back()->with(['error' => 'Please select an existing customer'])->withInput();
+        }
 
         if ($request->client_type == 'existing') {
             $customer = Customer::find($request->existing_client_id);
-        } else {
+            if (!$customer) {
+                return redirect()->back()->with(['error' => 'The selected customer is invalid'])->withInput();
+            }
+        }
+
+        $product = Product::findOrFail($request->product_id);
+
+        if ($request->client_type == 'new') {
             $customerByPhone = Customer::where('phone', $request->phone)->first();
             $customerByEmail = Customer::where('email', $request->email)->first();
             if($request->email == "") $customerByEmail = null;
@@ -173,83 +179,16 @@ class ServiceController extends Controller
         $service->status = '0';
         $service->save();
 
-        if($request->is_booking == 'true'){
-            $booking = Booking::where('id', $request->booking_id)->first();
-            if(!$booking) $booking = new Booking;
-            $booking->id = $request->booking_id;
-            $booking->customer_id = $customer->id;
-            $booking->country_code = $countryCode;
-            $booking->name = $customer->name;
-            $booking->phone = $customer->phone;
-            $booking->email = $customer->email;
-            $booking->address = $customer->address;
-            $booking->product_name = $product->name;
-            $booking->product_number = $request->product_number;
-            $booking->details = $request->details;
-            $booking->save();
-        }
-
         if($request->paid_amount > 0){
             $payment = new Payment;
             $payment->payment_for = '1';
             $payment->customer_id = $customer->id;
             $payment->sale_id = $service->id;
-            $payment->payment_method = $request->payment_method_id ?: 'cash';
+            $payment->payment_method = $request->payment_method_id ?: '1';
             $payment->amount = $request->paid_amount;
             $payment->save();
         }
 
-
-        $service = Service::with('product')->where('id', $service->id)->first();
-        $serviceMans = lib_serviceMan();
-
-        // return view('layouts.placeOrderMail', compact('service','serviceMans'));
-
-        if($request->email){
-            Mail::to($request->email)->send(new PlaceOrderMail($service, $serviceMans));
-        }
-        if($request->phone){
-            $twilio = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
-
-            $man = getArrayData($serviceMans,$service->repaired_by);
-
-            $message  = "Quick Phone Fix N More\n";
-            $message .= "7157 Ogontaz Ave, Philadelphia PA 19138\n";
-            $message .= "Hotline: +234 901 791 9699\n\n";
-
-            $message .= "Service Confirmation\n\n";
-
-            $message .= "Customer Info:\n";
-            $message .= "Name: {$service->name}\n";
-            $message .= "Phone: {$service->phone}\n";
-            $message .= "Email: {$service->email}\n";
-            $message .= "Address: {$service->address}\n";
-
-            $message .= "Service Info:\n";
-            $message .= "Product: " . ($service->product?->name ?? $service->product_name) . "\n";
-            $message .= "IMEI: {$service->product_number}\n";
-            if($service->details)$message .= "Details: {$service->details}\n";
-            $message .= "Warranty: {$service->warranty_duration} days\n";
-            $message .= "Price: \${$service->bill}\n";
-            $message .= "Paid: \${$service->paid_amount}\n";
-            $message .= "Due: \${$service->due_amount}\n";
-            $message .= "Repaired By: {$man}\n";
-            $message .= "Date: " . now()->format('Y-m-d g:i A') . "\n\n";
-            $message .= "Thank You. Please come again.\n\n";
-
-            $message .= "Note: Warranty For {$service->warranty_duration} Days. Warranty Does Not Cover Broken Or Water Damage. No Refund, Exchange Only.";
-
-            try{
-                $twilio->messages->create(
-                    $request->country_code . $request->phone,
-                    [
-                        'from' => env('TWILIO_PHONE_NUMBER'),
-                        'body' => $message
-                    ]
-                );
-            } catch (\Twilio\Exceptions\RestException $e) {}
-        }
-        
         return redirect()->route('service.index')->with(['success' => getNotify(1)]);
 
     }
@@ -466,64 +405,64 @@ class ServiceController extends Controller
         return view('frontend.pages.service.complated',compact('services','users','request','todaysRevenue','thisWeeksRevenue','thisMonthsRevenue','thisYearsRevenue','monthlyRevenue','yearlyRevenue','todaysSalesRevenue','thisWeeksSalesRevenue','thisMonthsSalesRevenue','thisYearsSalesRevenue','totalServiceDues','totalSalesDues','todaysDailySalesRevenue','thisWeeksDailySalesRevenue','thisMonthsDailySalesRevenue','thisYearsDailySalesRevenue'));
     }
 
-    public function makeComplate(Request $request, string $id){
-        $service = Service::where('id',$id)->first();
-        if(!$service)abort(404);
-        $service->status = '1';
-        $service->complated_date = date('Y-m-d');
-        $service->update();
+    // public function makeComplate(Request $request, string $id){
+    //     $service = Service::where('id',$id)->first();
+    //     if(!$service)abort(404);
+    //     $service->status = '1';
+    //     $service->complated_date = date('Y-m-d');
+    //     $service->update();
 
 
-        $serviceMans = lib_serviceMan();
+    //     $serviceMans = lib_serviceMan();
 
-        if($service->email){
-            Mail::to($service->email)->send(new PlaceOrderMail($service, $serviceMans));
-        }
-        if($service->phone){
-            $twilio = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
+    //     if($service->email){
+    //         Mail::to($service->email)->send(new PlaceOrderMail($service, $serviceMans));
+    //     }
+    //     if($service->phone && env('TWILIO_SID') && env('TWILIO_AUTH_TOKEN')){
+    //         $twilio = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
 
-            $man = getArrayData($serviceMans,$service->repaired_by);
+    //         $man = getArrayData($serviceMans,$service->repaired_by);
 
-            $message  = "Quick Phone Fix N More\n";
-            $message .= "7157 Ogontaz Ave, Philadelphia PA 19138\n";
-            $message .= "Hotline: +234 901 791 9699\n\n";
+    //         $message  = "Quick Phone Fix N More\n";
+    //         $message .= "7157 Ogontaz Ave, Philadelphia PA 19138\n";
+    //         $message .= "Hotline: +234 901 791 9699\n\n";
 
-            $message .= "Service Completed\n\n";
+    //         $message .= "Service Completed\n\n";
 
-            $message .= "Customer Info:\n";
-            $message .= "Name: {$service->name}\n";
-            $message .= "Phone: {$service->phone}\n";
-            $message .= "Email: {$service->email}\n";
-            $message .= "Address: {$service->address}\n";
+    //         $message .= "Customer Info:\n";
+    //         $message .= "Name: {$service->name}\n";
+    //         $message .= "Phone: {$service->phone}\n";
+    //         $message .= "Email: {$service->email}\n";
+    //         $message .= "Address: {$service->address}\n";
 
-            $message .= "Service Info:\n";
-            $message .= "Product: " . ($service->product?->name ?? $service->product_name) . "\n";
-            $message .= "IMEI: {$service->product_number}\n";
-            if($service->details)$message .= "Details: {$service->details}\n";
-            $message .= "Warranty: {$service->warranty_duration} days\n";
-            $message .= "Price: \${$service->bill}\n";
-            $message .= "Paid: \${$service->paid_amount}\n";
-            $message .= "Due: \${$service->due_amount}\n";
-            $message .= "Repaired By: {$man}\n";
-            $message .= "Date: " . now()->format('Y-m-d g:i A') . "\n\n";
-            $message .= "Thank You. Please come again.\n\n";
+    //         $message .= "Service Info:\n";
+    //         $message .= "Product: " . ($service->product?->name ?? $service->product_name) . "\n";
+    //         $message .= "IMEI: {$service->product_number}\n";
+    //         if($service->details)$message .= "Details: {$service->details}\n";
+    //         $message .= "Warranty: {$service->warranty_duration} days\n";
+    //         $message .= "Price: \${$service->bill}\n";
+    //         $message .= "Paid: \${$service->paid_amount}\n";
+    //         $message .= "Due: \${$service->due_amount}\n";
+    //         $message .= "Repaired By: {$man}\n";
+    //         $message .= "Date: " . now()->format('Y-m-d g:i A') . "\n\n";
+    //         $message .= "Thank You. Please come again.\n\n";
 
-            $message .= "Note: Warranty For {$service->warranty_duration} Days. Warranty Does Not Cover Broken Or Water Damage. No Refund, Exchange Only.";
+    //         $message .= "Note: Warranty For {$service->warranty_duration} Days. Warranty Does Not Cover Broken Or Water Damage. No Refund, Exchange Only.";
 
 
-            try{
-                $twilio->messages->create(
-                    $service->country_code . $service->phone,
-                    [
-                        'from' => env('TWILIO_PHONE_NUMBER'),
-                        'body' => $message
-                    ]
-                );
-            } catch (\Twilio\Exceptions\RestException $e) {}
-        }
+    //         try{
+    //             $twilio->messages->create(
+    //                 $service->country_code . $service->phone,
+    //                 [
+    //                     'from' => env('TWILIO_PHONE_NUMBER'),
+    //                     'body' => $message
+    //                 ]
+    //             );
+    //         } catch (\Twilio\Exceptions\RestException $e) {}
+    //     }
 
-        return redirect()->back()->with(['success' => getNotify(2)]);
-    } 
+    //     return redirect()->back()->with(['success' => getNotify(2)]);
+    // } 
 
     public function payments(Request $request){ 
 

@@ -116,8 +116,8 @@
                                     <th>Product</th>
                                     {{-- <th>Total</th>
                                     <th>Discount</th> --}}
-                                    <th>Total</th>
-                                    <th>Paid</th>
+                                    <th>Bill</th>
+                                    {{-- <th>Paid</th> --}}
                                     <th>Due</th>
                                     <th>Status</th>
                                     {{-- <th>Warranty</th>
@@ -143,8 +143,8 @@
                                         </td>
                                         {{-- <td>{{ $service->total }}</td>
                                         <td>{{ $service->discount }}</td> --}}
-                                        <td>{{ $service->total }}</td>
-                                        <td>{{ $service->paid_amount }}</td>
+                                        <td>{{ $service->bill }}</td>
+                                        {{-- <td>{{ $service->paid_amount }}</td> --}}
                                         <td>{{ $service->due_amount }}</td>
                                         <td>
                                             @if ($service->due_amount <= 0)
@@ -162,8 +162,13 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     <a class="dropdown-item"
-                                                        href="{{ route('service.payments', ['id' => $service->id, 'payment_for' => '1']) }}">Get
-                                                        Payments</a>
+                                                        href="{{ route('service.payments', ['id' => $service->id, 'payment_for' => '1']) }}">
+                                                        @if ($service->due_amount <= 0)
+                                                            View
+                                                        @else
+                                                            Get Payments
+                                                        @endif
+                                                    </a>
                                                     <a class="dropdown-item" target="_blank"
                                                         href="{{ route('service.invoice', $service->id) }}">Invoice</a>
                                                     {{-- <a class="dropdown-item"

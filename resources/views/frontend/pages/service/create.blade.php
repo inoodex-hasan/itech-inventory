@@ -286,9 +286,9 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-end justify-content-end pb-3">
+                        <div class="col-md-3 d-flex align-items-end justify-content-end pb-3">
                             <button type="submit" class="btn btn-primary btn-lg w-100" style="height: 50px;">
-                                <i class="fe fe-check-circle me-2"></i> Confirm & Save Service
+                                Save & Confirm
                             </button>
                         </div>
                     </div>
