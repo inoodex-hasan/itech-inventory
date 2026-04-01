@@ -256,12 +256,11 @@ public function store(Request $request)
 
     } catch (\Exception $e) {
         DB::rollBack();
-        
+
         // Log the error
         \Log::error('Sale creation failed: ' . $e->getMessage());
-        
-        return redirect()->back()
-            ->withInput()
+
+        return redirect()->route('sales.index')
             ->with(['error' => 'Failed to create sale: ' . $e->getMessage()]);
     }
 }
