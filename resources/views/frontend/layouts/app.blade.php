@@ -61,6 +61,8 @@
 
     <script src="{{ asset('assets') }}/js/rocket-loader.min.js" data-cf-settings="19fcc0aa7d222f8686a0e100-|49" defer>
     </script>
+
+    @stack('scripts')
 </body>
 
 <!-- Mirrored from kanakku.dreamstechnologies.com/html/template/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 24 Nov 2024 06:10:03 GMT -->
