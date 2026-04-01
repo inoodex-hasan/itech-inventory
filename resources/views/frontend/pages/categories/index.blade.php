@@ -21,7 +21,7 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="search" class="form-label">Search</label>
-                                        <input type="text" class="form-control" id="search" name="search" 
+                                        <input type="text" class="form-control" id="search" name="search"
                                             value="{{ request('search') }}" placeholder="Search by name, slug...">
                                     </div>
                                 </div>
@@ -30,8 +30,10 @@
                                         <label for="status" class="form-label">Status</label>
                                         <select class="form-select" id="status" name="status">
                                             <option value="">All Status</option>
-                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inactive</option>
+                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Active
+                                            </option>
+                                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inactive
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -144,7 +146,9 @@
         <script>
             $(document).ready(function() {
                 $('#categoryTable').DataTable({
-                    "order": [[0, 'asc']],
+                    "order": [
+                        [0, 'asc']
+                    ],
                     "paging": false,
                     "info": false
                 });

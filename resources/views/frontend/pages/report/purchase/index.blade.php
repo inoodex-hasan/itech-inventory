@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row p-3">
             <div class="col-sm-12">
                 <div class="card-table">
                     <div class="card-body">

@@ -138,7 +138,7 @@
                     <li class="">
                         <a href="{{ route('company-details.index') }}"
                             class="{{ Route::currentRouteName() == 'company-details.index' ? 'active' : '' }}"><i
-                                class="fe fe-layers"></i> <span> Company Details</span></a>
+                                class="fe fe-briefcase"></i> <span> Company Details</span></a>
                     </li>
                 @endcan
 

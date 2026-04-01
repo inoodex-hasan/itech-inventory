@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 01, 2026 at 11:10 AM
+-- Generation Time: Apr 01, 2026 at 12:20 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.26
 
@@ -151,13 +151,6 @@ CREATE TABLE `bills` (
   `designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `bills`
---
-
-INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `sale_id`, `project_id`, `customer_id`, `client_id`, `type`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`, `bank_detail_id`, `company_detail_id`, `terms_conditions`, `subject`, `attention_to`, `designation`) VALUES
-(37, 'BILL-20260331-0002', 'BIL-20260331-160136', 26, NULL, 16, NULL, 'sale', 'hjfgjfdgjhdfgh', '2026-03-31', 32400.00, 32400.00, NULL, '2026-03-31 10:02:21', '2026-03-31 10:02:21', 1, 1, 'The products come with a 1-year limited warranty. Please note that the warranty does not cover physical damage or burn cases.\r\nThe delivered products & accessories will not be changeable after use.\r\n The party will pay by Cash/ an account Payee Cheque/DD/Pay Order in favor of our company with a work order.\r\nGovt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per government rule.', 'Bill for Supplying of Products/Services', 'Mr. Khan', 'Striker');
-
 -- --------------------------------------------------------
 
 --
@@ -174,13 +167,6 @@ CREATE TABLE `bill_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `bill_items`
---
-
-INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(45, 37, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 16200.00, 32400.00, '2026-03-31 10:02:21', '2026-03-31 10:02:21');
 
 -- --------------------------------------------------------
 
@@ -224,10 +210,20 @@ CREATE TABLE `brands` (
 --
 
 INSERT INTO `brands` (`id`, `name`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(2, 'HP', 1, '2025-11-02 18:37:35', '2025-11-02 18:37:35', NULL),
-(3, 'Canon', 1, '2025-11-02 18:38:06', '2025-11-02 18:38:06', NULL),
-(4, 'Epson', 1, '2025-11-02 18:38:12', '2025-11-02 18:38:12', NULL),
-(5, 'Brother', 1, '2025-11-02 18:38:25', '2025-11-02 18:38:25', NULL);
+(2, 'HP', 1, '2025-11-02 12:37:35', '2025-11-02 12:37:35', NULL),
+(3, 'Canon', 1, '2025-11-02 12:38:06', '2025-11-02 12:38:06', NULL),
+(4, 'Epson', 1, '2025-11-02 12:38:12', '2025-11-02 12:38:12', NULL),
+(8, 'HiTi', 1, '2026-03-14 04:16:23', '2026-03-14 04:49:07', NULL),
+(9, 'Zebra', 1, '2026-03-14 04:16:55', '2026-03-14 04:16:55', NULL),
+(10, 'Evolish', 1, '2026-03-14 04:17:09', '2026-03-14 04:17:09', NULL),
+(11, 'RFID 125k Mango brand', 1, '2026-03-14 04:17:42', '2026-03-14 04:17:42', NULL),
+(12, 'Crystal', 1, '2026-03-14 04:18:14', '2026-03-14 04:18:14', NULL),
+(13, 'Luminus', 1, '2026-03-14 04:18:29', '2026-03-14 04:18:29', NULL),
+(14, 'ZKTeco', 1, '2026-03-14 04:18:59', '2026-03-14 04:18:59', NULL),
+(15, 'HIKVISION', 1, '2026-03-14 04:19:25', '2026-03-14 04:19:25', NULL),
+(16, '3D Glass', 1, '2026-03-28 08:50:32', '2026-03-28 08:50:32', NULL),
+(17, 'DT Lebel', 1, '2026-03-29 05:57:19', '2026-03-29 05:57:19', NULL),
+(18, 'TT Lebel', 1, '2026-03-29 05:58:57', '2026-03-29 05:58:57', NULL);
 
 -- --------------------------------------------------------
 
@@ -252,10 +248,13 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `image`, `status`, `order_by`, `created_at`, `updated_at`) VALUES
-(1, 'Electronics', 'electronics', NULL, NULL, 1, 1, '2026-03-08 09:28:49', '2026-03-08 09:28:49'),
-(3, 'Laptops', 'laptops', NULL, NULL, 1, 2, '2026-03-08 09:28:49', '2026-03-08 09:28:49'),
-(4, 'Tablets', 'tablets', NULL, NULL, 1, 3, '2026-03-08 09:28:49', '2026-03-08 09:28:49'),
-(5, 'Accessories', 'accessories', NULL, NULL, 1, 4, '2026-03-08 09:28:49', '2026-03-08 09:28:49');
+(4, 'Tablets', 'tablets', NULL, NULL, 1, 3, '2026-03-08 03:28:49', '2026-03-08 03:28:49'),
+(5, 'Accessories', 'accessories', NULL, NULL, 1, 4, '2026-03-08 03:28:49', '2026-03-08 03:28:49'),
+(19, 'Pvc card', 'pvc-card', NULL, NULL, 1, 0, '2026-03-14 04:28:23', '2026-03-14 04:28:23'),
+(20, 'Printers Ribbons', 'printers-ribbons', NULL, NULL, 1, 0, '2026-03-14 04:28:51', '2026-03-14 04:29:01'),
+(21, 'Printers', 'printers', NULL, NULL, 1, 0, '2026-03-14 04:29:18', '2026-03-14 04:29:18'),
+(22, 'Service Charges', 'service-charges', NULL, NULL, 1, 0, '2026-03-14 04:29:58', '2026-03-14 04:29:58'),
+(23, 'DT Lebel', 'dt-lebel', NULL, NULL, 1, 0, '2026-03-29 05:56:53', '2026-03-29 05:56:53');
 
 -- --------------------------------------------------------
 
@@ -290,13 +289,6 @@ CREATE TABLE `challans` (
   `designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `challans`
---
-
-INSERT INTO `challans` (`id`, `challan_number`, `reference_number`, `challan_date`, `type`, `sale_id`, `project_id`, `customer_id`, `client_id`, `recipient_organization`, `recipient_designation`, `recipient_address`, `created_at`, `updated_at`, `attention_to`, `subject`, `notes`, `company_name`, `signatory_name`, `signatory_designation`, `company_phone`, `company_email`, `company_website`, `designation`) VALUES
-(45, 'CHALLAN-20260401-0001', 'CHL-20260401-155021', '2026-04-01', 'sale', 26, NULL, 16, NULL, 'Md Hasan', 'Manager', 'Dhaka', '2026-04-01 09:50:50', '2026-04-01 09:50:50', 'Mr. Kamal', 'Delivery Challan', NULL, 'Intelligent Technology', 'Engr. Shamsul Alam', 'Director (Technical)', '+880 XXXX-XXXXXX', 'info@intelligenttech.com', 'www.intelligenttech.com', 'Manager');
-
 -- --------------------------------------------------------
 
 --
@@ -312,13 +304,6 @@ CREATE TABLE `challan_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `challan_items`
---
-
-INSERT INTO `challan_items` (`id`, `challan_id`, `description`, `quantity`, `unit`, `created_at`, `updated_at`) VALUES
-(50, 45, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2026-04-01 09:50:50', '2026-04-01 09:50:50');
 
 -- --------------------------------------------------------
 
@@ -425,12 +410,10 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_verified_at`, `address`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
-(11, 'Md Juel', NULL, '01213986745', 'juel@example.com', NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-26 11:00:21'),
-(15, 'Md Rahim', NULL, '01195674368', 'rahim@example.com', NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-23 06:05:15', '2025-11-26 10:59:08'),
-(16, 'Md Hasan', NULL, '01200000000', 'hasan@example.com', NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-26 05:26:27', '2025-11-26 10:56:57'),
-(20, 'Beau Kemmer', NULL, '4338071573', 'your.email+fakedata66830@gmail.com', NULL, '5588 E River Road', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-04-01 10:30:52', '2026-04-01 10:30:52'),
-(21, 'Nia Labadie', NULL, '6564701866', 'your.email+fakedata26341@gmail.com', NULL, '805 Dickens Meadow', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-04-01 10:34:35', '2026-04-01 10:34:35'),
-(22, 'Edmond Kutch', NULL, '2317735233', 'your.email+fakedata47339@gmail.com', NULL, '20047 Ollie Unions', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-04-01 10:53:44', '2026-04-01 10:53:44');
+(19, 'Averroes International  School', NULL, '01302223312', NULL, NULL, 'Lalmatia,7/16 B-block', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-03-14 04:22:03', '2026-03-14 04:22:03'),
+(20, 'Unique Trade Co', NULL, '01718943547', NULL, NULL, 'Shamim sarani,Sewrapara,Mirpur', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-03-14 04:24:04', '2026-03-14 04:24:04'),
+(21, 'Techno Solution', NULL, '01894892867', NULL, NULL, 'Elephant Road,Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-03-14 04:25:46', '2026-03-14 04:25:46'),
+(22, 'Nonghor Photo Graphics', NULL, '01723407102', NULL, NULL, 'Gloria Tower (Gnd Floor), Paltan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-03-14 04:26:52', '2026-03-14 04:26:52');
 
 -- --------------------------------------------------------
 
@@ -916,10 +899,21 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `category_id`, `name`, `brand_id`, `model`, `photos`, `status`, `warranty`, `created_at`, `updated_at`) VALUES
-(3, NULL, 'Brother HL-L2320D Auto Duplex Laser Printer (30 PPM)', 5, 'Brother HL-L2320D', '[\"products\\/MvogjUxGJxkpdJ81qlvcw0xvNkNP359uJMsQmYeJ.jpg\"]', '1', 365, '2025-11-02 18:39:59', '2025-11-25 12:56:30'),
-(4, NULL, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 4, 'EcoTank L3250', '[\"products\\/tASNTtO44wLOcacQJD3c4OY1RlN6BeKvD0syvHAu.jpg\"]', '1', 365, '2025-11-02 18:40:49', '2025-11-25 11:48:20'),
-(5, NULL, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', 3, 'Canon Pixma G3010', '[\"products\\/hRkUJ44b4qhFOjjeeyCMtSqfHQQWxBekLq60T9eE.jpg\"]', '1', 365, '2025-11-02 18:41:22', '2025-11-25 11:48:08'),
-(11, NULL, 'HP Smart Tank 670 Wi-Fi Duplexer All-in-One Color Printer', 2, 'Smart Tank 670', '[\"products\\/rwOhbDFkwmB4cKCGCa54ASsHxqCUit2k3qREQIrG.jpg\"]', '1', 365, '2025-11-30 10:54:46', '2025-11-30 10:55:28');
+(11, NULL, 'HP Smart Tank 670 Wi-Fi Duplexer All-in-One Color Printer', 2, 'Smart Tank 670', '[\"products\\/VfLtkp76kbG5hgYlEYaLXeDO5GRFykxoFmcfe5gV.jpg\"]', '1', 365, '2025-11-30 04:54:46', '2026-03-08 10:33:16'),
+(12, NULL, 'HiTi Colour Ribbon(YMCKO)', 8, 'CS200e', '[\"products\\/Mck1r35Y9I2MbS9RTG5q6F8DZM9wI3lUimNG25LV.png\"]', '1', 365, '2026-03-14 04:55:50', '2026-03-14 05:06:09'),
+(13, NULL, 'HiTi ID Card Printer', 8, 'CS200e', '[\"products\\/lyy3onKh4BrerKYkbg0vu9ZcusbaCpBENzo4Yg3J.png\"]', '1', 365, '2026-03-14 05:32:36', '2026-03-14 05:32:36'),
+(14, NULL, 'ZC300 Series Dual-Sided Card Printer', 9, 'ZC300', '[\"products\\/dqDJN1b2rDhJ86enmNgZoyjTwwPbZKLXOSOSCOS3.png\"]', '1', 365, '2026-03-14 05:36:45', '2026-03-14 05:36:45'),
+(15, NULL, 'Evolis ID card printer.', 10, 'Primacy 2', '[\"products\\/8SWx2jtWYGd7a970ymnbQwILTfSWi2smcJ7emh8n.png\"]', '1', 365, '2026-03-14 05:41:20', '2026-03-14 05:41:20'),
+(16, NULL, 'Evolis Colour Ribbon (YMCKO)', 10, 'Primacy 2', '[\"products\\/tYGmMKoQJEEWWXYW3ntoWvUq3gqrzDbcShcUaNur.png\"]', '1', 365, '2026-03-14 05:47:14', '2026-03-14 05:47:14'),
+(17, NULL, 'ZC300 Colour Ribbon (YMCKO) 300IMG', 9, 'ZC300', '[\"products\\/rEeoo6nUjz6nlgpBMZ1FWhBgjx2Qpvg0XolCLYZr.png\"]', '1', 365, '2026-03-14 05:50:02', '2026-03-14 05:50:02'),
+(18, NULL, 'Glass', 16, '3D', NULL, '1', 365, '2026-03-28 08:51:15', '2026-03-28 08:51:15'),
+(19, NULL, 'AC Adapter', 8, '(HiTi CS 200e)', NULL, '1', 365, '2026-03-29 05:54:34', '2026-03-29 05:54:34'),
+(20, NULL, 'AC Adapter', 9, '( Zebra ZXP-3)', NULL, '1', 365, '2026-03-29 05:56:08', '2026-03-29 05:56:08'),
+(21, NULL, 'Barcode Label DT (50mm.38mm)', 17, '(50mm.38mm)', NULL, '1', 365, '2026-03-29 05:57:57', '2026-03-29 05:57:57'),
+(22, NULL, 'Barcode label DT', 17, '(100mm.57mm)', NULL, '1', 365, '2026-03-29 05:58:21', '2026-03-29 05:58:21'),
+(23, NULL, 'Barcode Label TT', 18, '(38mm.25mm)', NULL, '1', 365, '2026-03-29 05:59:17', '2026-03-29 05:59:17'),
+(24, NULL, 'Barcode Label-DT', 17, '(50mm.25mm)', NULL, '1', 365, '2026-03-29 06:00:12', '2026-03-29 06:00:12'),
+(25, NULL, 'Barcode Label', 17, '(DT 38mm.25mm)', NULL, '1', 365, '2026-03-29 06:00:35', '2026-03-29 06:00:35');
 
 -- --------------------------------------------------------
 
@@ -993,14 +987,6 @@ CREATE TABLE `project_items` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `project_items`
---
-
-INSERT INTO `project_items` (`id`, `project_id`, `product_id`, `unit_price`, `quantity`, `total`, `created_at`, `updated_at`) VALUES
-(65, 10, 4, 16000.00, 2, 32000.00, '2025-11-26 05:54:14', '2025-11-26 05:54:14'),
-(66, 10, 5, 28000.00, 3, 84000.00, '2025-11-26 05:54:14', '2025-11-26 05:54:14');
-
 -- --------------------------------------------------------
 
 --
@@ -1022,16 +1008,6 @@ CREATE TABLE `purchases` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `purchases`
---
-
-INSERT INTO `purchases` (`id`, `product_id`, `vendor_id`, `quantity`, `unit_price`, `sub_price`, `total_price`, `payment`, `due`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 4, 2, 10, 15500.00, 155000.00, 14000.00, 10000.00, 4000.00, 1, NULL, '2025-11-02 19:31:34', '2025-11-02 19:31:34'),
-(3, 5, 1, 20, 25000.00, 500000.00, 480000.00, 400000.00, 80000.00, 1, NULL, '2025-11-03 02:05:12', '2025-11-03 02:05:12'),
-(4, 3, 3, 12, 13500.00, 162000.00, 160000.00, 80000.00, 80000.00, 1, NULL, '2025-11-03 02:11:45', '2025-11-03 02:11:45'),
-(5, 4, 4, 15, 15500.00, 232500.00, 230000.00, 150000.00, 80000.00, 2, NULL, '2025-11-20 05:14:42', '2025-11-20 05:14:42');
 
 -- --------------------------------------------------------
 
@@ -1095,13 +1071,6 @@ CREATE TABLE `quotation_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `quotation_items`
---
-
-INSERT INTO `quotation_items` (`id`, `quotation_id`, `product_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(25, 23, 4, NULL, 2, 1500.00, 3000.00, '2026-04-01 09:59:38', '2026-04-01 09:59:38');
 
 -- --------------------------------------------------------
 
@@ -1263,15 +1232,6 @@ CREATE TABLE `sales` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `sales`
---
-
-INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`, `sale_type`, `project_id`, `qty`, `total`, `vat`, `tax`, `delivery_charge`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
-(26, 'INV-69268F83DF752', 16, NULL, 4, 'retail', NULL, 2, 32400, 0.00, 0.00, 0.00, 33000, 33000, 23000.00, 10000.00, 0, '2', 'partial', '2025-11-26 05:26:27', '2025-11-26 11:02:09'),
-(35, 'PRJ-10-0B4C22CF0487', NULL, 9, 4, 'project', 10, 2, 32000, 0.00, 0.00, 0.00, 32000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14'),
-(36, 'PRJ-10-E7F592F03244', NULL, 9, 5, 'project', 10, 3, 84000, 0.00, 0.00, 0.00, 84000, 250000, NULL, NULL, NULL, NULL, 'credit', '2025-11-26 05:54:14', '2025-11-26 05:54:14');
-
 -- --------------------------------------------------------
 
 --
@@ -1354,8 +1314,8 @@ CREATE TABLE `services` (
 --
 
 INSERT INTO `services` (`id`, `customer_id`, `name`, `country_code`, `phone`, `email`, `address`, `product_id`, `product_name`, `product_number`, `details`, `total`, `bill`, `paid_amount`, `discount`, `due_amount`, `warranty_duration`, `repaired_by`, `status`, `complated_date`, `created_at`, `updated_at`) VALUES
-(4, 15, 'Md Rahim', NULL, '01195674368', 'rahim@example.com', 'Dhaka', 5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', '12345', 'test', 800, 750, 300, 50, 450, NULL, NULL, '0', NULL, '2026-04-01 08:18:42', '2026-04-01 08:18:42'),
-(9, 16, 'Md Hasan', NULL, '01200000000', 'hasan@example.com', 'Dhaka', 4, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', '123456', 'Test', 800, 750, 500, 50, 250, NULL, NULL, '0', NULL, '2026-04-01 11:01:01', '2026-04-01 11:01:01');
+(4, 15, 'Md Rahim', NULL, '01195674368', 'rahim@example.com', 'Dhaka', NULL, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', '12345', 'test', 800, 750, 300, 50, 450, NULL, NULL, '0', NULL, '2026-04-01 08:18:42', '2026-04-01 08:18:42'),
+(9, 16, 'Md Hasan', NULL, '01200000000', 'hasan@example.com', 'Dhaka', NULL, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', '123456', 'Test', 800, 750, 500, 50, 250, NULL, NULL, '0', NULL, '2026-04-01 11:01:01', '2026-04-01 11:01:01');
 
 -- --------------------------------------------------------
 
@@ -1879,13 +1839,13 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `challans`
