@@ -12,7 +12,7 @@ use App\Models\User;
 class PaymentController extends Controller
 {
     public function payments(Request $request, $id, $payment_for){
-        $payments = Payment::where('bill_id',$id)->where('payment_for', $payment_for)->get();
+        $payments = Payment::where('sale_id',$id)->where('payment_for', $payment_for)->get();
         return view('frontend.pages.payment.bill_payment', compact('payments','id', 'payment_for'));
     }
 
@@ -30,8 +30,8 @@ class PaymentController extends Controller
         $payment = new Payment;
         $payment->payment_for = $request->payment_for;
         $payment->customer_id = $bill->customer_id;
-        $payment->bill_id = $bill->id;
-        $payment->payment_method_id = $request->payment_method_id;
+        $payment->sale_id = $bill->id;
+        $payment->payment_method = $request->payment_method_id;
         $payment->amount = $request->amount;
         $payment->save();
 
@@ -46,10 +46,10 @@ class PaymentController extends Controller
         $payment = Payment::where('id',$id)->first();
         if(!$payment) return redirect()->back()->with(['error' => getNotify(10)]);
         if($payment->payment_for == '1'){
-            $bill = Service::where('id', $payment->bill_id)->first();
+            $bill = Service::where('id', $payment->sale_id)->first();
         }
         if($payment->payment_for == '2'){
-            $bill = Sale::where('id', $payment->bill_id)->first();
+            $bill = Sale::where('id', $payment->sale_id)->first();
         }
         if(!$bill) return redirect()->back()->with(['error' => getNotify(10)]);
 
@@ -58,7 +58,7 @@ class PaymentController extends Controller
         $bill->due_amount = max(0,$bill->bill - $bill->paid_amount);
         $bill->update();
 
-        $payment->payment_method_id = $request->payment_method_id;
+        $payment->payment_method = $request->payment_method_id;
         $payment->amount = $request->amount;
         $payment->update();
 
@@ -69,10 +69,10 @@ class PaymentController extends Controller
         $payment = Payment::where('id',$id)->first();
         if(!$payment) return redirect()->back()->with(['error' => getNotify(10)]);
         if($payment->payment_for == '1'){
-            $bill = Service::where('id', $payment->bill_id)->first();
+            $bill = Service::where('id', $payment->sale_id)->first();
         }
         if($payment->payment_for == '2'){
-            $bill = Sale::where('id', $payment->bill_id)->first();
+            $bill = Sale::where('id', $payment->sale_id)->first();
         }
         if(!$bill) return redirect()->back()->with(['error' => getNotify(10)]);
 

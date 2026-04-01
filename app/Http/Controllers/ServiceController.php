@@ -11,6 +11,7 @@ use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Service;
+use App\Models\Admin\Category;
 use Twilio\Rest\Client;
 use App\Models\Customer;
 use App\Models\DailySale;
@@ -55,6 +56,7 @@ class ServiceController extends Controller
 
         $services = $services->where('services.status','0');
         $services = $services->select('services.*','users.name as repaired_by')->orderBy('id','desc')->get();
+        $services->load('product');
 
         $users = lib_serviceMan();
         if($request->search_for == 'pdf'){
@@ -72,8 +74,10 @@ class ServiceController extends Controller
     public function create()
     {
         $users  = User::get();
-        $products = Product::where('status','1')->where('type','1')->get();
-        return view('frontend.pages.service.create',compact('users','products'));
+        $products = Product::with('category')->where('status', '1')->orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+
+        return view('frontend.pages.service.create', compact('users', 'products', 'categories'));
     }
 
     /**
@@ -81,15 +85,21 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->filled('phone')) {
+            $request->merge([
+                'phone' => preg_replace('/\D+/', '', (string) $request->phone),
+            ]);
+        }
+
         $attributes = $request->all();
         $rules = [
             'client_type' => 'required|in:new,existing',
-            'name' => 'required_if:client_type,new',
+            'name' => 'exclude_unless:client_type,new|required',
             'email' => 'nullable|email',
-            'country_code' => 'required_if:client_type,new',
-            'phone' => 'required_if:client_type,new|numeric',
+            'country_code' => 'nullable',
+            'phone' => 'exclude_unless:client_type,new|required|numeric',
             'address' => 'nullable',
-            'product_name' => 'required',
+            'product_id' => 'required|exists:products,id',
             'product_number' => 'nullable',
             'total' => 'required|numeric',
             'bill' => 'required|numeric',
@@ -101,8 +111,8 @@ class ServiceController extends Controller
                     $fail('The payment method is required when the paid amount is greater than 0.');
                 }
             }],
-            'warranty_duration' => 'required|numeric',
-            'repaired_by' => 'required|numeric',
+            'warranty_duration' => 'nullable|numeric',
+            'repaired_by' => 'nullable|numeric',
             'existing_client_id' => 'required_if:client_type,existing|exists:customers,id',
         ];
 
@@ -111,15 +121,7 @@ class ServiceController extends Controller
             return redirect()->back()->with(['error' => getNotify(4)])->withErrors($validation)->withInput();
         }
 
-        if(!is_numeric($request->product_name)){
-            $product = new Product;
-            $product->name = $request->product_name;
-            $product->type = '1';
-            $product->save();
-        } else {
-            $product = Product::where('id', $request->product_name)->first();
-            if($product)$request->product_name =  $product->name;
-        }
+        $product = Product::findOrFail($request->product_id);
 
         if ($request->client_type == 'existing') {
             $customer = Customer::find($request->existing_client_id);
@@ -148,14 +150,17 @@ class ServiceController extends Controller
             $customer->save();
         }
 
+        $countryCode = $customer->country_code ?: $request->country_code;
+
         $service = new Service;
         $service->customer_id = $customer->id;
         $service->name = $customer->name;
-        $service->country_code = $customer->country_code ?? $request->country_code;
+        $service->country_code = $countryCode;
         $service->phone = $customer->phone;
         $service->email = $customer->email;
         $service->address = $customer->address;
-        $service->product_name = $request->product_name;
+        $service->product_id = $product->id;
+        $service->product_name = $product->name;
         $service->product_number = $request->product_number;
         $service->total = $request->total??0;
         $service->discount = $request->discount??0;
@@ -173,12 +178,12 @@ class ServiceController extends Controller
             if(!$booking) $booking = new Booking;
             $booking->id = $request->booking_id;
             $booking->customer_id = $customer->id;
-            $booking->country_code = $request->country_code;
+            $booking->country_code = $countryCode;
             $booking->name = $customer->name;
             $booking->phone = $customer->phone;
             $booking->email = $customer->email;
             $booking->address = $customer->address;
-            $booking->product_name = $request->product_name;
+            $booking->product_name = $product->name;
             $booking->product_number = $request->product_number;
             $booking->details = $request->details;
             $booking->save();
@@ -188,17 +193,14 @@ class ServiceController extends Controller
             $payment = new Payment;
             $payment->payment_for = '1';
             $payment->customer_id = $customer->id;
-            $payment->bill_id = $service->id;
-            $payment->payment_method_id = $request->payment_method_id;
+            $payment->sale_id = $service->id;
+            $payment->payment_method = $request->payment_method_id ?: 'cash';
             $payment->amount = $request->paid_amount;
             $payment->save();
         }
 
 
-        $service = Service::join('customers','customers.id','=','services.customer_id')
-                    ->where('services.id',$service->id)
-                    ->select('services.*')
-                    ->first();
+        $service = Service::with('product')->where('id', $service->id)->first();
         $serviceMans = lib_serviceMan();
 
         // return view('layouts.placeOrderMail', compact('service','serviceMans'));
@@ -224,7 +226,7 @@ class ServiceController extends Controller
             $message .= "Address: {$service->address}\n";
 
             $message .= "Service Info:\n";
-            $message .= "Product: {$service->product_name}\n";
+            $message .= "Product: " . ($service->product?->name ?? $service->product_name) . "\n";
             $message .= "IMEI: {$service->product_number}\n";
             if($service->details)$message .= "Details: {$service->details}\n";
             $message .= "Warranty: {$service->warranty_duration} days\n";
@@ -248,9 +250,7 @@ class ServiceController extends Controller
             } catch (\Twilio\Exceptions\RestException $e) {}
         }
         
-
-
-        return redirect()->back()->with(['success' => getNotify(1)]);
+        return redirect()->route('service.index')->with(['success' => getNotify(1)]);
 
     }
 
@@ -267,15 +267,13 @@ class ServiceController extends Controller
      */
     public function edit(string $id)
     {
-        $service = Service::join('customers','customers.id','=','services.customer_id')
-                    ->where('services.id',$id)
-                    ->select('services.*')
-                    ->first();
+        $service = Service::with('product')->where('id',$id)->first();
         if(!$service)abort(404);
-        $products = Product::where('status','1')->where('type','1')->get();
+        $products = Product::with('category')->where('status', '1')->orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
         $serviceMans = lib_serviceMan();
 
-        return view('frontend.pages.service.edit',compact('service','serviceMans','products'));
+        return view('frontend.pages.service.edit',compact('service','serviceMans','products','categories'));
     }
 
     /**
@@ -286,34 +284,33 @@ class ServiceController extends Controller
         $service = Service::where('id',$id)->first();
         if(!$service)abort(404);
 
+        if ($request->filled('phone')) {
+            $request->merge([
+                'phone' => preg_replace('/\D+/', '', (string) $request->phone),
+            ]);
+        }
+
         $attributes = $request->all();
         $rules = [
             'name' => 'required',
             'email' => 'nullable|email',
-            'country_code' => 'required',
+            'country_code' => 'nullable',
             'phone' => 'required|numeric',
             'address' => 'nullable',
-            'product_name' => 'required',
+            'product_id' => 'required|exists:products,id',
             'product_number' => 'nullable',
             'total' => 'required|numeric',
             'bill' => 'required|numeric',
             'discount' => 'nullable|numeric',
-            'warranty_duration' => 'required|numeric',
-            'repaired_by' => 'required|numeric',
+            'warranty_duration' => 'nullable|numeric',
+            'repaired_by' => 'nullable|numeric',
         ];
         $validation = Validator::make($attributes, $rules);
         if ($validation->fails()) {
             return redirect()->back()->with(['error' => getNotify(4)])->withErrors($validation)->withInput();
         }
 
-        if(!is_numeric($request->product_name)){
-            $product = new Product;
-            $product->name = $request->product_name;
-            $product->save();
-        }else{
-            $product = Product::where('id', $request->product_name)->first();
-            if($product)$request->product_name =  $product->name;
-        }
+        $product = Product::findOrFail($request->product_id);
 
         $customerByPhone = Customer::where('phone', $request->phone)->first();
         $customerByEmail = Customer::where('email', $request->email)->first();
@@ -337,13 +334,16 @@ class ServiceController extends Controller
         $customer->address = $request->address;
         $customer->save();
 
+        $countryCode = $customer->country_code ?: $request->country_code;
+
         $service->customer_id = $customer->id;
         $service->name = $customer->name;
-        $service->country_code = $request->country_code;
+        $service->country_code = $countryCode;
         $service->phone = $customer->phone;
         $service->email = $customer->email;
         $service->address = $customer->address;
-        $service->product_name = $request->product_name;
+        $service->product_id = $product->id;
+        $service->product_name = $product->name;
         $service->product_number = $request->product_number;
         $service->total = $request->total??0;
         $service->discount = $request->discount??0;
@@ -355,8 +355,6 @@ class ServiceController extends Controller
         $service->update();
 
         return redirect()->back()->with(['success' => getNotify(2)]);
-
-
     }
 
     /**
@@ -372,14 +370,20 @@ class ServiceController extends Controller
     }
 
     public function makeInvoice(Request $request, $serviceId){
-        $service = Service::join('customers','customers.id','=','services.customer_id')
-                    ->where('services.id',$serviceId)
-                    ->select('services.*')
-                    ->first();
+        $service = Service::with('product')->where('id',$serviceId)->first();
         if(!$service)abort(404);
         $serviceMans = lib_serviceMan();
 
-        return view('frontend.pages.service.invoice',compact('service','serviceMans'));
+        $items = collect([
+            (object)[
+                'name' => $service->product_name ?? 'N/A',
+                'qty' => 1,
+                'unit_price' => $service->total ?? 0,
+                'total_price' => $service->bill ?? 0,
+            ],
+        ]);
+
+        return view('frontend.pages.service.invoice',compact('service','serviceMans','items'));
     }
 
     public function complatedService(Request $request){
@@ -418,6 +422,7 @@ class ServiceController extends Controller
 
         $services = $services->where('services.status','1');
         $services = $services->select('services.*','users.name as repaired_by')->orderBy('id','desc')->get();
+        $services->load('product');
 
         $users = lib_serviceMan();
 
@@ -492,7 +497,7 @@ class ServiceController extends Controller
             $message .= "Address: {$service->address}\n";
 
             $message .= "Service Info:\n";
-            $message .= "Product: {$service->product_name}\n";
+            $message .= "Product: " . ($service->product?->name ?? $service->product_name) . "\n";
             $message .= "IMEI: {$service->product_number}\n";
             if($service->details)$message .= "Details: {$service->details}\n";
             $message .= "Warranty: {$service->warranty_duration} days\n";
@@ -523,6 +528,14 @@ class ServiceController extends Controller
     public function payments(Request $request){ 
 
         $payments = Payment::where('payment_for', 1);
+        $service = null;
+
+        if ($request->id) {
+            $service = Service::find($request->id);
+            if ($service) {
+                $payments = $payments->where('sale_id', $service->id);
+            }
+        }
 
         $defaultFilter = true;
 
@@ -534,7 +547,7 @@ class ServiceController extends Controller
         }
 
         if ($request->payments_method != "") {
-            $payments = $payments->where('payments.payment_method_id', $request->payments_method);
+            $payments = $payments->where('payments.payment_method', $request->payments_method);
             $defaultFilter = false;
         }
 
@@ -547,12 +560,12 @@ class ServiceController extends Controller
         $payments = $payments->get();
 
         if($request->search_for == 'pdf'){
-            $pdf = Pdf::loadView('pdf.service_payments', compact('payments', 'request'))
+            $pdf = Pdf::loadView('pdf.service_payments', compact('payments', 'request', 'service'))
                 ->setPaper('A4', 'portrait');
             return $pdf->download('service Payments.pdf');
         }
 
-        return view('frontend.pages.service.payments',compact('payments','request'));
+        return view('frontend.pages.service.payments',compact('payments','request','service'));
     }
 
     public function storeRating(Request $request){

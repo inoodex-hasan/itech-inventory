@@ -10,7 +10,7 @@ use App\Http\Controllers\{
     RevenueController, RoleController, PermissionController,
     SalaryController, SalesController, ServiceController,
     TaDaController, UserController, VendorController, BankDetailController,
-    CompanyDetailController
+    CompanyDetailController, PaymentController
 };
 
 use Illuminate\Support\Facades\{Auth, Route};
@@ -73,6 +73,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('complated/service', [ServiceController::class, 'complatedService'])->name('service.complated');
     Route::post('service/makecomplate/{id}', [ServiceController::class, 'makeComplate'])->name('service.makecomplate');
     Route::get('service-payments', [ServiceController::class, 'payments'])->name('service.payments');
+    Route::post('service-payment/add', [PaymentController::class, 'addPayment'])->name('add.payment');
     Route::post('/submit-rating', [ServiceController::class, 'storeRating'])->name('submit.rating');
 
     // === Projects, Bills, Challans, Quotations, etc. ===

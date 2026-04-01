@@ -13,7 +13,7 @@ class Payment extends Model
         'customer_id',
         'sale_id',
         'payment_for',
-        'payment_method_id',
+        'payment_method',
         'amount',
         'status',
         'created_by',

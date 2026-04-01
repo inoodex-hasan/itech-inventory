@@ -33,12 +33,12 @@
                 <tr role="row" class="odd">
                     <td style="border: 1px solid #00;">{{$loop->index+1}}</td>
                     <td style="border: 1px solid #00;">{{$payment->created_at->format('Y-m-d')}}</td>
-                    <td style="border: 1px solid #00;">{{getArrayData(paymentMethods(), $payment->payment_method_id)}}</td>
+                    <td style="border: 1px solid #00;">{{getArrayData(paymentMethods(), $payment->payment_method)}}</td>
                     <td style="border: 1px solid #00;">{{$payment->amount}}</td>
                 </tr>
                 @php
-                      if(!isset($methodWise[$payment->payment_method_id])) $methodWise[$payment->payment_method_id] = 0;
-                      $methodWise[$payment->payment_method_id] += $payment->amount;
+                      if(!isset($methodWise[$payment->payment_method])) $methodWise[$payment->payment_method] = 0;
+                      $methodWise[$payment->payment_method] += $payment->amount;
                       if(!isset($total)) $total = 0;
                       $total += $payment->amount;
                   @endphp

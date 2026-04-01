@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="invoice-title">
-                <p>Date: 09/10/2025</p>
+                {{-- <p>Date: {{ $sales->created_at->format('d-m-Y') }}</p> --}}
                 <h1>INVOICE</h1>
             </div>
         </div>
@@ -56,7 +56,7 @@
 
                     <div class="right">
                         <p>Invoice Date:
-                            {{ date('d-m-Y') }}
+                            {{ $sales->created_at->format('d-m-Y') }}
 
                         </p>
                     </div>

@@ -95,13 +95,24 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
 													<div class="input-block mb-3">
 														<label>Product Name <span class="text-danger">*</span></label>
-														<!-- <input type="text"  class="form-control" placeholder="Product Name" name="product_name" value="{{ $service->product_name }}" required> -->
-														<select name="product_name" id="" class="form-control js-example-basic-single" required>
+														<select name="product_id" id="product_select" class="form-control js-example-basic-single" required>
 															<option value=""></option>
 															@foreach ($products as $product)
-																<option value="{{$product->id}}" {{ strpos($service->product_name, $product->name) !== false ? 'selected' : ''}}>{{$product->name}}</option>
+																<option value="{{$product->id}}" data-category-id="{{$product->category_id}}" {{ (string) old('product_id', $service->product_id) === (string) $product->id || (!$service->product_id && $service->product_name === $product->name) ? 'selected' : ''}}>{{$product->name}}</option>
 															@endforeach
 														 </select>
+													</div>
+												</div>
+
+                                                <div class="col-lg-4 col-md-6 col-sm-12">
+													<div class="input-block mb-3">
+														<label>Category</label>
+														<select id="category_select" class="form-control js-example-basic-single-no-new-value" disabled>
+															<option value="">-- Select Category --</option>
+															@foreach ($categories as $category)
+																<option value="{{ $category->id }}" {{ (string) optional($service->product)->category_id === (string) $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+															@endforeach
+														</select>
 													</div>
 												</div>
 
@@ -128,8 +139,8 @@
 
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
 													<div class="input-block mb-3">
-														<label>Repaired By <span class="text-danger">*</span></label>
-                                                        <Select class="form-select" name="repaired_by" required>
+														<label>Repaired By</label>
+                                                        <Select class="form-select" name="repaired_by">
                                                             <option value="">--Select--</option>
                                                             @foreach ($serviceMans as $key =>  $user)
 															<option value="{{$key}}" {{ $service->repaired_by == $key ? 'selected' : '' }}>{{$user}}</option>
@@ -193,12 +204,16 @@
 <script>
   $(document).ready(function() {
 	
-    $('.js-example-basic-single').select2({
-		tags: true,
-	});
+    $('.js-example-basic-single').select2();
 
 	$('.js-example-basic-single-no-new-value').select2({
 	});
+
+	$('#product_select').on('change', function() {
+		const selected = this.options[this.selectedIndex];
+		const categoryId = selected ? selected.getAttribute('data-category-id') : '';
+		$('#category_select').val(categoryId).trigger('change');
+	}).trigger('change');
   });
 
   function calculateDue(){

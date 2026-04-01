@@ -459,7 +459,7 @@ public function store(Request $request)
 
         // Filter by payment method
         if (!empty($request->payments_method)) {
-            $paymentsQuery->where('payments.payment_method_id', $request->payments_method);
+            $paymentsQuery->where('payments.payment_method', $request->payments_method);
             $defaultFilter = false;
         }
 

@@ -49,16 +49,6 @@
 				@endcan
                 --}}
 
-				@can('Service Management')
-					<li class="menu-title"><span>Services</span></li>
-					<li>
-						<a href="{{ route('service.create') }}" class="{{ Route::currentRouteName() == 'service.create' ? 'active' : '' }}" ><i class="fe fe-plus-circle"></i> <span> Add Service</span></a>
-						<a href="{{ route('service.index') }}" class="{{ Route::currentRouteName() == 'service.index' ? 'active' : '' }}"><i class="fe fe-refresh-cw"></i> <span>Pending Service</span></a>
-						<a href="{{ route('service.complated') }}" class="{{ Route::currentRouteName() == 'service.complated' ? 'active' : '' }}"><i class="fe fe-check-square"></i> <span>Completed Service</span></a>
-						<a href="{{ route('products.index',['type' => 'service']) }}" class="{{ Route::currentRouteName() == 'products.index' ? 'active' : '' }}"><i class="fe fe-server"></i> <span>Service List</span></a>									
-					</li>
-				@endcan
-
 
                 @can('Product Management')
                     <li class="menu-title "><span>Product Management</span></li>
@@ -89,6 +79,24 @@
                         <a href="{{ route('sales.index') }}"
                             class="{{ Route::currentRouteName() == 'sales.index' ? 'active' : '' }}"><i
                                 class="fe fe-list"></i> <span>Sales List</span></a>
+                    </li>
+                @endcan
+
+                @can('Service Management')
+                    <li class="menu-title"><span>Services</span></li>
+                    <li>
+                        <a href="{{ route('service.create') }}"
+                            class="{{ Route::currentRouteName() == 'service.create' ? 'active' : '' }}"><i
+                                class="fe fe-plus-circle"></i> <span> Add Service</span></a>
+                        {{-- <a href="{{ route('service.index') }}"
+                            class="{{ Route::currentRouteName() == 'service.index' ? 'active' : '' }}"><i
+                                class="fe fe-refresh-cw"></i> <span>Pending Service</span></a>
+                        <a href="{{ route('service.complated') }}"
+                            class="{{ Route::currentRouteName() == 'service.complated' ? 'active' : '' }}"><i
+                                class="fe fe-check-square"></i> <span>Completed Service</span></a> --}}
+                        <a href="{{ route('service.index', ['type' => 'service']) }}"
+                            class="{{ Route::currentRouteName() == 'service.index' ? 'active' : '' }}"><i
+                                class="fe fe-server"></i> <span>Service List</span></a>
                     </li>
                 @endcan
 

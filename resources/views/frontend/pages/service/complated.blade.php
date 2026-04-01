@@ -556,7 +556,7 @@
                     <td>
                       <h2 class="table-avatar"> <span>{{$service->phone}}</span></h2>
                     </td>
-                    <td> {{$service->product_name}} </td>
+                    <td> {{ optional($service->product)->name ?? $service->product_name }} </td>
                     <!-- <td> {{$service->product_number}} </td> -->
                     <td> ${{$service->total}} </td>
                     <td> ${{$service->discount}} </td>

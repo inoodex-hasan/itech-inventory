@@ -142,14 +142,14 @@
                                             <tr role="row">
                                                 <td>{{ $loop->index + 1 }}</td>
                                                 <td>{{ $payment->created_at->format('Y-m-d') }}</td>
-                                                <td>{{ getArrayData(paymentMethods(), $payment->payment_method_id) }}</td>
+                                                <td>{{ getArrayData(paymentMethods(), $payment->payment_method) }}</td>
                                                 <td>{{ $payment->amount }}</td>
                                             </tr>
                                             @php
-                                                if (!isset($methodWise[$payment->payment_method_id])) {
-                                                    $methodWise[$payment->payment_method_id] = 0;
+                                                if (!isset($methodWise[$payment->payment_method])) {
+                                                    $methodWise[$payment->payment_method] = 0;
                                                 }
-                                                $methodWise[$payment->payment_method_id] += $payment->amount;
+                                                $methodWise[$payment->payment_method] += $payment->amount;
                                                 if (!isset($total)) {
                                                     $total = 0;
                                                 }
