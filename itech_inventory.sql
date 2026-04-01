@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 08, 2026 at 10:14 AM
+-- Generation Time: Apr 01, 2026 at 11:10 AM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.26
 
@@ -156,7 +156,7 @@ CREATE TABLE `bills` (
 --
 
 INSERT INTO `bills` (`id`, `bill_number`, `reference_number`, `sale_id`, `project_id`, `customer_id`, `client_id`, `type`, `work_order_number`, `bill_date`, `subtotal`, `total_amount`, `notes`, `created_at`, `updated_at`, `bank_detail_id`, `company_detail_id`, `terms_conditions`, `subject`, `attention_to`, `designation`) VALUES
-(32, 'BILL-20251130-0001', 'BIL-20251130-125803', 26, NULL, 16, NULL, 'sale', 'fgjhfgj', '2025-11-30', 32400.00, 32400.00, NULL, '2025-11-30 06:58:20', '2025-11-30 06:58:20', 1, 1, 'The products come with a 1-year limited warranty. Please note that the warranty does not cover physical damage or burn cases.\r\nThe delivered products & accessories will not be changeable after use.\r\n The party will pay by Cash/ an account Payee Cheque/DD/Pay Order in favor of our company with a work order.\r\nGovt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per government rule.', 'Bill for Supplying of Products/Services', 'fgjfgj', 'fgjhfgj');
+(37, 'BILL-20260331-0002', 'BIL-20260331-160136', 26, NULL, 16, NULL, 'sale', 'hjfgjfdgjhdfgh', '2026-03-31', 32400.00, 32400.00, NULL, '2026-03-31 10:02:21', '2026-03-31 10:02:21', 1, 1, 'The products come with a 1-year limited warranty. Please note that the warranty does not cover physical damage or burn cases.\r\nThe delivered products & accessories will not be changeable after use.\r\n The party will pay by Cash/ an account Payee Cheque/DD/Pay Order in favor of our company with a work order.\r\nGovt. VAT & TAX: Prices are including of all kinds of TAX & VAT as per government rule.', 'Bill for Supplying of Products/Services', 'Mr. Khan', 'Striker');
 
 -- --------------------------------------------------------
 
@@ -180,7 +180,7 @@ CREATE TABLE `bill_items` (
 --
 
 INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(40, 32, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 16200.00, 32400.00, '2025-11-30 06:58:20', '2025-11-30 06:58:20');
+(45, 37, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 16200.00, 32400.00, '2026-03-31 10:02:21', '2026-03-31 10:02:21');
 
 -- --------------------------------------------------------
 
@@ -273,9 +273,20 @@ CREATE TABLE `challans` (
   `project_id` bigint UNSIGNED DEFAULT NULL,
   `customer_id` bigint UNSIGNED DEFAULT NULL,
   `client_id` bigint UNSIGNED DEFAULT NULL,
+  `recipient_organization` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `recipient_designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `recipient_address` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `attention_to` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `subject` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `company_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `signatory_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `signatory_designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_website` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -283,8 +294,8 @@ CREATE TABLE `challans` (
 -- Dumping data for table `challans`
 --
 
-INSERT INTO `challans` (`id`, `challan_number`, `reference_number`, `challan_date`, `type`, `sale_id`, `project_id`, `customer_id`, `client_id`, `created_at`, `updated_at`, `attention_to`, `designation`) VALUES
-(44, 'CHALLAN-20251130-0001', 'CHL-20251130-133231', '2025-11-30', 'sale', 26, NULL, 16, NULL, '2025-11-30 07:32:42', '2025-11-30 07:32:42', 'dsfgsdg', 'dsfgsdfg');
+INSERT INTO `challans` (`id`, `challan_number`, `reference_number`, `challan_date`, `type`, `sale_id`, `project_id`, `customer_id`, `client_id`, `recipient_organization`, `recipient_designation`, `recipient_address`, `created_at`, `updated_at`, `attention_to`, `subject`, `notes`, `company_name`, `signatory_name`, `signatory_designation`, `company_phone`, `company_email`, `company_website`, `designation`) VALUES
+(45, 'CHALLAN-20260401-0001', 'CHL-20260401-155021', '2026-04-01', 'sale', 26, NULL, 16, NULL, 'Md Hasan', 'Manager', 'Dhaka', '2026-04-01 09:50:50', '2026-04-01 09:50:50', 'Mr. Kamal', 'Delivery Challan', NULL, 'Intelligent Technology', 'Engr. Shamsul Alam', 'Director (Technical)', '+880 XXXX-XXXXXX', 'info@intelligenttech.com', 'www.intelligenttech.com', 'Manager');
 
 -- --------------------------------------------------------
 
@@ -307,7 +318,7 @@ CREATE TABLE `challan_items` (
 --
 
 INSERT INTO `challan_items` (`id`, `challan_id`, `description`, `quantity`, `unit`, `created_at`, `updated_at`) VALUES
-(49, 44, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2025-11-30 07:32:42', '2025-11-30 07:32:42');
+(50, 45, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', 2, 'Piece', '2026-04-01 09:50:50', '2026-04-01 09:50:50');
 
 -- --------------------------------------------------------
 
@@ -416,7 +427,10 @@ CREATE TABLE `customers` (
 INSERT INTO `customers` (`id`, `name`, `country_code`, `phone`, `email`, `email_verified_at`, `address`, `images`, `verification_code`, `is_verified`, `billing_address`, `shipping_address`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
 (11, 'Md Juel', NULL, '01213986745', 'juel@example.com', NULL, 'Gulshan', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-03 02:06:48', '2025-11-26 11:00:21'),
 (15, 'Md Rahim', NULL, '01195674368', 'rahim@example.com', NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-23 06:05:15', '2025-11-26 10:59:08'),
-(16, 'Md Hasan', NULL, '01200000000', 'hasan@example.com', NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-26 05:26:27', '2025-11-26 10:56:57');
+(16, 'Md Hasan', NULL, '01200000000', 'hasan@example.com', NULL, 'Dhaka', NULL, NULL, 0, NULL, NULL, '1', NULL, '2025-11-26 05:26:27', '2025-11-26 10:56:57'),
+(20, 'Beau Kemmer', NULL, '4338071573', 'your.email+fakedata66830@gmail.com', NULL, '5588 E River Road', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-04-01 10:30:52', '2026-04-01 10:30:52'),
+(21, 'Nia Labadie', NULL, '6564701866', 'your.email+fakedata26341@gmail.com', NULL, '805 Dickens Meadow', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-04-01 10:34:35', '2026-04-01 10:34:35'),
+(22, 'Edmond Kutch', NULL, '2317735233', 'your.email+fakedata47339@gmail.com', NULL, '20047 Ollie Unions', NULL, NULL, 0, NULL, NULL, '1', NULL, '2026-04-01 10:53:44', '2026-04-01 10:53:44');
 
 -- --------------------------------------------------------
 
@@ -582,8 +596,8 @@ CREATE TABLE `inventories` (
 --
 
 INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 4, 10, 9, 'Opening stock entry', '2025-11-02 19:31:35', '2025-11-26 05:54:14'),
-(3, 5, 20, 3, 'Opening stock entry', '2025-11-03 02:05:12', '2026-01-12 06:54:44'),
+(1, 4, 10, 5, 'Opening stock entry', '2025-11-02 19:31:35', '2026-03-31 10:19:07'),
+(3, 5, 20, 2, 'Opening stock entry', '2025-11-03 02:05:12', '2026-04-01 09:29:05'),
 (4, 3, 12, 1, 'Opening stock entry', '2025-11-03 02:11:45', '2026-01-12 06:51:32');
 
 -- --------------------------------------------------------
@@ -698,7 +712,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (93, '2026_01_12_121918_add_fields_to_sales_table', 61),
 (94, '2026_03_08_152251_create_categories_table', 62),
 (95, '2026_03_08_152751_add_category_id_to_products_table', 63),
-(96, '2026_03_08_153755_remove_parent_id_from_categories_table', 64);
+(96, '2026_03_08_153755_remove_parent_id_from_categories_table', 64),
+(97, '2026_03_08_160500_add_product_id_to_services_table', 65),
+(98, '2026_03_08_161500_add_paid_amount_to_services_table', 66),
+(99, '2026_03_08_162500_make_country_code_and_warranty_nullable_on_services_table', 67),
+(100, '2026_03_08_170000_sync_service_schema_updates', 68),
+(101, '2026_04_01_154652_add_recipient_and_company_fields_to_challans_table', 69),
+(102, '2026_04_01_155356_add_client_and_company_fields_to_quotations_table', 70);
 
 -- --------------------------------------------------------
 
@@ -801,7 +821,18 @@ CREATE TABLE `payments` (
 INSERT INTO `payments` (`id`, `payment_for`, `customer_id`, `sale_id`, `project_id`, `payment_method`, `amount`, `status`, `created_at`, `updated_at`) VALUES
 (1, 2, 9, 9, NULL, 'cash', 10000, '1', '2025-11-03 01:06:11', '2025-11-03 01:06:11'),
 (2, 2, 10, 10, NULL, 'cash', 21500, '1', '2025-11-03 01:27:52', '2025-11-03 01:27:52'),
-(3, 2, 16, 26, NULL, 'cash', 7500, '1', '2025-11-26 11:02:09', '2025-11-26 11:02:09');
+(3, 2, 16, 26, NULL, 'cash', 7500, '1', '2025-11-26 11:02:09', '2025-11-26 11:02:09'),
+(4, 1, 15, 1, NULL, 'cash', 200, '1', '2026-04-01 07:08:00', '2026-04-01 07:08:00'),
+(5, 1, 15, 1, NULL, 'cash', 200, '1', '2026-04-01 08:01:55', '2026-04-01 08:01:55'),
+(6, 1, 15, 1, NULL, 'cash', 100, '1', '2026-04-01 08:10:18', '2026-04-01 08:10:18'),
+(7, 1, 15, 4, NULL, 'cash', 300, '1', '2026-04-01 08:18:42', '2026-04-01 08:18:42'),
+(8, 1, 20, 5, NULL, 'cash', 12, '1', '2026-04-01 10:30:52', '2026-04-01 10:30:52'),
+(9, 1, 21, 6, NULL, 'card', 288, '1', '2026-04-01 10:34:35', '2026-04-01 10:34:35'),
+(10, 1, 21, 6, NULL, 'cash', 199, '1', '2026-04-01 10:39:14', '2026-04-01 10:39:14'),
+(11, 1, 21, 6, NULL, 'bank_transfer', 100, '1', '2026-04-01 10:39:30', '2026-04-01 10:39:30'),
+(12, 1, 22, 7, NULL, 'cash', 200, '1', '2026-04-01 10:53:44', '2026-04-01 10:53:44'),
+(13, 1, 22, 8, NULL, 'cash', 200, '1', '2026-04-01 10:57:29', '2026-04-01 10:57:29'),
+(14, 1, 16, 9, NULL, 'cash', 500, '1', '2026-04-01 11:01:01', '2026-04-01 11:01:01');
 
 -- --------------------------------------------------------
 
@@ -1013,6 +1044,22 @@ CREATE TABLE `quotations` (
   `quotation_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `customer_id` bigint UNSIGNED DEFAULT NULL,
   `client_id` bigint UNSIGNED DEFAULT NULL,
+  `client_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `client_designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `client_address` text COLLATE utf8mb4_unicode_ci,
+  `client_phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `client_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attention_to` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `body_content` text COLLATE utf8mb4_unicode_ci,
+  `terms_conditions` text COLLATE utf8mb4_unicode_ci,
+  `subject` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `signatory_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `signatory_designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_website` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `additional_enclosed` text COLLATE utf8mb4_unicode_ci,
   `quotation_date` date NOT NULL,
   `expiry_date` date NOT NULL,
   `notes` text COLLATE utf8mb4_unicode_ci,
@@ -1028,8 +1075,8 @@ CREATE TABLE `quotations` (
 -- Dumping data for table `quotations`
 --
 
-INSERT INTO `quotations` (`id`, `quotation_number`, `customer_id`, `client_id`, `quotation_date`, `expiry_date`, `notes`, `sub_total`, `discount_amount`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
-(22, 'QT-20260208-0001', NULL, 2, '2026-02-08', '2026-02-23', 'gjdgj', 1500.00, 0.00, 1500.00, 'draft', '2026-02-08 13:50:50', '2026-02-08 13:50:50');
+INSERT INTO `quotations` (`id`, `quotation_number`, `customer_id`, `client_id`, `client_name`, `client_designation`, `client_address`, `client_phone`, `client_email`, `attention_to`, `body_content`, `terms_conditions`, `subject`, `company_name`, `signatory_name`, `signatory_designation`, `company_phone`, `company_email`, `company_website`, `additional_enclosed`, `quotation_date`, `expiry_date`, `notes`, `sub_total`, `discount_amount`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
+(23, 'QT-20260401-0001', NULL, 9, 'Mr Rahim', 'Manager', 'Mirpur', NULL, NULL, 'Mr. Kamal', 'Dear Sir,\r\n\r\nConcerning the above-mentioned subject, we are pleased to propose a technical solution and financial appraisal for the supply & installation of the ID Card Printing System for your organization.\r\n\r\nWe appreciate your interest in Cost-saving & new state-of-the-art technology ID Card Printers. We guarantee customer satisfaction by providing both excellent services and products of the highest quality. We maintain spares as recommended by our principal. \r\n\r\nIntelligent Technology is a leading card printer, office automation, and security solution provider. The company has an expert team of technical persons consisting of graduates and diploma engineers. For our valued customers we have a service desk available on an 8 / 6 basis which ensures instant support. Please note that Intelligent Technology is the original Distributor of all kinds of the best products, ensuring quality products with quality services. Especially authorized distributor for HiTi Digital Inc, Taiwan, and reseller for Zebra Technologies, USA & Evolis Card Printer, France in Bangladesh. Also Provide a Biometric Attendance and Access Control System, CCTV Surveillance System, Fire Safety & Security Solutions and Interactive Whiteboard System for the Classroom.\r\n\r\nPlease do not hesitate to contact me for further inquiries. We will be happy to provide our best to you all the time. We are ready to conduct the demonstration at any time as per your kind schedule. A detail of the offer is enclosed herewith. If you have any further assistance, please do not hesitate to contact us. We assure you of our best co-operation.\r\n\r\nThanks, with assuring you our best services.\r\nYours Sincerely,', '1. Intelligent Technology will promptly deliver the product from available stock or within 7 to 15 days upon order placement.\r\n2. Intelligent Technology will provide (01) one-year service warranty for printer; however, no warranty is provided for printer heads & any others spare parts. \r\n    • Warranty doesn\'t acceptable against natural disaster, burn case for AC INPUT power fluctuation or any mechanical/Physical damage.\r\n    • Warranty doesn\'t acceptable of the product if \"warranty void seal\" removed or tempered.\r\n3. Accessories are not covered by any warranty.\r\n4. The printer and its accessories cannot be exchanged or replaced once used.\r\n5. The design of the card and lanyard must design must be approved by the relevant authority. Once printed, no modifications to the design will be allowed. \r\n6. The payment for the services will be made through an account payee cheque/DD/pay order, payable to Intelligent Technology, along with a corresponding work order.\r\n7. This offer is made in Bangladesh Taka Only.\r\n8. Government VAT and TAX are not included in the prices. If necessary, please incorporate the applicable amount of TAX and VAT in accordance with government or organizational regulations.\r\n9. As you are experiencing, the cost of inconsistence supplies and raw materials is highly fluctuating and reflecting an increasing cost trend all along the supply chain. Price is increasing both freight and US$ to Taka conversion rate too. Validity of all quotation will be 15 days only.', 'Test', 'Intelligent Technology', 'Engr. Shamsul Alam', 'Director (Technical)', '+880 1904400202', 'info@intelligenttech.com', 'www.intelligenttech.com', 'Enclosed:\r\n                                                1)	Price Quotation.\r\n                                                2)	Summary.\r\n                                                3)	Terms & Conditions.', '2026-04-01', '2026-04-16', 'Test', 3000.00, 200.00, 2800.00, 'draft', '2026-04-01 09:59:37', '2026-04-01 09:59:37');
 
 -- --------------------------------------------------------
 
@@ -1054,7 +1101,7 @@ CREATE TABLE `quotation_items` (
 --
 
 INSERT INTO `quotation_items` (`id`, `quotation_id`, `product_id`, `description`, `quantity`, `unit_price`, `total`, `created_at`, `updated_at`) VALUES
-(24, 22, 4, NULL, 1, 1500.00, 1500.00, '2026-02-08 13:50:50', '2026-02-08 13:50:50');
+(25, 23, 4, NULL, 2, 1500.00, 3000.00, '2026-04-01 09:59:38', '2026-04-01 09:59:38');
 
 -- --------------------------------------------------------
 
@@ -1266,7 +1313,10 @@ INSERT INTO `sales_items` (`id`, `order_id`, `product_id`, `unit_price`, `warran
 (17, 26, 4, 16500, 365, 2, 33000, '2025-11-26 05:29:49', '2025-11-26 05:29:49'),
 (18, 37, 3, 100, 365, 2, 200, '2026-01-12 06:51:32', '2026-01-12 06:51:32'),
 (19, 37, 5, 100, 365, 3, 300, '2026-01-12 06:51:32', '2026-01-12 06:51:32'),
-(20, 38, 5, 100, 365, 1, 100, '2026-01-12 06:54:44', '2026-01-12 06:54:44');
+(20, 38, 5, 100, 365, 1, 100, '2026-01-12 06:54:44', '2026-01-12 06:54:44'),
+(21, 39, 4, 16000, 365, 2, 32000, '2026-03-31 07:56:51', '2026-03-31 07:56:51'),
+(22, 40, 4, 15000, 365, 2, 30000, '2026-03-31 10:19:07', '2026-03-31 10:19:07'),
+(23, 41, 5, 1500, 365, 1, 1500, '2026-04-01 09:29:05', '2026-04-01 09:29:05');
 
 -- --------------------------------------------------------
 
@@ -1278,24 +1328,34 @@ CREATE TABLE `services` (
   `id` bigint UNSIGNED NOT NULL,
   `customer_id` bigint NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `country_code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `country_code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `address` text COLLATE utf8mb4_unicode_ci,
+  `product_id` bigint UNSIGNED DEFAULT NULL,
   `product_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `product_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `details` text COLLATE utf8mb4_unicode_ci,
   `total` double NOT NULL,
   `bill` double NOT NULL,
+  `paid_amount` double NOT NULL DEFAULT '0',
   `discount` double DEFAULT NULL,
   `due_amount` double NOT NULL,
-  `warranty_duration` int NOT NULL,
-  `repaired_by` bigint NOT NULL,
+  `warranty_duration` int DEFAULT NULL,
+  `repaired_by` bigint DEFAULT NULL,
   `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `complated_date` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `services`
+--
+
+INSERT INTO `services` (`id`, `customer_id`, `name`, `country_code`, `phone`, `email`, `address`, `product_id`, `product_name`, `product_number`, `details`, `total`, `bill`, `paid_amount`, `discount`, `due_amount`, `warranty_duration`, `repaired_by`, `status`, `complated_date`, `created_at`, `updated_at`) VALUES
+(4, 15, 'Md Rahim', NULL, '01195674368', 'rahim@example.com', 'Dhaka', 5, 'Canon Pixma G3010 Refillable Ink Tank Wireless All-In-One Printer', '12345', 'test', 800, 750, 300, 50, 450, NULL, NULL, '0', NULL, '2026-04-01 08:18:42', '2026-04-01 08:18:42'),
+(9, 16, 'Md Hasan', NULL, '01200000000', 'hasan@example.com', 'Dhaka', 4, 'Epson EcoTank L3250 A4 Wi-Fi Multifunction InkTank Printer (Official)', '123456', 'Test', 800, 750, 500, 50, 250, NULL, NULL, '0', NULL, '2026-04-01 11:01:01', '2026-04-01 11:01:01');
 
 -- --------------------------------------------------------
 
@@ -1739,7 +1799,8 @@ ALTER TABLE `sales_items`
 -- Indexes for table `services`
 --
 ALTER TABLE `services`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `services_product_id_foreign` (`product_id`);
 
 --
 -- Indexes for table `ta_das`
@@ -1800,13 +1861,13 @@ ALTER TABLE `bank_details`
 -- AUTO_INCREMENT for table `bills`
 --
 ALTER TABLE `bills`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `bill_items`
 --
 ALTER TABLE `bill_items`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `bookings`
@@ -1818,25 +1879,25 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `challans`
 --
 ALTER TABLE `challans`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `challan_items`
 --
 ALTER TABLE `challan_items`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `clients`
@@ -1860,7 +1921,7 @@ ALTER TABLE `cost_categories`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `daily_expenses`
@@ -1914,7 +1975,7 @@ ALTER TABLE `inventories`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1926,7 +1987,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `permissions`
@@ -1974,13 +2035,13 @@ ALTER TABLE `purchases`
 -- AUTO_INCREMENT for table `quotations`
 --
 ALTER TABLE `quotations`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `quotation_items`
 --
 ALTER TABLE `quotation_items`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `revenues`
@@ -2010,19 +2071,19 @@ ALTER TABLE `salary_advances`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `sales_items`
 --
 ALTER TABLE `sales_items`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `ta_das`
@@ -2185,6 +2246,12 @@ ALTER TABLE `sales`
   ADD CONSTRAINT `sales_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `sales_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `sales_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `services`
+--
+ALTER TABLE `services`
+  ADD CONSTRAINT `services_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `ta_das`
