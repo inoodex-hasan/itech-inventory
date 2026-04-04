@@ -15,6 +15,7 @@ class Payment extends Model
         'payment_for',
         'payment_method',
         'amount',
+        'remarks',
         'status',
         'created_by',
         'updated_by'

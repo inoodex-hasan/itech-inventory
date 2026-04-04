@@ -1,10 +1,59 @@
 @extends('frontend.layouts.app')
 @section('content')
     <div class="content container-fluid">
+        <!-- Service/Sale Info Card -->
+        @if ($bill)
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                @if ($payment_for == '1')
+                                    <i class="fas fa-tools me-2"></i>Service Payment Details
+                                @else
+                                    <i class="fas fa-shopping-cart me-2"></i>Sale Payment Details
+                                @endif
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <p class="mb-1"><strong>Customer:</strong> {{ $bill->name ?? 'N/A' }}</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-1"><strong>Total Bill:</strong> ${{ number_format($bill->bill ?? 0, 2) }}
+                                    </p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-1"><strong>Paid Amount:</strong>
+                                        ${{ number_format($bill->paid_amount ?? 0, 2) }}</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-1"><strong>Due Amount:</strong>
+                                        <span class="badge bg-{{ ($bill->due_amount ?? 0) > 0 ? 'warning' : 'success' }}">
+                                            ${{ number_format($bill->due_amount ?? 0, 2) }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            @if ($bill->remarks)
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <div class="alert alert-info mb-0">
+                                            <strong><i class="fas fa-sticky-note me-1"></i>Service Remarks:</strong>
+                                            {{ $bill->remarks }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Page Header -->
         <div class="page-header">
             <div class="content-page-header">
-                <h5>Payments</h5>
+                <h5>Payment History</h5>
 
                 <div class="list-btn">
                     <ul class="filter-list">
@@ -54,7 +103,11 @@
                                                 required>
                                         </div>
                                         <div class="mb-3">
-                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                            <label for="paymentRemarks" class="form-label">Remarks</label>
+                                            <textarea class="form-control" name="remarks" id="paymentRemarks" rows="3" placeholder="Add payment remarks..."></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <button type="submit" class="btn btn-primary w-100">Submit Payment</button>
                                         </div>
                                     </form>
                                 </div>
@@ -89,6 +142,9 @@
                                             <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
                                                 rowspan="1" colspan="1"
                                                 aria-label="Phone: activate to sort column ascending">Amount</th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
+                                                rowspan="1" colspan="1"
+                                                aria-label="Remarks: activate to sort column ascending">Remarks</th>
                                             <th class="no-sort sorting_disabled" rowspan="1" colspan="1"
                                                 aria-label="Actions">Actions</th>
                                         </tr>
@@ -109,6 +165,10 @@
                                                 </td>
                                                 <td>
                                                     <h2 class="table-avatar"> <span>{{ $payment->amount }}</span></h2>
+                                                </td>
+                                                <td>
+                                                    <h2 class="table-avatar"> <span>{{ $payment->remarks ?? '-' }}</span>
+                                                    </h2>
                                                 </td>
                                                 <td class="d-flex align-items-center">
                                                     <div class="dropdown dropdown-action">
@@ -182,6 +242,12 @@
                                                                         <input class="form-control" type="text"
                                                                             name="amount" value="{{ $payment->amount }}"
                                                                             required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="editPaymentRemarks{{ $payment->id }}"
+                                                                            class="form-label">Remarks</label>
+                                                                        <textarea class="form-control" name="remarks" id="editPaymentRemarks{{ $payment->id }}" rows="2"
+                                                                            placeholder="Add payment remarks...">{{ $payment->remarks }}</textarea>
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <button type="submit"

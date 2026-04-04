@@ -286,6 +286,14 @@
                             </div>
                         </div>
 
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                            <div class="input-block mb-3">
+                                <label>Remarks / Notes</label>
+                                <textarea name="remarks" class="form-control" placeholder="Add any remarks or notes about this service..."
+                                    rows="1"></textarea>
+                            </div>
+                        </div>
+
                         <div class="col-md-3 d-flex align-items-end justify-content-end pb-3">
                             <button type="submit" class="btn btn-primary btn-lg w-100" style="height: 50px;">
                                 Save & Confirm

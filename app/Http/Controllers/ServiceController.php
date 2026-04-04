@@ -102,6 +102,7 @@ class ServiceController extends Controller
             'discount' => 'nullable|numeric',
             'paid_amount' => 'nullable|numeric',
             'due_amount' => 'nullable|numeric',
+            'remarks' => 'nullable|string',
             'payment_method_id' => [function ($attribute, $value, $fail) use ($request) {
                 if ($request->paid_amount > 0 && !$value) {
                     $fail('The payment method is required when the paid amount is greater than 0.');
@@ -173,6 +174,7 @@ class ServiceController extends Controller
         $service->bill = $request->bill??0;
         $service->paid_amount = $request->paid_amount??0;
         $service->due_amount = max(0,$request->bill-$request->paid_amount);
+        $service->remarks = $request->remarks;
         $service->details = $request->details;
         $service->warranty_duration = $request->warranty_duration;
         $service->repaired_by = $request->repaired_by;
@@ -186,6 +188,7 @@ class ServiceController extends Controller
             $payment->sale_id = $service->id;
             $payment->payment_method = $request->payment_method_id ?: '1';
             $payment->amount = $request->paid_amount;
+            $payment->remarks = $request->remarks;
             $payment->save();
         }
 
@@ -241,6 +244,7 @@ class ServiceController extends Controller
             'total' => 'required|numeric',
             'bill' => 'required|numeric',
             'discount' => 'nullable|numeric',
+            'remarks' => 'nullable|string',
             'warranty_duration' => 'nullable|numeric',
             'repaired_by' => 'nullable|numeric',
         ];
@@ -288,6 +292,7 @@ class ServiceController extends Controller
         $service->discount = $request->discount??0;
         $service->bill = $request->bill??0;
         $service->due_amount = max(0,$request->bill-$service->paid_amount);
+        $service->remarks = $request->remarks;
         $service->details = $request->details;
         $service->warranty_duration = $request->warranty_duration;
         $service->repaired_by = $request->repaired_by;

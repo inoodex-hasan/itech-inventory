@@ -92,22 +92,42 @@
                             <strong>Customer</strong><br>
                             {{ $service->name }}
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <strong>Due Amount</strong><br>
                             <span class="badge bg-danger"
                                 style="font-size: 1rem; padding: 0.65rem 0.9rem;">{{ number_format($service->due_amount, 2) }}</span>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <strong>Paid</strong><br>
                             <span class="badge bg-primary"
                                 style="font-size: 1rem; padding: 0.65rem 0.9rem;">{{ number_format($service->paid_amount, 2) }}</span>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <strong>Total</strong><br>
                             <span class="badge bg-success"
                                 style="font-size: 1rem; padding: 0.65rem 0.9rem;">{{ number_format($service->bill, 2) }}</span>
                         </div>
+                        <div class="col-md-3">
+                            <strong>Status</strong><br>
+                            @if ($service->due_amount > 0)
+                                <span class="badge bg-warning"
+                                    style="font-size: 1rem; padding: 0.65rem 0.9rem;">Partial</span>
+                            @else
+                                <span class="badge bg-success" style="font-size: 1rem; padding: 0.65rem 0.9rem;">Fully
+                                    Paid</span>
+                            @endif
+                        </div>
                     </div>
+                    @if ($service->remarks)
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="alert alert-info mb-0">
+                                    <strong><i class="fas fa-sticky-note me-1"></i>Service Remarks:</strong>
+                                    {{ $service->remarks }}
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     @if ($service->due_amount > 0)
                         <form method="POST" action="{{ route('add.payment') }}" class="row g-2 align-items-end">
                             @csrf
@@ -122,12 +142,16 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <label class="form-label">Amount</label>
                                 <input type="number" name="amount" step="0.01" min="0.01"
                                     max="{{ max(0, $service->due_amount) }}" class="form-control" required>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <label class="form-label">Remarks</label>
+                                <textarea name="remarks" class="form-control" rows="1" placeholder="Add payment remarks..."></textarea>
+                            </div>
+                            <div class="col-md-3">
                                 <button type="submit" class="btn btn-success w-100">Submit Payment</button>
                             </div>
                         </form>
@@ -153,6 +177,7 @@
                                             <th>Date</th>
                                             <th>Payment Method</th>
                                             <th>Amount</th>
+                                            <th>Remarks</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -164,6 +189,7 @@
                                                 <td>{{ getArrayData(paymentMethods(), $payment->payment_method) ?: ($payment->payment_method == 'cash' ? 'cash' : $payment->payment_method) }}
                                                 </td>
                                                 <td>{{ $payment->amount }}</td>
+                                                <td>{{ $payment->remarks ?? '-' }}</td>
                                             </tr>
                                             @php
                                                 if (!isset($methodWise[$payment->payment_method])) {
@@ -180,14 +206,14 @@
                                         @if (isset($methodWise))
                                             @foreach ($methodWise as $key => $value)
                                                 <tr>
-                                                    <th colspan="3" style="text-align:right;">
+                                                    <th colspan="4" style="text-align:right;">
                                                         {{ getArrayData(paymentMethods(), $key) ?: ($key == 'cash' ? 'cash' : $key) }}
                                                     </th>
                                                     <th>{{ $value }}</th>
                                                 </tr>
                                             @endforeach
                                             <tr>
-                                                <th colspan="3" style="text-align:right;">Total</th>
+                                                <th colspan="4" style="text-align:right;">Total</th>
                                                 <th>{{ $total }}</th>
                                             </tr>
                                         @endif

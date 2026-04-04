@@ -143,9 +143,26 @@
                                         </td>
                                         {{-- <td>{{ $service->total }}</td>
                                         <td>{{ $service->discount }}</td> --}}
-                                        <td>{{ $service->bill }}</td>
+                                        <td>
+                                            <span class="badge bg-primary"
+                                                style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                                                {{ number_format($service->bill, 2) }}
+                                            </span>
+                                        </td>
                                         {{-- <td>{{ $service->paid_amount }}</td> --}}
-                                        <td>{{ $service->due_amount }}</td>
+                                        <td>
+                                            @if ($service->due_amount > 0)
+                                                <span class="badge bg-danger"
+                                                    style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                                                    {{ number_format($service->due_amount, 2) }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-success"
+                                                    style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                                                    0.00
+                                                </span>
+                                            @endif
+                                        </td>
                                         <td>
                                             @if ($service->due_amount <= 0)
                                                 <span class="badge bg-success">Paid</span>

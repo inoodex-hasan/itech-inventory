@@ -10,6 +10,29 @@ class Service extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'customer_id',
+        'name',
+        'country_code',
+        'phone',
+        'email',
+        'address',
+        'product_id',
+        'product_name',
+        'product_number',
+        'details',
+        'total',
+        'bill',
+        'discount',
+        'paid_amount',
+        'due_amount',
+        'remarks',
+        'warranty_duration',
+        'repaired_by',
+        'status',
+        'complated_date',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);

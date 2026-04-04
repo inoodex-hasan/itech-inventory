@@ -13,7 +13,17 @@ class PaymentController extends Controller
 {
     public function payments(Request $request, $id, $payment_for){
         $payments = Payment::where('sale_id',$id)->where('payment_for', $payment_for)->get();
-        return view('frontend.pages.payment.bill_payment', compact('payments','id', 'payment_for'));
+        
+        // Get the bill (service or sale) information
+        $bill = null;
+        if($payment_for == '1'){
+            $bill = Service::where('id', $id)->first();
+        }
+        if($payment_for == '2'){
+            $bill = Sale::where('id', $id)->first();
+        }
+        
+        return view('frontend.pages.payment.bill_payment', compact('payments','id', 'payment_for', 'bill'));
     }
 
     public function addPayment(Request $request){
@@ -33,6 +43,7 @@ class PaymentController extends Controller
         $payment->sale_id = $bill->id;
         $payment->payment_method = $request->payment_method_id;
         $payment->amount = $request->amount;
+        $payment->remarks = $request->remarks;
         $payment->save();
 
         $bill->paid_amount += $request->amount;
@@ -60,6 +71,7 @@ class PaymentController extends Controller
 
         $payment->payment_method = $request->payment_method_id;
         $payment->amount = $request->amount;
+        $payment->remarks = $request->remarks;
         $payment->update();
 
         return redirect()->back()->with(['success' => getNotify(2)]);
