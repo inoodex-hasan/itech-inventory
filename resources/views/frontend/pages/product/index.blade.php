@@ -206,7 +206,8 @@
                                 <tbody>
                                     @forelse ($products as $product)
                                         <tr>
-                                            <td>{{ $loop->index + 1 }}</td>
+                                            <td>{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
+                                            </td>
                                             <td>{{ $product->brand->name ?? 'N/A' }}</td>
                                             <td>{{ Str::limit($product->name, 20) }}</td>
                                             <td>{{ Str::limit($product->model, 20) }}</td>
