@@ -93,10 +93,12 @@ class ProductContoller extends Controller
 {
     $validated = $request->validate([
         'brand_id' => 'required|exists:brands,id',
+        'category_id' => 'nullable|exists:categories,id',
         'name' => 'required|string|max:255',
         'model_name' => 'required|string|max:255',
         'warranty' => 'nullable|integer',
         'status' => 'required|boolean',
+        'is_serialized' => 'nullable|boolean',
         'photos' => 'nullable|array',
         'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
     ]);
@@ -112,10 +114,12 @@ class ProductContoller extends Controller
 
     $product = Product::create([
         'brand_id' => $validated['brand_id'],
+        'category_id' => $validated['category_id'] ?? null,
         'name' => $validated['name'],
         'model' => $validated['model_name'],
         'warranty' => $validated['warranty'] ?? 0,
         'status' => $validated['status'],
+        'is_serialized' => $request->has('is_serialized') ? 1 : 0,
         'photos' => !empty($photoPaths) ? $photoPaths : null,
     ]);
 
@@ -157,10 +161,12 @@ public function update(Request $request, Product $product)
 {
     $validated = $request->validate([
         'brand_id' => 'required|exists:brands,id',
+        'category_id' => 'nullable|exists:categories,id',
         'name' => 'required|string|max:255',
         'model_name' => 'required|string|max:255',
         'warranty' => 'nullable|integer',
         'status' => 'required|boolean',
+        'is_serialized' => 'nullable|boolean',
         'photos' => 'nullable|array',
         'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         'remaining_photos' => 'nullable|string', // JSON string of remaining photos
@@ -196,10 +202,12 @@ public function update(Request $request, Product $product)
 
     $product->update([
         'brand_id' => $validated['brand_id'],
+        'category_id' => $validated['category_id'] ?? $product->category_id,
         'name' => $validated['name'],
         'model' => $validated['model_name'],
         'warranty' => $validated['warranty'] ?? 0,
         'status' => $validated['status'],
+        'is_serialized' => $request->has('is_serialized') ? 1 : 0,
         'photos' => !empty($allPhotos) ? $allPhotos : null,
     ]);
 

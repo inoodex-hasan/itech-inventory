@@ -46,14 +46,14 @@
                                 </div>
                                 <div class="modal-body">
                                     {{-- <div class="text-center mt-2 mb-4">
-                  <div class="auth-logo">
-                    <a href="{{ route('index') }}" class="logo logo-dark">
-                      <span class="logo-lg">
-                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" height="42">
-                      </span>
-                    </a>
-                  </div>
-                </div> --}}
+                                        <div class="auth-logo">
+                                            <a href="{{ route('index') }}" class="logo logo-dark">
+                                                <span class="logo-lg">
+                                                    <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" height="42">
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div> --}}
                                     <form method="post" action="{{ route('inventory.store') }}" class="px-3">
                                         @csrf
 
@@ -108,7 +108,7 @@
                                         <th>Photos</th>
                                         <th>Opening Stock</th>
                                         <th>Current Stock</th>
-                                        {{-- <th class="no-sort">Actions</th> --}}
+                                        <th class="no-sort">Serials</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -126,8 +126,7 @@
                                                     <div class="d-flex gap-1 align-items-center">
                                                         @foreach ($inventory->product->photos as $index => $photo)
                                                             @if ($index < 2)
-                                                                <img src="{{ asset('storage/' . $photo) }}"
-                                                                    alt="Product Photo"
+                                                                <img src="{{ asset('storage/' . $photo) }}" alt="Product Photo"
                                                                     style="height: 60px; width: 60px; object-fit: cover;"
                                                                     class="img-thumbnail rounded">
                                                             @endif
@@ -144,69 +143,75 @@
                                             </td>
                                             <td>{{ $inventory->opening_stock ?? 0 }}</td>
                                             <td>{{ $inventory->current_stock ?? 0 }}</td>
-                                            {{-- <td>
-                    <div class="dropdown dropdown-action">
-                      <a href="#" class="btn-action-icon" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#edit-inventory-modal{{ $inventory->id }}">
-                          <i class="far fa-edit me-2"></i>Edit
-                        </a>
-                        <a class="dropdown-item" href="javascript:void(0)"
-                           onclick="if (confirm('Are you sure to delete this inventory?')) document.getElementById('deleteForm{{ $inventory->id }}').submit();">
-                          <i class="far fa-trash-alt me-2"></i>Delete
-                        </a>
-                        <form id="deleteForm{{ $inventory->id }}" action="{{ route('inventory.destroy', $inventory->id) }}" method="POST" style="display:none;">
-                          @csrf @method('DELETE')
-                        </form>
-                      </div>
-                    </div>
-                  </td> --}}
+                                            <td>
+                                                @if ($inventory->product?->is_serialized)
+                                                    <span class="badge bg-info view-serials-btn" style="cursor: pointer;"
+                                                        data-product-id="{{ $inventory->product_id }}"
+                                                        data-product-name="{{ $inventory->product->name }}" data-bs-toggle="modal"
+                                                        data-bs-target="#view-serials-modal">
+                                                        (View List)
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-secondary">Non-Serial</span>
+                                                @endif
+                                            </td>
                                         </tr>
 
                                         <!-- Edit inventory Modal -->
                                         <!-- Inventory Edit Modal -->
-                                        {{-- <div id="edit-inventory-modal{{ $inventory->id }}" class="modal fade" tabindex="-1" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-body">
-                        <div class="text-center mt-2 mb-4">
-                          <div class="auth-logo">
-                            <a href="{{ route('index') }}" class="logo logo-dark">
-                              <span class="logo-lg">
-                                <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" height="42">
-                              </span>
-                            </a>
-                          </div>
-                        </div>
+                                        {{-- <div id="edit-inventory-modal{{ $inventory->id }}" class="modal fade" tabindex="-1"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-body">
+                                                        <div class="text-center mt-2 mb-4">
+                                                            <div class="auth-logo">
+                                                                <a href="{{ route('index') }}" class="logo logo-dark">
+                                                                    <span class="logo-lg">
+                                                                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo"
+                                                                            height="42">
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
 
-                        <form method="POST" action="{{ route('inventory.update', $inventory->id) }}" class="px-3">
-                          @csrf
-                          @method('PUT')
+                                                        <form method="POST"
+                                                            action="{{ route('inventory.update', $inventory->id) }}"
+                                                            class="px-3">
+                                                            @csrf
+                                                            @method('PUT')
 
-                          <div class="mb-3">
-                            <label class="form-label">Product Name</label>
-                            <input type="text" class="form-control" value="{{ $inventory->product->name }}" readonly>
-                          </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Product Name</label>
+                                                                <input type="text" class="form-control"
+                                                                    value="{{ $inventory->product->name }}" readonly>
+                                                            </div>
 
-                          <div class="mb-3">
-                            <label class="form-label">Model Name</label>
-                            <input type="text" class="form-control" value="{{ $inventory->product->model_name ?? 'N/A' }}" readonly>
-                          </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Model Name</label>
+                                                                <input type="text" class="form-control"
+                                                                    value="{{ $inventory->product->model_name ?? 'N/A' }}"
+                                                                    readonly>
+                                                            </div>
 
-                          <div class="mb-3">
-                            <label for="opening_stock{{ $inventory->id }}" class="form-label">Opening Stock <span class="text-danger">*</span></label>
-                            <input type="number" name="opening_stock" id="opening_stock{{ $inventory->id }}" class="form-control" min="0" value="{{ $inventory->qty }}" required>
-                          </div>
+                                                            <div class="mb-3">
+                                                                <label for="opening_stock{{ $inventory->id }}"
+                                                                    class="form-label">Opening Stock <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input type="number" name="opening_stock"
+                                                                    id="opening_stock{{ $inventory->id }}" class="form-control"
+                                                                    min="0" value="{{ $inventory->qty }}" required>
+                                                            </div>
 
-                          <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">Update</button>
-                          </div>
-                        </form>
+                                                            <div class="mb-3">
+                                                                <button type="submit" class="btn btn-primary">Update</button>
+                                                            </div>
+                                                        </form>
 
-                      </div>
-                    </div>
-                  </div>
-                </div> --}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> --}}
                                     @endforeach
                                 </tbody>
                             </table>
@@ -217,6 +222,93 @@
         </div>
     </div>
 
+    <!-- View Serials Modal -->
+    <div id="view-serials-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Available Serials - <span id="modal-product-name"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Serial Number</th>
+                                    <th>Vendor</th>
+                                    <th>Purchase Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="serials-table-body">
+                                <!-- AJAX content -->
+                            </tbody>
+                        </table>
+                        <div id="serials-loader" class="text-center py-4" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="serials-empty-msg" class="text-center py-4" style="display: none;">
+                            <span class="text-muted">No available serial numbers found for this product.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.view-serials-btn').on('click', function () {
+                const productId = $(this).data('product-id');
+                const productName = $(this).data('product-name');
+
+                $('#modal-product-name').text(productName);
+                $('#serials-table-body').empty();
+                $('#serials-loader').show();
+                $('#serials-empty-msg').hide();
+
+                let url = '{{ route("inventory.serials", ":id") }}';
+                url = url.replace(':id', productId);
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#serials-loader').hide();
+                        const serials = response.serials;
+
+                        if (serials.length > 0) {
+                            serials.forEach((serial, index) => {
+                                const vendorName = serial.purchase && serial.purchase.vendor ? serial.purchase.vendor.name : 'N/A';
+                                const purchaseDate = serial.purchase ? new Date(serial.created_at).toLocaleDateString() : 'N/A';
+
+                                $('#serials-table-body').append(`
+                                            <tr>
+                                                <td>${index + 1}</td>
+                                                <td><strong class="text-primary">${serial.serial_number}</strong></td>
+                                                <td>${vendorName}</td>
+                                                <td>${purchaseDate}</td>
+                                                <td><span class="badge bg-success">${serial.status}</span></td>
+                                            </tr>
+                                        `);
+                            });
+                        } else {
+                            $('#serials-empty-msg').show();
+                        }
+                    },
+                    error: function () {
+                        $('#serials-loader').hide();
+                        alert('Error fetching serial numbers. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

@@ -23,7 +23,13 @@ class Product extends Model
         'photos',
         'status',
         'warranty',
+        'is_serialized',
     ];
+
+    public function serials()
+    {
+        return $this->hasMany(ProductSerial::class);
+    }
     public function latestPurchase()
     {
         return $this->hasOne(Purchase::class)->latestOfMany();

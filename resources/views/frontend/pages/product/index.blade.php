@@ -18,6 +18,12 @@
             position: absolute;
             top: 50%;
             width: 0;
+
+            @media (min-width: 992px) {
+    .table-responsive {
+        overflow-x: visible;
+    }
+}
         }
     </style>
     <div class="content container-fluid">
@@ -44,27 +50,38 @@
                                 </div>
                                 <div class="modal-body">
                                     {{-- <div class="text-center mt-2 mb-4">
-                            <div class="auth-logo">
-                                <a href="{{ route('index') }}" class="logo logo-dark">
-                                    <span class="logo-lg">
-                                        <img src="{{asset('assets/img/logo.png')}}" alt="Logo" height="42">
-                                    </span>
-                                </a>
-                            </div>
-                        </div> --}}
+                                        <div class="auth-logo">
+                                            <a href="{{ route('index') }}" class="logo logo-dark">
+                                                <span class="logo-lg">
+                                                    <img src="{{asset('assets/img/logo.png')}}" alt="Logo" height="42">
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div> --}}
 
                                     <form class="px-3" method="POST" action="{{ route('products.store') }}"
                                         enctype="multipart/form-data">
                                         @csrf
                                         <!-- Input for Product Name -->
                                         <div class="mb-3">
-                                            <label for="name" class="form-label">Brand Name <span
+                                            <label for="brand_id" class="form-label">Brand Name <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-control select2" name="brand_id" id="brand_id" required>
                                                 <option value="">Select Brand</option>
                                                 @foreach ($brands as $brand)
                                                     <option {{ $brand->id == old('brand_id') ? 'selected' : '' }}
                                                         value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <!-- Category Dropdown -->
+                                        <div class="mb-3">
+                                            <label for="category_id" class="form-label">Category</label>
+                                            <select class="form-control select2" name="category_id" id="category_id">
+                                                <option value="">Select Category</option>
+                                                @foreach ($categories as $category)
+                                                    <option {{ $category->id == old('category_id') ? 'selected' : '' }}
+                                                        value="{{ $category->id }}">{{ $category->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -84,8 +101,8 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="photos" class="form-label">Product Photos</label>
-                                            <input type="file" name="photos[]" id="photos" class="form-control"
-                                                multiple accept="image/*">
+                                            <input type="file" name="photos[]" id="photos" class="form-control" multiple
+                                                accept="image/*">
                                         </div>
                                         <div class="mb-3">
                                             <label for="warranty" class="form-label">Warranty (Days)</label>
@@ -98,6 +115,14 @@
                                                 <option selected="" value="1">Active</option>
                                                 <option value="0">InActive</option>
                                             </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" name="is_serialized"
+                                                    id="is_serialized" value="1">
+                                                <label class="form-check-label" for="is_serialized">Serialized Product
+                                                    (Track by Serial Number)</label>
+                                            </div>
                                         </div>
                                         <div class="mb-3">
                                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -133,8 +158,7 @@
                                         <select class="form-select select2" id="brand_id" name="brand_id">
                                             <option value="">All Brands</option>
                                             @foreach ($brands as $brand)
-                                                <option value="{{ $brand->id }}"
-                                                    {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
+                                                <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
                                                     {{ $brand->name }}
                                                 </option>
                                             @endforeach
@@ -147,8 +171,7 @@
                                         <select class="form-select select2" id="category_id" name="category_id">
                                             <option value="">All Categories</option>
                                             @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}"
-                                                    {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
                                                     {{ $category->name }}
                                                 </option>
                                             @endforeach
@@ -189,14 +212,16 @@
             <div class="col-sm-12">
                 <div class="card-table">
                     <div class="card-body">
-                        <div class="table-responsive">
+                     <div class="table-responsive-md">
                             <table id="productTable" class="table table-center table-hover">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>#</th>
-                                        <th>Brand Name</th>
-                                        <th>Product Name</th>
-                                        <th>Model</th>
+                                        <th style="width: 15%">Brand Name</th>
+                                        <th class="d-none d-xl-table-cell" style="width: 15%">Category</th>
+                                        <th style="width: 25%">Product Name</th>
+                                        <th class="d-none d-lg-table-cell" style="width: 15%">Model</th>
+                                        <th style="width: 10%">Type</th>
                                         {{-- <th>Photos</th> --}}
                                         <th>Warranty</th>
                                         <th>Status</th>
@@ -209,29 +234,36 @@
                                             <td>{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
                                             </td>
                                             <td>{{ $product->brand->name ?? 'N/A' }}</td>
+                                            <td class="d-none d-xl-table-cell text-muted small">{{ $product->category->name ?? 'N/A' }}</td>
                                             <td title="{{ $product->name }}">
-                                                {{ Str::limit($product->name, 35) }}
+                                                {{ Str::limit($product->name, 25) }}
                                             </td>
-                                            <td>{{ Str::limit($product->model, 20) }}</td>
+                                            <td class="d-none d-lg-table-cell">{{ Str::limit($product->model, 15) }}</td>
+                                            <td>
+                                                @if($product->is_serialized)
+                                                    <span class="badge bg-info">Serial</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Non-Serial</span>
+                                                @endif
+                                            </td>
                                             {{-- <td>
                                                 @if ($product->photos && count($product->photos) > 0)
-                                                    <div class="d-flex gap-1 align-items-center">
-                                                        @foreach ($product->photos as $index => $photo)
-                                                            @if ($index < 2)
-                                                                <img src="{{ asset('storage/' . $photo) }}"
-                                                                    alt="Product Photo"
-                                                                    style="height: 60px; width: 60px; object-fit: cover;"
-                                                                    class="img-thumbnail rounded">
-                                                            @endif
+                                                <div class="d-flex gap-1 align-items-center">
+                                                    @foreach ($product->photos as $index => $photo)
+                                                    @if ($index < 2) <img src="{{ asset('storage/' . $photo) }}"
+                                                        alt="Product Photo"
+                                                        style="height: 60px; width: 60px; object-fit: cover;"
+                                                        class="img-thumbnail rounded">
+                                                        @endif
                                                         @endforeach
 
                                                         @if (count($product->photos) > 2)
-                                                            <span
-                                                                class="badge bg-secondary ms-1">+{{ count($product->photos) - 2 }}</span>
+                                                        <span class="badge bg-secondary ms-1">+{{ count($product->photos) - 2
+                                                            }}</span>
                                                         @endif
-                                                    </div>
+                                                </div>
                                                 @else
-                                                    <span class="text-muted">No photos</span>
+                                                <span class="text-muted">No photos</span>
                                                 @endif
                                             </td> --}}
                                             <td>{{ $product->warranty ?? 'N/A' }}</td>
@@ -257,8 +289,7 @@
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <a class="dropdown-item text-danger"
-                                                                    href="javascript:void(0)"
+                                                                <a class="dropdown-item text-danger" href="javascript:void(0)"
                                                                     onclick="if(confirm('Are you sure to delete the product?')) { document.getElementById('serviceDelete{{ $product->id }}').submit(); }">
                                                                     <i class="far fa-trash-alt me-2"></i>Delete
                                                                 </a>
@@ -306,15 +337,29 @@
 
                                                     <!-- Brand Selection -->
                                                     <div class="mb-3">
-                                                        <label for="name" class="form-label">Brand Name <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="brand_id{{ $product->id }}" class="form-label">Brand Name
+                                                            <span class="text-danger">*</span></label>
                                                         <select class="form-control select2" name="brand_id"
-                                                            id="brand_id" required>
+                                                            id="brand_id{{ $product->id }}" required>
                                                             <option value="">Select Brand</option>
                                                             @foreach ($brands as $brand)
-                                                                <option
-                                                                    {{ $brand->id == $product->brand_id ? 'selected' : '' }}
+                                                                <option {{ $brand->id == $product->brand_id ? 'selected' : '' }}
                                                                     value="{{ $brand->id }}">{{ $brand->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Category Selection -->
+                                                    <div class="mb-3">
+                                                        <label for="category_id{{ $product->id }}"
+                                                            class="form-label">Category</label>
+                                                        <select class="form-control select2" name="category_id"
+                                                            id="category_id{{ $product->id }}">
+                                                            <option value="">Select Category</option>
+                                                            @foreach ($categories as $category)
+                                                                <option {{ $category->id == $product->category_id ? 'selected' : '' }}
+                                                                    value="{{ $category->id }}">{{ $category->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -324,31 +369,26 @@
                                                     <div class="mb-3">
                                                         <label for="name{{ $product->id }}" class="form-label">Product
                                                             Name <span class="text-danger">*</span></label>
-                                                        <input type="text" name="name"
-                                                            id="name{{ $product->id }}" class="form-control"
-                                                            placeholder="Enter product name"
+                                                        <input type="text" name="name" id="name{{ $product->id }}"
+                                                            class="form-control" placeholder="Enter product name"
                                                             value="{{ old('name', $product->name) }}" required>
                                                     </div>
 
                                                     <!-- Product Model Name -->
                                                     <div class="mb-3">
-                                                        <label for="model_name{{ $product->id }}"
-                                                            class="form-label">Product Model Name <span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" name="model_name"
-                                                            id="model_name{{ $product->id }}" class="form-control"
-                                                            placeholder="Enter product model name"
-                                                            value="{{ old('model_name', $product->model ?? '') }}"
-                                                            required>
+                                                        <label for="model_name{{ $product->id }}" class="form-label">Product
+                                                            Model Name <span class="text-danger">*</span></label>
+                                                        <input type="text" name="model_name" id="model_name{{ $product->id }}"
+                                                            class="form-control" placeholder="Enter product model name"
+                                                            value="{{ old('model_name', $product->model ?? '') }}" required>
                                                     </div>
 
                                                     <!-- Warranty -->
                                                     <div class="mb-3">
-                                                        <label for="warranty{{ $product->id }}"
-                                                            class="form-label">Warranty (Days)</label>
-                                                        <input type="text" name="warranty"
-                                                            id="warranty{{ $product->id }}" class="form-control"
-                                                            placeholder="Enter how many days"
+                                                        <label for="warranty{{ $product->id }}" class="form-label">Warranty
+                                                            (Days)</label>
+                                                        <input type="text" name="warranty" id="warranty{{ $product->id }}"
+                                                            class="form-control" placeholder="Enter how many days"
                                                             value="{{ old('model_name', $product->warranty ?? '') }}">
                                                     </div>
 
@@ -359,8 +399,7 @@
                                                             <div class="d-flex flex-wrap gap-2"
                                                                 id="photos-container-{{ $product->id }}">
                                                                 @foreach ($product->photos as $index => $photo)
-                                                                    <div class="position-relative photo-item"
-                                                                        data-photo="{{ $photo }}">
+                                                                    <div class="position-relative photo-item" data-photo="{{ $photo }}">
                                                                         <img src="{{ asset('storage/' . $photo) }}"
                                                                             class="img-thumbnail"
                                                                             style="height: 80px; width: 80px; object-fit: cover;">
@@ -386,26 +425,32 @@
                                                     <div class="mb-3">
                                                         <label for="photos{{ $product->id }}" class="form-label">Add New
                                                             Photos</label>
-                                                        <input type="file" name="photos[]"
-                                                            id="photos{{ $product->id }}" class="form-control" multiple
-                                                            accept="image/*">
+                                                        <input type="file" name="photos[]" id="photos{{ $product->id }}"
+                                                            class="form-control" multiple accept="image/*">
                                                         <div id="image-preview-{{ $product->id }}"
                                                             class="mt-2 d-flex flex-wrap gap-2"></div>
                                                     </div>
 
                                                     <!-- Status -->
                                                     <div class="mb-3">
-                                                        <label for="status{{ $product->id }}"
-                                                            class="form-label">Status</label>
+                                                        <label for="status{{ $product->id }}" class="form-label">Status</label>
                                                         <select class="form-select mb-3" name="status"
                                                             id="status{{ $product->id }}" required>
-                                                            <option value="1"
-                                                                {{ old('status', $product->status) == 1 ? 'selected' : '' }}>
+                                                            <option value="1" {{ old('status', $product->status) == 1 ? 'selected' : '' }}>
                                                                 Active</option>
-                                                            <option value="0"
-                                                                {{ old('status', $product->status) == 0 ? 'selected' : '' }}>
+                                                            <option value="0" {{ old('status', $product->status) == 0 ? 'selected' : '' }}>
                                                                 Inactive</option>
                                                         </select>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" name="is_serialized"
+                                                                id="is_serialized{{ $product->id }}" value="1" {{ $product->is_serialized ? 'checked' : '' }}>
+                                                            <label class="form-check-label"
+                                                                for="is_serialized{{ $product->id }}">Serialized Product (Track
+                                                                by Serial Number)</label>
+                                                        </div>
                                                     </div>
 
                                                     <div class="mb-3">
@@ -435,7 +480,7 @@
     <!-- Add this single script at the bottom of your page -->
     <script>
         // Single event listener for all delete buttons
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (e.target.classList.contains('delete-photo-btn')) {
                 e.preventDefault();
 
@@ -452,7 +497,7 @@
         });
 
         // Single event listener for all file inputs
-        document.addEventListener('change', function(e) {
+        document.addEventListener('change', function (e) {
             if (e.target && e.target.matches('input[type="file"][name="photos[]"]')) {
                 const input = e.target;
                 const productId = input.id.replace('photos', '');

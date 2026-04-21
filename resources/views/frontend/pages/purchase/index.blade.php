@@ -30,10 +30,18 @@
                                     <select class="form-control select2" name="product_id" id="product_id" required>
                                         <option value="">Select Product</option>
                                         @foreach ($products as $product)
-                                            <option value="{{ $product->id }}">
+                                            <option value="{{ $product->id }}" data-is-serialized="{{ $product->is_serialized }}">
                                                 {{ $product->name }}({{ $product->model ?? 'N/A' }})</option>
                                         @endforeach
                                     </select>
+                                </div>
+
+                                <div id="serial-section" style="display: none;">
+                                    <label class="form-label text-info">Serial Numbers (Required for this product)</label>
+                                    <div id="serial-inputs-container" class="mb-3 p-2 border rounded bg-light">
+                                        <!-- JS will fill this -->
+                                    </div>
+                                    <small class="text-muted d-block mb-3" id="serial-help-text"></small>
                                 </div>
 
                                 <div class="mb-3">
@@ -357,6 +365,48 @@
             unitPriceInput.addEventListener('input', calculateSubPrice);
             totalPriceInput.addEventListener('input', calculateDue);
             paymentInput.addEventListener('input', calculateDue);
+
+            // Serial Number Hybrid Logic
+            const serialSection = document.getElementById('serial-section');
+            const serialContainer = document.getElementById('serial-inputs-container');
+            const serialHelpText = document.getElementById('serial-help-text');
+            const productSelect = document.getElementById('product_id');
+
+            function updateSerialUI() {
+                const selectedOption = productSelect.options[productSelect.selectedIndex];
+                const isSerialized = selectedOption ? selectedOption.getAttribute('data-is-serialized') == '1' : false;
+                const quantity = parseInt(quantityInput.value) || 0;
+
+                if (isSerialized && quantity > 0) {
+                    serialSection.style.display = 'block';
+                    serialContainer.innerHTML = '';
+                    
+                    if (quantity <= 3) {
+                        serialHelpText.innerText = "Please enter each serial number precisely.";
+                        for (let i = 1; i <= quantity; i++) {
+                            const div = document.createElement('div');
+                            div.className = 'mb-2';
+                            div.innerHTML = `<input type="text" name="serial_numbers[]" class="form-control form-control-sm" placeholder="Serial #${i}" required>`;
+                            serialContainer.appendChild(div);
+                        }
+                    } else {
+                        serialHelpText.innerText = "High quantity detected. Please paste serials separated by new lines or commas.";
+                        const textarea = document.createElement('textarea');
+                        textarea.name = "serial_bulk";
+                        textarea.className = 'form-control form-control-sm';
+                        textarea.rows = 5;
+                        textarea.placeholder = "Enter ${quantity} serials here...";
+                        textarea.required = true;
+                        serialContainer.appendChild(textarea);
+                    }
+                } else {
+                    serialSection.style.display = 'none';
+                    serialContainer.innerHTML = '';
+                }
+            }
+
+            productSelect.addEventListener('change', updateSerialUI);
+            quantityInput.addEventListener('input', updateSerialUI);
         });
     </script>
 

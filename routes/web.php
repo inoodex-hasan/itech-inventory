@@ -51,6 +51,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     });
     Route::prefix('inventory')->group(function () {
         Route::resource('inventory', InventoryController::class);
+        Route::get('{productId}/serials', [\App\Http\Controllers\ProductSerialController::class, 'getSerialsByProduct'])->name('inventory.serials');
     });
     Route::resource('customers', CustomerController::class);
     Route::get('/vendors/pdf', [VendorController::class, 'downloadPdf'])

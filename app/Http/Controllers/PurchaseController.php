@@ -67,17 +67,19 @@ class PurchaseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
-            'product_id'  => 'required|exists:products,id',
-            'quantity'    => 'required|numeric|min:1',
-            'unit_price'  => 'required|numeric|min:0',
-            'sub_price'   => 'nullable|numeric',
-            'total_price' => 'required|numeric|min:0',
-            'payment'     => 'required|numeric|min:0',
-            'due'         => 'required|numeric|min:0',
-            'vendor_id'   => 'required|exists:vendors,id',
+            'product_id'     => 'required|exists:products,id',
+            'quantity'       => 'required|numeric|min:1',
+            'unit_price'     => 'required|numeric|min:0',
+            'sub_price'      => 'nullable|numeric',
+            'total_price'    => 'required|numeric|min:0',
+            'payment'        => 'required|numeric|min:0',
+            'due'            => 'required|numeric|min:0',
+            'vendor_id'      => 'required|exists:vendors,id',
+            'serial_numbers' => 'nullable|array',
+            'serial_bulk'    => 'nullable|string',
         ]);
 
         // Create purchase
@@ -89,9 +91,40 @@ class PurchaseController extends Controller
             'total_price' => $request->total_price,
             'payment'     => $request->payment,
             'due'         => $request->due,
-            'vendor_id'         => $request->vendor_id,
+            'vendor_id'   => $request->vendor_id,
             'created_by'  => Auth::id(),
         ]);
+
+        // Handle Serial Numbers
+        $product = Product::find($request->product_id);
+        if ($product && $product->is_serialized) {
+            $serials = [];
+
+            // From individual inputs
+            if ($request->filled('serial_numbers')) {
+                $serials = array_merge($serials, $request->serial_numbers);
+            }
+
+            // From bulk textarea
+            if ($request->filled('serial_bulk')) {
+                // Split by newline or comma
+                $bulkSerials = preg_split('/[\n,]+/', $request->serial_bulk);
+                $serials = array_merge($serials, array_map('trim', $bulkSerials));
+            }
+
+            // Filter out empty values and limit to quantity
+            $serials = array_filter($serials);
+            $serials = array_slice($serials, 0, $request->quantity);
+
+            foreach ($serials as $serial) {
+                \App\Models\ProductSerial::create([
+                    'product_id'    => $product->id,
+                    'purchase_id'   => $purchase->id,
+                    'serial_number' => $serial,
+                    'status'        => 'available',
+                ]);
+            }
+        }
 
         // Increment inventory quantity
         $inventory = Inventory::where('product_id', $request->product_id)->first();
