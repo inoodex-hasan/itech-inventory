@@ -197,7 +197,7 @@
                                         <th>Brand Name</th>
                                         <th>Product Name</th>
                                         <th>Model</th>
-                                        <th>Photos</th>
+                                        {{-- <th>Photos</th> --}}
                                         <th>Warranty</th>
                                         <th>Status</th>
                                         <th class="no-sort">Actions</th>
@@ -209,9 +209,11 @@
                                             <td>{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
                                             </td>
                                             <td>{{ $product->brand->name ?? 'N/A' }}</td>
-                                            <td>{{ Str::limit($product->name, 20) }}</td>
+                                            <td title="{{ $product->name }}">
+                                                {{ Str::limit($product->name, 35) }}
+                                            </td>
                                             <td>{{ Str::limit($product->model, 20) }}</td>
-                                            <td>
+                                            {{-- <td>
                                                 @if ($product->photos && count($product->photos) > 0)
                                                     <div class="d-flex gap-1 align-items-center">
                                                         @foreach ($product->photos as $index => $photo)
@@ -231,7 +233,7 @@
                                                 @else
                                                     <span class="text-muted">No photos</span>
                                                 @endif
-                                            </td>
+                                            </td> --}}
                                             <td>{{ $product->warranty ?? 'N/A' }}</td>
                                             <td>
                                                 @if ($product->status == 1)

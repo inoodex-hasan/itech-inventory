@@ -9,6 +9,7 @@ use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PurchaseController extends Controller
 {
@@ -204,39 +205,22 @@ class PurchaseController extends Controller
     public function reportIndex(Request $request)
     {
         $query = Purchase::query();
+        $hasFilters = $request->filled('vendor_id') || $request->filled('item_name') || $request->filled('from') || $request->filled('to');
 
-        // Check if any filters are applied
-        $hasFilters = $request->filled('vendor_id') || $request->filled('product_id') || $request->filled('from_date') || $request->filled('to_date');
-
-        // Default to current month if no filters are applied
         if (!$hasFilters) {
             $query->whereBetween('created_at', [
                 Carbon::now()->startOfMonth(),
-                Carbon::now()->endOfMonth()
+                Carbon::now()->endOfMonth(),
             ]);
         } else {
-            if ($request->filled('vendor_id')) {
-                $query->where('vendor_id', $request->vendor_id);
-            }
-
-            if ($request->filled('product_id')) {
-                $query->where('product_id', $request->product_id);
-            }
-
-            if ($request->filled('from_date')) {
-                $query->whereDate('created_at', '>=', $request->from_date);
-            }
-
-            if ($request->filled('to_date')) {
-                $query->whereDate('created_at', '<=', $request->to_date);
-            }
+            $query = $this->applyPurchaseReportFilters($query, $request);
         }
 
         $purchases = $query
-                ->selectRaw('product_id, SUM(quantity) as total_qty, SUM(total_price) as total_amount')
-                ->groupBy('product_id')
-                ->with('product') // Eager load product details
-                ->get(); // You can add pagination if needed
+            ->selectRaw('product_id, SUM(quantity) as total_qty, SUM(total_price) as total_amount')
+            ->groupBy('product_id')
+            ->with('product')
+            ->get();
 
         $products = Product::with('brand')->latest()->get();
         $vendors = Vendor::latest()->get();
@@ -247,10 +231,49 @@ class PurchaseController extends Controller
 
     public function report(Request $request)
     {
-        $request->all(); // For debugging purposes, you can remove this later
         $query = Purchase::query();
-        
-        // Apply filters
+        $query = $this->applyPurchaseReportFilters($query, $request);
+
+        $purchases = $query
+            ->selectRaw('product_id, SUM(quantity) as total_qty, SUM(total_price) as total_amount')
+            ->groupBy('product_id')
+            ->with('product')
+            ->get();
+
+        $products = Product::latest()->get();
+        $vendors = Vendor::latest()->get();
+
+        return view('frontend.pages.report.purchase.index', compact('purchases', 'products', 'vendors', 'request'));
+    }
+
+    public function reportPdf(Request $request)
+    {
+        $query = Purchase::query();
+        $query = $this->applyPurchaseReportFilters($query, $request);
+
+        $purchases = $query
+            ->selectRaw('product_id, SUM(quantity) as total_qty, SUM(total_price) as total_amount')
+            ->groupBy('product_id')
+            ->with('product')
+            ->get();
+
+        $products = Product::latest()->get();
+        $vendors = Vendor::latest()->get();
+
+        $filters = [
+            'from' => $request->filled('from') ? $request->from : Carbon::now()->startOfMonth()->format('Y-m-d'),
+            'to' => $request->filled('to') ? $request->to : Carbon::now()->endOfMonth()->format('Y-m-d'),
+            'product' => $request->filled('item_name') ? Product::find($request->item_name)?->name : 'All Products',
+            'vendor' => $request->filled('vendor_id') ? Vendor::find($request->vendor_id)?->name : 'All Vendors',
+        ];
+
+        $pdf = Pdf::loadView('frontend.pages.report.purchase.pdf', compact('purchases', 'filters'));
+
+        return $pdf->download('purchase-report-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function applyPurchaseReportFilters($query, Request $request)
+    {
         if ($request->filled('vendor_id')) {
             $query->where('vendor_id', $request->vendor_id);
         }
@@ -266,17 +289,8 @@ class PurchaseController extends Controller
         if ($request->filled('to')) {
             $query->whereDate('created_at', '<=', $request->to);
         }
-        // Group by product to get item-wise purchase data
-        $purchases = $query
-            ->selectRaw('product_id, SUM(quantity) as total_qty, SUM(total_price) as total_amount')
-            ->groupBy('product_id')
-            ->with('product') // Eager load product details
-            ->get();
-        
-        $products = Product::latest()->get();
-        $vendors = Vendor::latest()->get();
 
-        return view('frontend.pages.report.purchase.index', compact('purchases', 'products', 'vendors', 'request'));
+        return $query;
     }
 
 }

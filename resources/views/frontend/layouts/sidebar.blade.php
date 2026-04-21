@@ -131,6 +131,11 @@
                             class="{{ Route::currentRouteName() == 'purchase.index' ? 'active' : '' }}"><i
                                 class="fe fe-shopping-cart"></i> <span> Purchase List</span></a>
                     </li>
+                    <li class="">
+                        <a href="{{ route('purchase.report') }}"
+                            class="{{ Route::currentRouteName() == 'purchase.report' ? 'active' : '' }}"><i
+                                class="fe fe-shopping-cart"></i> <span> Purchase Reports</span></a>
+                    </li>
                 @endcan
 
                 @can('Company Management')

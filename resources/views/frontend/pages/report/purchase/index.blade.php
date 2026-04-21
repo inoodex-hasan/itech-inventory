@@ -51,11 +51,11 @@
                         <div class="col-sm-3 col-md-3">
                             <div class="input-block mb-3">
                                 <label>Vendor</label>
-                                <select name="vendor" class="form-control">
+                                <select name="vendor_id" class="form-control">
                                     <option value="">-- Select Vendor --</option>
                                     @foreach ($vendors as $vendor)
                                         <option value="{{ $vendor->id }}"
-                                            {{ request('vendor') == $vendor->id ? 'selected' : '' }}>
+                                            {{ request('vendor_id') == $vendor->id ? 'selected' : '' }}>
                                             {{ $vendor->name }}
                                         </option>
                                     @endforeach
@@ -77,10 +77,20 @@
                         </div>
                         <div class="col-sm-2 col-md-2">
                             <div class="input-block mb-3">
-                                <button type="submit" class="btn btn-primary">Filter</button>
+                                <label class="d-block">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary">Generate Report</button>
+                                <a href="{{ route('purchase.report') }}" class="btn btn-light">Reset</a>
                             </div>
                         </div>
+                    </div>
                 </form>
+                <div class="row">
+                    <div class="col-sm-12" style="text-align: right;">
+                        <a href="{{ route('purchase.report.pdf', request()->all()) }}" class="btn btn-danger mb-3" target="_blank">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
 
