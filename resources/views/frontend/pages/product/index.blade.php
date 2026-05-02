@@ -216,15 +216,15 @@
                             <table id="productTable" class="table table-center table-hover">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>#</th>
-                                        <th style="width: 15%">Brand Name</th>
-                                        <th class="d-none d-xl-table-cell" style="width: 15%">Category</th>
-                                        <th style="width: 25%">Product Name</th>
+                                        <th style="width: 5%">#</th>
+                                        <th class="d-none d-md-table-cell" style="width: 12%">Brand Name</th>
+                                        <th class="d-none d-xl-table-cell" style="width: 10%">Category</th>
+                                        <th style="width: 35%">Product Name</th>
                                         <th class="d-none d-lg-table-cell" style="width: 15%">Model</th>
-                                        <th style="width: 10%">Type</th>
+                                        <th style="width: 8%">Type</th>
                                         {{-- <th>Photos</th> --}}
-                                        <th>Warranty</th>
-                                        <th>Status</th>
+                                        <!-- <th style="width: 8%">Warranty</th> -->
+                                        <th style="width: 7%">Status</th>
                                         <th class="no-sort">Actions</th>
                                     </tr>
                                 </thead>
@@ -233,12 +233,12 @@
                                         <tr>
                                             <td>{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
                                             </td>
-                                            <td>{{ $product->brand->name ?? 'N/A' }}</td>
+                                            <td class="d-none d-md-table-cell">{{ $product->brand->name ?? 'N/A' }}</td>
                                             <td class="d-none d-xl-table-cell text-muted small">{{ $product->category->name ?? 'N/A' }}</td>
-                                            <td title="{{ $product->name }}">
-                                                {{ Str::limit($product->name, 25) }}
+                                            <td title="{{ $product->name }}" class="text-wrap" style="min-width: 200px; word-break: break-word;">
+                                                {{ $product->name }}
                                             </td>
-                                            <td class="d-none d-lg-table-cell">{{ Str::limit($product->model, 15) }}</td>
+                                            <td class="d-none d-lg-table-cell text-wrap" style="word-break: break-word;">{{ $product->model }}</td>
                                             <td>
                                                 @if($product->is_serialized)
                                                     <span class="badge bg-info">Serial</span>
@@ -266,7 +266,7 @@
                                                 <span class="text-muted">No photos</span>
                                                 @endif
                                             </td> --}}
-                                            <td>{{ $product->warranty ?? 'N/A' }}</td>
+                                            <!-- <td>{{ $product->warranty ?? 'N/A' }}</td> -->
                                             <td>
                                                 @if ($product->status == 1)
                                                     <span class="badge bg-success">Active</span>

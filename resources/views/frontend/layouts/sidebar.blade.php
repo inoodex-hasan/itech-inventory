@@ -89,6 +89,12 @@
                         <a href="{{ route('sales.index') }}"
                             class="{{ Route::currentRouteName() == 'sales.index' ? 'active' : '' }}"><i
                                 class="fe fe-shopping-bag"></i> <span>Sales List</span></a>
+                        <!-- <a href="{{ route('returns.create') }}"
+                            class="{{ Route::currentRouteName() == 'returns.create' ? 'active' : '' }}"><i
+                                class="fe fe-corner-down-left"></i> <span> Add Return</span></a> -->
+                        <a href="{{ route('returns.index') }}"
+                            class="{{ Route::currentRouteName() == 'returns.index' ? 'active' : '' }}"><i
+                                class="fe fe-refresh-cw"></i> <span> Return List</span></a>
                     </li>
                 @endcan
 

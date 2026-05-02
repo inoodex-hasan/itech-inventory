@@ -16,4 +16,9 @@ class SalesItem extends Model
         'total_price',
         'warranty',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

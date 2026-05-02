@@ -10,7 +10,7 @@ use App\Http\Controllers\{
     RevenueController, RoleController, PermissionController,
     SalaryController, SalesController, ServiceController,
     TaDaController, UserController, VendorController, BankDetailController,
-    CompanyDetailController, PaymentController
+    CompanyDetailController, PaymentController, ReturnController
 };
 
 use Illuminate\Support\Facades\{Auth, Route};
@@ -142,4 +142,14 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     
     Route::resource('company-details', CompanyDetailController::class);
     Route::post('company-details/{companyDetail}/set-default', [CompanyDetailController::class, 'setDefault'])->name('company-details.set-default');
+
+        Route::get('returns', [ReturnController::class, 'index'])->name('returns.index');
+        Route::get('returns/create', [ReturnController::class, 'create'])->name('returns.create');
+        Route::post('returns', [ReturnController::class, 'store'])->name('returns.store');
+        Route::get('returns/sale-items/{saleId}', [ReturnController::class, 'getSaleItems'])->name('returns.sale.items');
+        Route::get('returns/{id}', [ReturnController::class, 'show'])->name('returns.show');
+        Route::delete('returns/{id}', [ReturnController::class, 'destroy'])->name('returns.destroy');
+        Route::patch('returns/{id}/approve', [ReturnController::class, 'approve'])->name('returns.approve');
+        Route::patch('returns/{id}/complete', [ReturnController::class, 'complete'])->name('returns.complete');
+        Route::patch('returns/{id}/reject', [ReturnController::class, 'reject'])->name('returns.reject');
 });
