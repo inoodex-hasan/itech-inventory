@@ -796,10 +796,7 @@ CREATE TABLE `inventories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `inventories` (`id`, `product_id`, `opening_stock`, `current_stock`, `notes`, `created_at`, `updated_at`) VALUES
-(1,	4,	10,	5,	'Opening stock entry',	'2025-11-02 19:31:35',	'2026-03-31 10:19:07'),
-(3,	5,	20,	2,	'Opening stock entry',	'2025-11-03 02:05:12',	'2026-04-01 09:29:05'),
-(4,	3,	12,	1,	'Opening stock entry',	'2025-11-03 02:11:45',	'2026-01-12 06:51:32'),
-(5,	82,	635,	632,	'Opening stock entry',	'2026-04-20 14:51:03',	'2026-05-02 10:11:27'),
+(5,	82,	635,	632,	'Opening stock entry',	'2026-04-20 14:51:03',	'2026-05-03 07:18:31'),
 (6,	93,	17,	17,	'Opening stock entry',	'2026-04-20 15:40:21',	'2026-04-20 15:40:21'),
 (7,	83,	340,	340,	'Opening stock entry',	'2026-04-20 15:41:27',	'2026-04-20 15:41:27');
 
@@ -915,7 +912,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (101,	'2026_04_01_154652_add_recipient_and_company_fields_to_challans_table',	69),
 (102,	'2026_04_01_155356_add_client_and_company_fields_to_quotations_table',	70),
 (103,	'2026_05_02_123308_create_returns_table',	71),
-(104,	'2026_05_02_123312_create_return_items_table',	72);
+(104,	'2026_05_02_123312_create_return_items_table',	72),
+(105,	'2026_05_03_105500_add_returned_qty_to_sales_items_table',	73),
+(106,	'2026_04_04_164945_add_remarks_to_payments_table',	74),
+(107,	'2026_05_03_125600_add_created_by_updated_by_to_payments_table',	75);
 
 DROP TABLE IF EXISTS `model_has_permissions`;
 CREATE TABLE `model_has_permissions` (
@@ -985,28 +985,37 @@ CREATE TABLE `payments` (
   `project_id` bigint unsigned DEFAULT NULL,
   `payment_method` enum('cash','card','bank_transfer') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'cash',
   `amount` double NOT NULL,
+  `remarks` text COLLATE utf8mb4_unicode_ci,
+  `created_by` bigint unsigned DEFAULT NULL,
+  `updated_by` bigint unsigned DEFAULT NULL,
   `status` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `payments_created_by_foreign` (`created_by`),
+  KEY `payments_updated_by_foreign` (`updated_by`),
+  CONSTRAINT `payments_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `payments_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `payments` (`id`, `payment_for`, `customer_id`, `sale_id`, `project_id`, `payment_method`, `amount`, `status`, `created_at`, `updated_at`) VALUES
-(1,	2,	9,	9,	NULL,	'cash',	10000,	'1',	'2025-11-03 01:06:11',	'2025-11-03 01:06:11'),
-(2,	2,	10,	10,	NULL,	'cash',	21500,	'1',	'2025-11-03 01:27:52',	'2025-11-03 01:27:52'),
-(3,	2,	16,	26,	NULL,	'cash',	7500,	'1',	'2025-11-26 11:02:09',	'2025-11-26 11:02:09'),
-(4,	1,	15,	1,	NULL,	'cash',	200,	'1',	'2026-04-01 07:08:00',	'2026-04-01 07:08:00'),
-(5,	1,	15,	1,	NULL,	'cash',	200,	'1',	'2026-04-01 08:01:55',	'2026-04-01 08:01:55'),
-(6,	1,	15,	1,	NULL,	'cash',	100,	'1',	'2026-04-01 08:10:18',	'2026-04-01 08:10:18'),
-(7,	1,	15,	4,	NULL,	'cash',	300,	'1',	'2026-04-01 08:18:42',	'2026-04-01 08:18:42'),
-(8,	1,	20,	5,	NULL,	'cash',	12,	'1',	'2026-04-01 10:30:52',	'2026-04-01 10:30:52'),
-(9,	1,	21,	6,	NULL,	'card',	288,	'1',	'2026-04-01 10:34:35',	'2026-04-01 10:34:35'),
-(10,	1,	21,	6,	NULL,	'cash',	199,	'1',	'2026-04-01 10:39:14',	'2026-04-01 10:39:14'),
-(11,	1,	21,	6,	NULL,	'bank_transfer',	100,	'1',	'2026-04-01 10:39:30',	'2026-04-01 10:39:30'),
-(12,	1,	22,	7,	NULL,	'cash',	200,	'1',	'2026-04-01 10:53:44',	'2026-04-01 10:53:44'),
-(13,	1,	22,	8,	NULL,	'cash',	200,	'1',	'2026-04-01 10:57:29',	'2026-04-01 10:57:29'),
-(14,	1,	16,	9,	NULL,	'cash',	500,	'1',	'2026-04-01 11:01:01',	'2026-04-01 11:01:01'),
-(15,	1,	22,	10,	NULL,	'cash',	150,	'1',	'2026-04-01 18:32:35',	'2026-04-01 18:32:35');
+INSERT INTO `payments` (`id`, `payment_for`, `customer_id`, `sale_id`, `project_id`, `payment_method`, `amount`, `remarks`, `created_by`, `updated_by`, `status`, `created_at`, `updated_at`) VALUES
+(1,	2,	9,	9,	NULL,	'cash',	10000,	NULL,	NULL,	NULL,	'1',	'2025-11-03 01:06:11',	'2025-11-03 01:06:11'),
+(2,	2,	10,	10,	NULL,	'cash',	21500,	NULL,	NULL,	NULL,	'1',	'2025-11-03 01:27:52',	'2025-11-03 01:27:52'),
+(3,	2,	16,	26,	NULL,	'cash',	7500,	NULL,	NULL,	NULL,	'1',	'2025-11-26 11:02:09',	'2025-11-26 11:02:09'),
+(4,	1,	15,	1,	NULL,	'cash',	200,	NULL,	NULL,	NULL,	'1',	'2026-04-01 07:08:00',	'2026-04-01 07:08:00'),
+(5,	1,	15,	1,	NULL,	'cash',	200,	NULL,	NULL,	NULL,	'1',	'2026-04-01 08:01:55',	'2026-04-01 08:01:55'),
+(6,	1,	15,	1,	NULL,	'cash',	100,	NULL,	NULL,	NULL,	'1',	'2026-04-01 08:10:18',	'2026-04-01 08:10:18'),
+(7,	1,	15,	4,	NULL,	'cash',	300,	NULL,	NULL,	NULL,	'1',	'2026-04-01 08:18:42',	'2026-04-01 08:18:42'),
+(8,	1,	20,	5,	NULL,	'cash',	12,	NULL,	NULL,	NULL,	'1',	'2026-04-01 10:30:52',	'2026-04-01 10:30:52'),
+(9,	1,	21,	6,	NULL,	'card',	288,	NULL,	NULL,	NULL,	'1',	'2026-04-01 10:34:35',	'2026-04-01 10:34:35'),
+(10,	1,	21,	6,	NULL,	'cash',	199,	NULL,	NULL,	NULL,	'1',	'2026-04-01 10:39:14',	'2026-04-01 10:39:14'),
+(11,	1,	21,	6,	NULL,	'bank_transfer',	100,	NULL,	NULL,	NULL,	'1',	'2026-04-01 10:39:30',	'2026-04-01 10:39:30'),
+(12,	1,	22,	7,	NULL,	'cash',	200,	NULL,	NULL,	NULL,	'1',	'2026-04-01 10:53:44',	'2026-04-01 10:53:44'),
+(13,	1,	22,	8,	NULL,	'cash',	200,	NULL,	NULL,	NULL,	'1',	'2026-04-01 10:57:29',	'2026-04-01 10:57:29'),
+(14,	1,	16,	9,	NULL,	'cash',	500,	NULL,	NULL,	NULL,	'1',	'2026-04-01 11:01:01',	'2026-04-01 11:01:01'),
+(15,	1,	22,	10,	NULL,	'cash',	150,	NULL,	NULL,	NULL,	'1',	'2026-04-01 18:32:35',	'2026-04-01 18:32:35'),
+(16,	3,	31,	43,	NULL,	'cash',	-7200,	'Refund for Return #2',	2,	2,	'0',	'2026-05-03 06:58:54',	'2026-05-03 06:58:54'),
+(17,	3,	31,	44,	NULL,	'cash',	-7300,	'Refund for Return #3',	2,	2,	'0',	'2026-05-03 07:18:31',	'2026-05-03 07:18:31');
 
 DROP TABLE IF EXISTS `permissions`;
 CREATE TABLE `permissions` (
@@ -1412,7 +1421,7 @@ CREATE TABLE `return_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `return_items` (`id`, `return_id`, `product_id`, `sales_item_id`, `quantity`, `unit_price`, `total_price`, `return_reason`, `condition`, `notes`, `created_at`, `updated_at`) VALUES
-(1,	1,	82,	25,	2,	3600.00,	7200.00,	'customer_changed_mind',	'good',	'product is ok',	'2026-05-02 10:00:55',	'2026-05-02 10:00:55');
+(3,	3,	82,	26,	2,	3650.00,	7300.00,	'customer_changed_mind',	'good',	'product is ok',	'2026-05-03 07:18:01',	'2026-05-03 07:18:01');
 
 DROP TABLE IF EXISTS `returns`;
 CREATE TABLE `returns` (
@@ -1436,7 +1445,7 @@ CREATE TABLE `returns` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `returns` (`id`, `sale_id`, `customer_id`, `return_date`, `total_refund_amount`, `status`, `reason`, `notes`, `processed_by`, `processed_at`, `created_at`, `updated_at`) VALUES
-(1,	43,	31,	'2026-05-02',	7200.00,	'completed',	'test',	NULL,	2,	'2026-05-02 10:11:27',	'2026-05-02 10:00:55',	'2026-05-02 10:11:27');
+(3,	44,	31,	'2026-05-03',	7300.00,	'completed',	NULL,	NULL,	2,	'2026-05-03 07:18:31',	'2026-05-03 07:18:01',	'2026-05-03 07:18:31');
 
 DROP TABLE IF EXISTS `revenues`;
 CREATE TABLE `revenues` (
@@ -1580,7 +1589,7 @@ CREATE TABLE `sales` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sales` (`id`, `order_no`, `customer_id`, `client_id`, `product_id`, `sale_type`, `project_id`, `qty`, `total`, `vat`, `tax`, `delivery_charge`, `payble`, `bill`, `advanced_payment`, `due_payment`, `discount`, `sales_by`, `status`, `created_at`, `updated_at`) VALUES
-(43,	'INV-69F5C5E2E6284',	31,	NULL,	82,	'retail',	NULL,	4,	14400,	0.00,	0.00,	0.00,	14400,	14400,	5000.00,	9400.00,	0,	'2',	'partial',	'2026-05-02 09:37:38',	'2026-05-02 09:37:38');
+(44,	'INV-69F6F65227377',	31,	NULL,	82,	'retail',	NULL,	4,	7300,	1.50,	0.00,	500.00,	7919,	14600,	5000.00,	2919.00,	100,	'2',	'partial',	'2026-05-03 07:16:34',	'2026-05-03 07:18:31');
 
 DROP TABLE IF EXISTS `sales_items`;
 CREATE TABLE `sales_items` (
@@ -1591,36 +1600,38 @@ CREATE TABLE `sales_items` (
   `warranty` int NOT NULL DEFAULT '0' COMMENT 'in days',
   `qty` int NOT NULL,
   `total_price` double NOT NULL,
+  `returned_qty` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `sales_items` (`id`, `order_id`, `product_id`, `unit_price`, `warranty`, `qty`, `total_price`, `created_at`, `updated_at`) VALUES
-(1,	1,	1,	2500,	365,	2,	5000,	'2025-10-14 23:06:04',	'2025-10-14 23:06:04'),
-(2,	2,	2,	1200,	365,	5,	6000,	'2025-11-02 19:18:55',	'2025-11-02 19:18:55'),
-(3,	3,	2,	10000,	365,	12,	120000,	'2025-11-02 20:01:39',	'2025-11-02 20:01:39'),
-(4,	4,	3,	100,	365,	10,	1000,	'2025-11-02 20:03:14',	'2025-11-02 20:03:14'),
-(5,	5,	2,	100,	365,	10,	1000,	'2025-11-02 20:13:01',	'2025-11-02 20:13:01'),
-(6,	6,	2,	1000,	365,	5,	5000,	'2025-11-02 20:57:52',	'2025-11-02 20:57:52'),
-(7,	6,	3,	1500,	365,	3,	4500,	'2025-11-02 20:57:52',	'2025-11-02 20:57:52'),
-(8,	7,	2,	100,	365,	5,	500,	'2025-11-02 21:22:29',	'2025-11-02 21:22:29'),
-(9,	7,	4,	16000,	365,	2,	32000,	'2025-11-02 21:22:29',	'2025-11-02 21:22:29'),
-(10,	8,	4,	16000,	365,	5,	80000,	'2025-11-02 22:12:36',	'2025-11-02 22:12:36'),
-(11,	9,	4,	18000,	365,	2,	36000,	'2025-11-03 00:22:32',	'2025-11-03 00:22:32'),
-(12,	10,	2,	16000,	365,	3,	48000,	'2025-11-03 01:26:05',	'2025-11-03 01:26:05'),
-(13,	11,	5,	28000,	365,	8,	224000,	'2025-11-03 02:06:48',	'2025-11-03 02:06:48'),
-(14,	11,	2,	16000,	365,	2,	32000,	'2025-11-03 02:06:48',	'2025-11-03 02:06:48'),
-(15,	12,	3,	14500,	365,	2,	29000,	'2025-11-23 06:05:15',	'2025-11-23 06:05:15'),
-(17,	26,	4,	16500,	365,	2,	33000,	'2025-11-26 05:29:49',	'2025-11-26 05:29:49'),
-(18,	37,	3,	100,	365,	2,	200,	'2026-01-12 06:51:32',	'2026-01-12 06:51:32'),
-(19,	37,	5,	100,	365,	3,	300,	'2026-01-12 06:51:32',	'2026-01-12 06:51:32'),
-(20,	38,	5,	100,	365,	1,	100,	'2026-01-12 06:54:44',	'2026-01-12 06:54:44'),
-(21,	39,	4,	16000,	365,	2,	32000,	'2026-03-31 07:56:51',	'2026-03-31 07:56:51'),
-(22,	40,	4,	15000,	365,	2,	30000,	'2026-03-31 10:19:07',	'2026-03-31 10:19:07'),
-(23,	41,	5,	1500,	365,	1,	1500,	'2026-04-01 09:29:05',	'2026-04-01 09:29:05'),
-(24,	42,	82,	4200,	0,	1,	4200,	'2026-04-21 10:23:10',	'2026-04-21 10:23:10'),
-(25,	43,	82,	3600,	0,	4,	14400,	'2026-05-02 09:37:38',	'2026-05-02 09:37:38');
+INSERT INTO `sales_items` (`id`, `order_id`, `product_id`, `unit_price`, `warranty`, `qty`, `total_price`, `returned_qty`, `created_at`, `updated_at`) VALUES
+(1,	1,	1,	2500,	365,	2,	5000,	0,	'2025-10-14 23:06:04',	'2025-10-14 23:06:04'),
+(2,	2,	2,	1200,	365,	5,	6000,	0,	'2025-11-02 19:18:55',	'2025-11-02 19:18:55'),
+(3,	3,	2,	10000,	365,	12,	120000,	0,	'2025-11-02 20:01:39',	'2025-11-02 20:01:39'),
+(4,	4,	3,	100,	365,	10,	1000,	0,	'2025-11-02 20:03:14',	'2025-11-02 20:03:14'),
+(5,	5,	2,	100,	365,	10,	1000,	0,	'2025-11-02 20:13:01',	'2025-11-02 20:13:01'),
+(6,	6,	2,	1000,	365,	5,	5000,	0,	'2025-11-02 20:57:52',	'2025-11-02 20:57:52'),
+(7,	6,	3,	1500,	365,	3,	4500,	0,	'2025-11-02 20:57:52',	'2025-11-02 20:57:52'),
+(8,	7,	2,	100,	365,	5,	500,	0,	'2025-11-02 21:22:29',	'2025-11-02 21:22:29'),
+(9,	7,	4,	16000,	365,	2,	32000,	0,	'2025-11-02 21:22:29',	'2025-11-02 21:22:29'),
+(10,	8,	4,	16000,	365,	5,	80000,	0,	'2025-11-02 22:12:36',	'2025-11-02 22:12:36'),
+(11,	9,	4,	18000,	365,	2,	36000,	0,	'2025-11-03 00:22:32',	'2025-11-03 00:22:32'),
+(12,	10,	2,	16000,	365,	3,	48000,	0,	'2025-11-03 01:26:05',	'2025-11-03 01:26:05'),
+(13,	11,	5,	28000,	365,	8,	224000,	0,	'2025-11-03 02:06:48',	'2025-11-03 02:06:48'),
+(14,	11,	2,	16000,	365,	2,	32000,	0,	'2025-11-03 02:06:48',	'2025-11-03 02:06:48'),
+(15,	12,	3,	14500,	365,	2,	29000,	0,	'2025-11-23 06:05:15',	'2025-11-23 06:05:15'),
+(17,	26,	4,	16500,	365,	2,	33000,	0,	'2025-11-26 05:29:49',	'2025-11-26 05:29:49'),
+(18,	37,	3,	100,	365,	2,	200,	0,	'2026-01-12 06:51:32',	'2026-01-12 06:51:32'),
+(19,	37,	5,	100,	365,	3,	300,	0,	'2026-01-12 06:51:32',	'2026-01-12 06:51:32'),
+(20,	38,	5,	100,	365,	1,	100,	0,	'2026-01-12 06:54:44',	'2026-01-12 06:54:44'),
+(21,	39,	4,	16000,	365,	2,	32000,	0,	'2026-03-31 07:56:51',	'2026-03-31 07:56:51'),
+(22,	40,	4,	15000,	365,	2,	30000,	0,	'2026-03-31 10:19:07',	'2026-03-31 10:19:07'),
+(23,	41,	5,	1500,	365,	1,	1500,	0,	'2026-04-01 09:29:05',	'2026-04-01 09:29:05'),
+(24,	42,	82,	4200,	0,	1,	4200,	0,	'2026-04-21 10:23:10',	'2026-04-21 10:23:10'),
+(25,	43,	82,	3600,	0,	4,	14400,	2,	'2026-05-02 09:37:38',	'2026-05-03 06:58:54'),
+(26,	44,	82,	3650,	0,	4,	14600,	2,	'2026-05-03 07:16:34',	'2026-05-03 07:18:31');
 
 DROP TABLE IF EXISTS `services`;
 CREATE TABLE `services` (
@@ -1762,4 +1773,4 @@ INSERT INTO `vendors` (`id`, `name`, `phone`, `email`, `address`, `status`, `cre
 (34,	'Univers IT and Automation Limited',	'01823021975',	NULL,	'Mirpur, Pallabi',	'1',	'2026-04-20 10:31:25',	'2026-04-20 10:31:25'),
 (35,	'HiTi',	'01904400202',	NULL,	'Taiwan',	'1',	'2026-04-20 14:48:59',	'2026-04-20 14:48:59');
 
--- 2026-05-02 10:40:12 UTC
+-- 2026-05-03 11:24:46 UTC
