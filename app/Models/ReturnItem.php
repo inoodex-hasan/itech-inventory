@@ -38,6 +38,11 @@ class ReturnItem extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function salesItem()
+    {
+        return $this->belongsTo(SalesItem::class, 'sales_item_id');
+    }
+
     // Calculate total before saving
     protected static function boot()
     {

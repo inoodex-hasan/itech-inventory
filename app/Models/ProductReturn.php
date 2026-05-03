@@ -87,9 +87,11 @@ class ProductReturn extends Model
         ]);
     }
 
-    // Complete return and add items back to stock
+    // Complete return, update stock, adjust sale amounts, create refund payment
     public function complete($userId)
     {
+        $this->load(['sale', 'items.salesItem']);
+
         $this->update([
             'status' => 'completed',
             'processed_by' => $userId,
@@ -100,6 +102,61 @@ class ProductReturn extends Model
         // Update stock for each item
         foreach ($this->items as $item) {
             $this->addToStock($item);
+        }
+
+        // Update sale amounts
+        $this->updateSaleAmounts();
+
+        // Create refund payment record
+        $this->createRefundPayment($userId);
+
+        // Update sales_items returned_qty
+        $this->updateSalesItemsReturnedQty();
+    }
+
+    // Update sale payable and total amounts
+    private function updateSaleAmounts()
+    {
+        $sale = $this->sale;
+        $refundAmount = $this->total_refund_amount;
+
+        $newPayble = $sale->payble - $refundAmount;
+        $newTotal = $sale->total - $refundAmount;
+        $newDuePayment = max(0, $sale->payble - $sale->advanced_payment - $refundAmount);
+
+        $sale->update([
+            'payble' => max(0, $newPayble),
+            'total' => max(0, $newTotal),
+            'due_payment' => $newDuePayment,
+        ]);
+    }
+
+    // Create refund payment record
+    private function createRefundPayment($userId)
+    {
+        Payment::create([
+            'sale_id' => $this->sale_id,
+            'customer_id' => $this->customer_id,
+            'payment_for' => 3, // 3 = refund
+            'payment_method' => 'cash',
+            'amount' => -$this->total_refund_amount, // Negative amount for refund
+            'remarks' => "Refund for Return #{$this->id}",
+            'status' => 1,
+            'created_by' => $userId,
+            'updated_by' => $userId,
+        ]);
+    }
+
+    // Update returned_qty for each sales_item
+    private function updateSalesItemsReturnedQty()
+    {
+        foreach ($this->items as $returnItem) {
+            if ($returnItem->sales_item_id) {
+                $salesItem = SalesItem::find($returnItem->sales_item_id);
+                if ($salesItem) {
+                    $salesItem->increment('returned_qty', $returnItem->quantity);
+                }
+            }
         }
     }
 

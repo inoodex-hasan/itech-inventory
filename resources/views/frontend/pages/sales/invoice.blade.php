@@ -88,12 +88,59 @@
                         <td>{{ $loop->index + 1 }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->qty ?? 'N/A' }}</td>
-                        <td>{{ $item->unit_price ?? 'N/A' }}</td>
-                        <td>{{ $item->total_price ?? 'N/A' }}</td>
+                        <td>{{ $item->unit_price ? number_format($item->unit_price, 2) : 'N/A' }}</td>
+                        <td>{{ $item->total_price ? number_format($item->total_price, 2) : 'N/A' }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+
+        @php
+            $completedReturns = $returns->where('status', 'completed');
+            $totalRefundAmount = $completedReturns->sum(function($return) {
+                return $return->total_refund_amount ?? $return->items->sum('total_price');
+            });
+            $hasReturns = $completedReturns->count() > 0;
+        @endphp
+
+        @if($hasReturns)
+        <!-- Returns Section -->
+        <div class="returns-section" style="margin-top: 20px; border: 1px dashed #dc3545; padding: 15px; background: #fff5f5;">
+            <h4 style="color: #dc3545; margin-bottom: 10px;">Returned Items</h4>
+            <table class="items-table" style="width: 100%;">
+                <thead>
+                    <tr style="background: #dc3545; color: white;">
+                        <th>Return #</th>
+                        <th>Product</th>
+                        <th>Qty Returned</th>
+                        <th>Reason</th>
+                        <th>Condition</th>
+                        <th>Refund Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($completedReturns as $return)
+                        @foreach($return->items as $returnItem)
+                            <tr>
+                                <td>#{{ $return->id }}</td>
+                                <td>{{ $returnItem->product->name ?? 'N/A' }}</td>
+                                <td>{{ $returnItem->quantity }}</td>
+                                <td>{{ $returnItem->reason_label }}</td>
+                                <td>{{ $returnItem->condition_label }}</td>
+                                <td>{{ number_format($returnItem->total_price, 2) }} Tk</td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background: #ffe0e0;">
+                        <td colspan="5" class="text-right">Total Refund:</td>
+                        <td>{{ number_format($totalRefundAmount, 2) }} Tk</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        @endif
 
         <div class="totals-section">
             <div class="conditions">
@@ -112,36 +159,62 @@
                 </p>
             </div>
             <table class="totals-table">
+                @if($hasReturns)
+                <tr style="color: #666; text-decoration: line-through;">
+                    <td>Original Sub Total:</td>
+                    <td class="text-right">{{ number_format($sales->bill + $totalRefundAmount, 2) }} Tk</td>
+                </tr>
+                <tr style="color: #dc3545;">
+                    <td>Returns / Refund:</td>
+                    <td class="text-right">- {{ number_format($totalRefundAmount, 2) }} Tk</td>
+                </tr>
+                @endif
                 <tr>
                     <td>Sub Total:</td>
-                    <td class="text-right">{{ $sales->bill }} Tk</td>
+                    <td class="text-right">{{ number_format($sales->bill, 2) }} Tk</td>
                 </tr>
+                @if(($sales->vat ?? 0) > 0)
+                @php $vatAmount = ($sales->bill * $sales->vat) / 100; @endphp
+                <tr>
+                    <td>VAT ({{ number_format($sales->vat, 2) }}%):</td>
+                    <td class="text-right">{{ number_format($vatAmount, 2) }} Tk</td>
+                </tr>
+                @endif
+                @if(($sales->tax ?? 0) > 0)
+                @php $taxAmount = ($sales->bill * $sales->tax) / 100; @endphp
+                <tr>
+                    <td>Tax ({{ number_format($sales->tax, 2) }}%):</td>
+                    <td class="text-right">{{ number_format($taxAmount, 2) }} Tk</td>
+                </tr>
+                @endif
+                @if(($sales->delivery_charge ?? 0) > 0)
+                <tr>
+                    <td>Delivery Charge:</td>
+                    <td class="text-right">{{ number_format($sales->delivery_charge, 2) }} Tk</td>
+                </tr>
+                @endif
                 <tr>
                     <td>Discount:</td>
-                    <td class="text-right">{{ $sales->discount }} Tk</td>
+                    <td class="text-right">{{ number_format($sales->discount ?? 0, 2) }} Tk</td>
                 </tr>
                 <tr>
                     <td>Total:</td>
-                    <td class="text-right">{{ $sales->payble }} Tk</td>
+                    <td class="text-right">{{ number_format($sales->payble, 2) }} Tk</td>
                 </tr>
                 <tr>
                     <td>Received:</td>
-                    <td class="text-right">{{ $sales->advanced_payment }} Tk</td>
+                    <td class="text-right">{{ number_format($sales->advanced_payment ?? 0, 2) }} Tk</td>
                 </tr>
                 <tr>
                     <td>Total Due:</td>
-                    <td class="text-right">{{ $sales->due_payment }} Tk</td>
+                    <td class="text-right">{{ number_format($sales->due_payment ?? 0, 2) }} Tk</td>
                 </tr>
             </table>
         </div>
         <div class="in-words">
             <strong>In Words:</strong>
             @php
-                if (is_countable($sales)) {
-                    $totalAmount = collect($sales)->sum('bill');
-                } else {
-                    $totalAmount = $sales->bill ?? 0;
-                }
+                $totalAmount = $sales->bill ?? 0;
             @endphp
             {{ numberToWords($totalAmount) }} Taka Only
         </div>
@@ -158,15 +231,12 @@
     </div>
 
     <script>
-        // প্রিন্ট বাটনে ক্লিক করলে প্রিন্ট ডায়ালগ ওপেন হবে
         document
             .querySelector(".print-btn")
             .addEventListener("click", function() {
                 window.print();
             });
 
-        // স্বয়ংক্রিয়ভাবে প্রিন্ট ডায়ালগ ওপেন করতে চাইলে নিচের লাইনটি আনকমেন্ট করুন
-        // window.print();
     </script>
 </body>
 

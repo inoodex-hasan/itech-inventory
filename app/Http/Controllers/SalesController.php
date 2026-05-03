@@ -421,18 +421,21 @@ public function store(Request $request)
 
     public function makeInvoice(Request $request, $serviceId)
     {
-        $sales = Sale::where('id', $serviceId)->first();
+        $sales = Sale::with(['returns.items.product', 'returns.processedBy'])->find($serviceId);
         if (!$sales) abort(404);
+
         $customer = Customer::where('id', $sales->customer_id)->first();
         if (!$customer) abort(404);
+
         $items = SalesItem::join('products', 'products.id', 'sales_items.product_id')
             ->where('order_id',  $sales->id)
             ->select('sales_items.*', 'products.name', 'products.model')
             ->get();
 
+        // Get completed returns for this sale
+        $returns = $sales->returns->where('status', 'completed');
 
-
-        return view('frontend.pages.sales.invoice', compact('sales', 'items', 'customer'));
+        return view('frontend.pages.sales.invoice', compact('sales', 'items', 'customer', 'returns'));
     }
 
     public function payments(Request $request, $saleId = null)

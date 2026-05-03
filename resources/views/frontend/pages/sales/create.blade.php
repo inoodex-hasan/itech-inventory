@@ -172,8 +172,8 @@
                             <div class="col-lg-4 col-md-6 col-sm-12">
                                 <div class="input-block mb-3">
                                     <label class="form-label">Select Customer <span class="text-danger">*</span></label>
-                                    <select name="existing_client_id" class="form-control" id="clientSelect">
-                                        <option value="">Select Customer</option>
+                                    <select name="existing_client_id" class="form-control select2-customer" id="clientSelect">
+                                        <option value="">-- Search Customer --</option>
                                         @foreach ($existingClients as $client)
                                             <option value="{{ $client->id }}">
                                                 {{ $client->name }} - {{ $client->phone }}
@@ -1092,7 +1092,7 @@
         // Optional: recalc Due Payment whenever Advanced Payment changes
         document.getElementById('advancedPayment').addEventListener('input', calculateTotal);
 
-        // Initialize Select2 with search for product dropdown
+        // Initialize Select2 with search for product and customer dropdowns
         $(document).ready(function() {
             $('.select2-product').select2({
                 placeholder: 'Search product by name or model...',
@@ -1101,6 +1101,18 @@
                 language: {
                     noResults: function() {
                         return "No product found";
+                    }
+                }
+            });
+
+            // Initialize Select2 for customer dropdown with search
+            $('.select2-customer').select2({
+                placeholder: 'Search customer by name or phone...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "No customer found";
                     }
                 }
             });

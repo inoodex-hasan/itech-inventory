@@ -15,6 +15,7 @@ class SalesItem extends Model
         'qty',
         'total_price',
         'warranty',
+        'returned_qty',
     ];
 
     public function product()

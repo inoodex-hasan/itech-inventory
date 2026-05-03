@@ -103,7 +103,7 @@
         <div class="col-sm-12">
             <div class="card-table">
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <div class="table-responsive" style="overflow: visible;">
                         <table class="table table-center table-hover" id="salesTable">
                             <thead class="thead-light">
                                 <tr>
