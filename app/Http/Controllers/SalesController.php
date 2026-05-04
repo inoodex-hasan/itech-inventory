@@ -478,7 +478,7 @@ public function store(Request $request)
 
             $mpdf->WriteHTML($html);
 
-            $fileName = 'sales-invoice-' . ($sales->order_no ?? $sales->id) . '.pdf';
+            $fileName = ($sales->order_no ?? $sales->id) . '.pdf';
             $pdfContent = $mpdf->Output($fileName, 'S');
 
             return response($pdfContent, 200, [
