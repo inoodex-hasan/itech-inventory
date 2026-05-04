@@ -6,6 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoice</title>
     <link rel="stylesheet" href="{{ asset('assets/invoice/style.css') }}" />
+    <style>
+        /* Background image for PDF - watermark style */
+        .a4-container {
+            background-image: url('{{ asset('assets/invoice/invoice-bg.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        /* Alternative: watermark style (centered, semi-transparent)
+        .a4-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background-image: url('{{ asset('assets/invoice/invoice-bg.jpg') }}');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+        } */
+        
+        /* Ensure content stays above background */
+        .a4-container > * {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
 </head>
 
 <body>
@@ -15,7 +48,7 @@
 
     <div class="a4-container">
         <div class="invoice-header">
-            <div class="header__left">
+            <!-- <div class="header__left">
                 <div class="logo">
                     <img src="{{ asset('assets/invoice/logo-transparent.webp') }}" alt="" />
                 </div>
@@ -24,17 +57,26 @@
                     <p>Phone: 01904400202</p>
                     <p>Email: info.itechbd@yahoo.com</p>
                 </div>
-            </div>
-            <div class="invoice-title">
+            </div> -->
+            <!-- <div class="invoice-title">
                 {{-- <p>Date: {{ $sales->created_at->format('d-m-Y') }}</p> --}}
                 <h1>INVOICE</h1>
-            </div>
+            </div> -->
         </div>
         <!-- invoice address  -->
-        <div class="address">
+        <!-- <div class="address">
             <p>Address: House # 7, (3rd floor), Road # 4,</p>
             <p>Mirpur-10, Dhaka -1216, Bangladesh.</p>
-        </div>
+        </div> -->
+
+         <div class="right">
+                        <h1>INVOICE</h1>
+                        <p>Invoice No: {{ $sales->order_no }}</p>
+                        <p>Invoice Date:
+                            {{ $sales->created_at->format('d-m-Y') }}
+
+                        </p>
+                    </div>
 
         <div class="invoice-details">
             <ul>
@@ -44,9 +86,6 @@
                         <p class="customer__name">{{ $customer->name }}</p>
                     </div>
 
-                    <div class="right">
-                        <p>Invoice No: {{ $sales->order_no }}</p>
-                    </div>
                 </li>
                 <li class="details__item">
                     <div class="customer">
@@ -54,12 +93,6 @@
                         <p class="customer__name">{{ $customer->phone }}</p>
                     </div>
 
-                    <div class="right">
-                        <p>Invoice Date:
-                            {{ $sales->created_at->format('d-m-Y') }}
-
-                        </p>
-                    </div>
                 </li>
                 <li class="details__item">
                     <div class="customer">
@@ -67,7 +100,6 @@
                         <p class="customer__name">{{ $customer->address }}</p>
                     </div>
 
-                    <div class="right"></div>
                 </li>
             </ul>
         </div>
