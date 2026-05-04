@@ -275,8 +275,8 @@
      </header>
 
      <footer>
-         <div> Corporate Office: 187(3rd Floor), Green Road, Dhanmondi Dhaka-1205, Bangladesh. Cell: +88 01904400202,
-             +88 01904400203</div>
+         <div> Corporate Office: Jahanara Villa, House # 07 (3rd Floor), Road # 04, Mirpur-10 Circle, Dhaka-1216, Bangladesh. Cell: +88 01904400202, +88 01904400203.
+</div>
 
          <div>E-mail: info.itechbd@yahoo.com Web: www.itechbd.net</div>
      </footer>
