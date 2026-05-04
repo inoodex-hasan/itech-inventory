@@ -150,12 +150,21 @@
                                                     <ul>
 
                                                         @if ($service->sale_type == 'retail')
-                                                            {{-- Invoice / Bill --}}
+                                                            {{-- Preview Invoice --}}
                                                             <li>
                                                                 <a class="dropdown-item" target="_blank"
                                                                     href="{{ route('sales.invoice', $service->id) }}">
-                                                                    <i class="far fa-file-alt me-2"></i>
-                                                                    Invoice
+                                                                    <i class="far fa-eye me-2"></i>
+                                                                    Preview
+                                                                </a>
+                                                            </li>
+
+                                                            {{-- Download PDF --}}
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('sales.invoice.pdf', $service->id) }}">
+                                                                    <i class="fas fa-download me-2"></i>
+                                                                    Download PDF
                                                                 </a>
                                                             </li>
 

@@ -66,6 +66,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
 
     Route::resource('sales', SalesController::class);
     Route::get('sales/invoice/{id}', [SalesController::class, 'makeInvoice'])->name('sales.invoice');
+    Route::get('sales/invoice/{id}/pdf', [SalesController::class, 'downloadInvoicePdf'])->name('sales.invoice.pdf');
     Route::get('/sales/payments/{saleId?}', [SalesController::class, 'payments'])->name('sales.payments');
     Route::get('sales/{id}/details', [SalesController::class, 'getSaleDetails'])->name('sales.details');
 

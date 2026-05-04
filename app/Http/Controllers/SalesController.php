@@ -11,6 +11,8 @@ use Input;
 use Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Mpdf\Mpdf;
+use Mpdf\MpdfException;
 use Twilio\Rest\Client;
 
 class SalesController extends Controller
@@ -436,6 +438,60 @@ public function store(Request $request)
         $returns = $sales->returns->where('status', 'completed');
 
         return view('frontend.pages.sales.invoice', compact('sales', 'items', 'customer', 'returns'));
+    }
+
+    public function downloadInvoicePdf($id)
+    {
+        $sales = Sale::with(['returns.items.product', 'returns.processedBy'])->find($id);
+        if (!$sales) {
+            abort(404);
+        }
+
+        $customer = Customer::where('id', $sales->customer_id)->first();
+        if (!$customer) {
+            abort(404);
+        }
+
+        $items = SalesItem::join('products', 'products.id', 'sales_items.product_id')
+            ->where('order_id', $sales->id)
+            ->select('sales_items.*', 'products.name', 'products.model')
+            ->get();
+
+        $returns = $sales->returns->where('status', 'completed');
+
+        try {
+            $html = view('frontend.pages.sales.invoice_pdf', compact('sales', 'items', 'customer', 'returns'))->render();
+            $tempDir = storage_path('app/mpdf-temp');
+            if (!is_dir($tempDir)) {
+                @mkdir($tempDir, 0775, true);
+            }
+
+            $mpdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'tempDir' => $tempDir,
+                'margin_top' => 10,
+                'margin_right' => 10,
+                'margin_bottom' => 10,
+                'margin_left' => 10,
+            ]);
+
+            $mpdf->WriteHTML($html);
+
+            $fileName = 'sales-invoice-' . ($sales->order_no ?? $sales->id) . '.pdf';
+            $pdfContent = $mpdf->Output($fileName, 'S');
+
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            ]);
+        } catch (MpdfException $e) {
+            Log::error('Sales invoice PDF generation failed: ' . $e->getMessage(), [
+                'sale_id' => $id,
+            ]);
+
+            return redirect()->back()->with('error', 'Failed to generate sales invoice PDF.');
+        }
     }
 
     public function payments(Request $request, $saleId = null)

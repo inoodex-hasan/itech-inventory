@@ -7,6 +7,19 @@
     <title>Invoice</title>
     <link rel="stylesheet" href="{{ asset('assets/invoice/style.css') }}" />
     <style>
+
+
+        @media print 
+    .a4-container {
+        /* This tells the browser: "I don't care about ink, show the background!" */
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
         /* Background image for PDF - watermark style */
         .a4-container {
             background-image: url('{{ asset('assets/invoice/invoice-bg.jpg') }}');
