@@ -545,46 +545,103 @@ public function store(Request $request)
         $salesQuery = DB::table('sales_items')
             ->join('sales', 'sales.id', '=', 'sales_items.order_id')
             ->join('products', 'products.id', '=', 'sales_items.product_id')
+            ->leftJoin('customers', 'customers.id', '=', 'sales.customer_id')
             ->select(
                 'products.name as product_name',
                 'sales.created_at as sale_date',
                 'sales_items.qty',
                 'sales_items.unit_price',
                 'sales_items.total_price',
+                'customers.name as customer_name',
+                'customers.phone as customer_phone',
             );
-
-        $hasFilters = false;
 
         if ($request->filled('item_name')) {
             $salesQuery->where('sales_items.product_id', $request->item_name);
-            $hasFilters = true;
+        }
+
+        if ($request->filled('customer_id')) {
+            $salesQuery->where('sales.customer_id', $request->customer_id);
         }
 
         if ($request->filled('from')) {
             $salesQuery->whereDate('sales.created_at', '>=', $request->from);
-            $hasFilters = true;
         }
 
         if ($request->filled('to')) {
             $salesQuery->whereDate('sales.created_at', '<=', $request->to);
-            $hasFilters = true;
-        }
-
-        if (!$hasFilters) {
-            $salesQuery->whereBetween('sales.created_at', [
-                Carbon::now()->startOfMonth(),
-                Carbon::now()->endOfMonth()
-            ]);
         }
 
         $salesReport = $salesQuery->orderBy('sales.created_at', 'desc')->get();
 
         $products = DB::table('products')->select('id', 'name')->get();
+        $customers = Customer::select('id', 'name', 'phone')->orderBy('name')->get();
 
         return view('frontend.pages.report.sales.index', [
             'salesReport' => $salesReport,
             'products' => $products,
+            'customers' => $customers,
             'request' => $request
+        ]);
+    }
+
+    public function reportPdf(Request $request)
+    {
+        $salesQuery = DB::table('sales_items')
+            ->join('sales', 'sales.id', '=', 'sales_items.order_id')
+            ->join('products', 'products.id', '=', 'sales_items.product_id')
+            ->leftJoin('customers', 'customers.id', '=', 'sales.customer_id')
+            ->select(
+                'products.name as product_name',
+                'sales.created_at as sale_date',
+                'sales_items.qty',
+                'sales_items.unit_price',
+                'sales_items.total_price',
+                'customers.name as customer_name',
+                'customers.phone as customer_phone',
+            );
+
+        if ($request->filled('item_name')) {
+            $salesQuery->where('sales_items.product_id', $request->item_name);
+        }
+
+        if ($request->filled('customer_id')) {
+            $salesQuery->where('sales.customer_id', $request->customer_id);
+        }
+
+        if ($request->filled('from')) {
+            $salesQuery->whereDate('sales.created_at', '>=', $request->from);
+        }
+
+        if ($request->filled('to')) {
+            $salesQuery->whereDate('sales.created_at', '<=', $request->to);
+        }
+
+        $salesReport = $salesQuery->orderBy('sales.created_at', 'desc')->get();
+
+        $html = view('frontend.pages.report.sales.pdf', compact('salesReport', 'request'))->render();
+
+        $tempDir = storage_path('app/mpdf-temp');
+        if (!is_dir($tempDir)) {
+            @mkdir($tempDir, 0775, true);
+        }
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'tempDir' => $tempDir,
+            'margin_top' => 10,
+            'margin_right' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 10,
+        ]);
+
+        $mpdf->WriteHTML($html);
+        $pdfContent = $mpdf->Output('sales-report.pdf', 'S');
+
+        return response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="sales-report.pdf"',
         ]);
     }
 

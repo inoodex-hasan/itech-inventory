@@ -9,7 +9,8 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf;
 
 class ChallanController extends Controller
 {
@@ -115,29 +116,17 @@ public function index(Request $request)
             // Load challan with relationships for PDF
             $challan->load('challanItems', 'sale.customer', 'project.client');
 
-            // Prepare data for PDF from saved database records
             $pdfData = [
                 'challan' => $challan,
-                'challan_items' => $challan->challanItems,
-                'recipient_organization' => $challan->recipient_organization,
+                'recipient_organization' => $challan->recipient_organization ?? 'N/A',
                 'recipient_designation' => $challan->recipient_designation ?? 'The Managing Director',
-                'recipient_address' => $challan->recipient_address ?? '',
+                'recipient_address' => $challan->recipient_address ?? 'N/A',
                 'attention_to' => $challan->attention_to ?? '',
                 'subject' => $challan->subject ?? 'Delivery Challan',
-                'notes' => $challan->notes ?? '',
-                'company_name' => $challan->company_name ?? 'Intelligent Technology',
-                'signatory_name' => $challan->signatory_name ?? 'Engr. Shamsul Alam',
-                'signatory_designation' => $challan->signatory_designation ?? 'Director (Technical)',
-                'company_phone' => $challan->company_phone ?? '+880 XXXX-XXXXXX',
-                'company_email' => $challan->company_email ?? 'info@intelligenttech.com',
-                'company_website' => $challan->company_website ?? 'www.intelligenttech.com',
             ];
 
-            \Log::info('PDF data prepared', $pdfData);
-
-            // Generate PDF with proper headers
-            $pdf = PDF::loadView('pdf.challan', $pdfData);
-            $fileRecipientName = $challan->sale?->customer?->name
+$pdf = Pdf::loadView('pdf.challan', $pdfData);
+    $fileRecipientName = $challan->sale?->customer?->name
                 ?? $challan->project?->client?->name
                 ?? $request->recipient_organization
                 ?? 'client';
@@ -198,22 +187,14 @@ public function download($id)
 
     $pdfData = [
         'challan' => $challan,
-        'challan_items' => $challan->challanItems,
         'recipient_organization' => $recipientName ?? 'N/A',
         'recipient_designation' => $challan->recipient_designation ?? 'The Managing Director',
         'recipient_address' => $recipientAddress ?? 'N/A',
         'attention_to' => $challan->attention_to ?? '',
         'subject' => $challan->subject ?? 'Delivery Challan',
-        'notes' => $challan->notes ?? '',
-        'company_name' => $challan->company_name ?? 'Intelligent Technology',
-        'signatory_name' => $challan->signatory_name ?? 'Engr. Shamsul Alam',
-        'signatory_designation' => $challan->signatory_designation ?? 'Director (Technical)',
-        'company_phone' => $challan->company_phone ?? '+880 XXXX-XXXXXX',
-        'company_email' => $challan->company_email ?? 'info@intelligenttech.com',
-        'company_website' => $challan->company_website ?? 'www.intelligenttech.com',
     ];
 
-    $pdf = PDF::loadView('pdf.challan', $pdfData);
+    $pdf = Pdf::loadView('pdf.challan', $pdfData);
     $fileRecipientName = $recipientName ?? 'client';
     $recipientSlug = Str::slug($fileRecipientName);
     $challanDate = $challan->challan_date
@@ -315,6 +296,50 @@ public function getProjects()
         \Log::error('getProjects Error: ' . $e->getMessage());
         return response()->json(['error' => $e->getMessage()], 500);
     }
+}
+
+public function reportPdf(Request $request)
+{
+    $query = Challan::with('challanItems');
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    if ($request->filled('date_from')) {
+        $query->whereDate('challan_date', '>=', $request->date_from);
+    }
+
+    if ($request->filled('date_to')) {
+        $query->whereDate('challan_date', '<=', $request->date_to);
+    }
+
+    $challans = $query->latest()->get();
+
+    $html = view('pdf.challans-report', compact('challans', 'request'))->render();
+
+    $tempDir = storage_path('app/mpdf-temp');
+    if (!is_dir($tempDir)) {
+        @mkdir($tempDir, 0775, true);
+    }
+
+    $mpdf = new Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'tempDir' => $tempDir,
+        'margin_top' => 10,
+        'margin_right' => 10,
+        'margin_bottom' => 10,
+        'margin_left' => 10,
+    ]);
+
+    $mpdf->WriteHTML($html);
+    $pdfContent = $mpdf->Output('challans-report.pdf', 'S');
+
+    return response($pdfContent, 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'attachment; filename="challans-report.pdf"',
+    ]);
 }
 
 public function destroy($id)

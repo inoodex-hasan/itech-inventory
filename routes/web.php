@@ -88,6 +88,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
 
     Route::prefix('bills')->group(function () {
         Route::get('/', [BillController::class, 'index'])->name('bills.index');
+        Route::get('/pdf', [BillController::class, 'reportPdf'])->name('bills.pdf');
         Route::get('/create', [BillController::class, 'create'])->name('bills.create');
         Route::get('/get-sales', [BillController::class, 'getSales'])->name('api.sales');
         Route::get('/get-projects', [BillController::class, 'getProjects'])->name('api.projects');
@@ -99,11 +100,13 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
         Route::delete('/{bill}', [BillController::class, 'destroy'])->name('bills.destroy');
     });
 
+    Route::get('/challans/pdf', [ChallanController::class, 'reportPdf'])->name('challans.pdf');
     Route::resource('challans', ChallanController::class);
     Route::get('/challans/{challan}/download', [ChallanController::class, 'download'])->name('challans.download');
     Route::get('/get-sales', [ChallanController::class, 'getSales'])->name('challans.get-sales');
     Route::get('/get-projects', [ChallanController::class, 'getProjects'])->name('challans.get-projects');
 
+    Route::get('/quotations/pdf-report', [QuotationController::class, 'reportPdf'])->name('quotations.pdf-report');
     Route::resource('quotations', QuotationController::class);
     Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
     Route::get('/quotations/{quotation}/download', [QuotationController::class, 'download'])->name('quotations.download');
@@ -129,6 +132,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('purchase/report', [PurchaseController::class, 'report'])->name('purchase.report.get');
     Route::get('purchase/report/pdf', [PurchaseController::class, 'reportPdf'])->name('purchase.report.pdf');
     Route::get('sales-report', [SalesController::class, 'report'])->name('sales.report');
+    Route::get('sales-report/pdf', [SalesController::class, 'reportPdf'])->name('sales.report.pdf');
     Route::get('/revenues', [RevenueController::class, 'index'])->name('revenues.index');
     Route::post('/revenues/generate', [RevenueController::class, 'generate'])->name('revenues.generate');
     Route::get('/revenues/export/{id}', [RevenueController::class, 'export'])->name('revenues.export');

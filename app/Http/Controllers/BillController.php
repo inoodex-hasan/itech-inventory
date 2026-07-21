@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\{BankDetail, Bill, BillItem, Client, CompanyDetail, Customer, Project, Purchase, Sale, Vendor};
 use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf;
 
 class BillController extends Controller
 {
@@ -709,6 +710,50 @@ public function download($id)
         if ($data['client_id']) return 'sale';
         return 'general';
     }
+
+public function reportPdf(Request $request)
+{
+    $query = Bill::with(['client', 'vendor', 'project', 'purchase', 'items']);
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    if ($request->filled('date_from')) {
+        $query->whereDate('bill_date', '>=', $request->date_from);
+    }
+
+    if ($request->filled('date_to')) {
+        $query->whereDate('bill_date', '<=', $request->date_to);
+    }
+
+    $bills = $query->latest()->get();
+
+    $html = view('pdf.bills-report', compact('bills', 'request'))->render();
+
+    $tempDir = storage_path('app/mpdf-temp');
+    if (!is_dir($tempDir)) {
+        @mkdir($tempDir, 0775, true);
+    }
+
+    $mpdf = new Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'tempDir' => $tempDir,
+        'margin_top' => 10,
+        'margin_right' => 10,
+        'margin_bottom' => 10,
+        'margin_left' => 10,
+    ]);
+
+    $mpdf->WriteHTML($html);
+    $pdfContent = $mpdf->Output('bills-report.pdf', 'S');
+
+    return response($pdfContent, 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'attachment; filename="bills-report.pdf"',
+    ]);
+}
 
 public function destroy($id)
 {

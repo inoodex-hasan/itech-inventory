@@ -17,45 +17,30 @@
                     </div>
                     <div class="card-body">
 
-                        <div class="row mb-4">
-                            {{-- <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label">Type</label>
-                                    <select class="form-control" id="typeFilter">
-                                        <option value="">All Types</option>
-                                        <option value="sale" {{ request('type') == 'sale' ? 'selected' : '' }}>Sales
-                                            Challan</option>
-                                        <option value="project" {{ request('type') == 'project' ? 'selected' : '' }}>
-                                            Project
-                                            Challan</option>
-                                    </select>
+                        <form action="{{ route('quotations.index') }}" method="GET">
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Date From</label>
+                                        <input type="date" class="form-control" name="date_from" value="{{ request('date_from') }}">
+                                    </div>
                                 </div>
-                            </div> --}}
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label">Date From</label>
-                                    <input type="date" class="form-control" id="dateFrom"
-                                        value="{{ request('date_from') }}">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Date To</label>
+                                        <input type="date" class="form-control" name="date_to" value="{{ request('date_to') }}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label">Date To</label>
-                                    <input type="date" class="form-control" id="dateTo"
-                                        value="{{ request('date_to') }}">
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-end h-100 gap-2">
+                                        <button type="submit" class="btn btn-primary flex-fill">Filter</button>
+                                        <a href="{{ route('quotations.pdf-report', request()->query()) }}" class="btn btn-danger flex-fill" target="_blank">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="d-flex align-items-end h-100">
-                                    <button type="button" class="btn btn-primary me-2" id="applyFilters">
-                                        Apply
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" id="resetFilters">
-                                        Reset
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        </form>
 
                         <div class="table-fluid">
                             <table class="table table-centered table-striped dt-responsive nowrap w-100"

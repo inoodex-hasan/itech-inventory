@@ -11,12 +11,23 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf;
 
 class QuotationController extends Controller
 {
-public function index()
+public function index(Request $request)
 {
-    $quotations = Quotation::with('client')->latest()->get();
+    $query = Quotation::with('client');
+
+    if ($request->filled('date_from')) {
+        $query->whereDate('quotation_date', '>=', $request->date_from);
+    }
+
+    if ($request->filled('date_to')) {
+        $query->whereDate('quotation_date', '<=', $request->date_to);
+    }
+
+    $quotations = $query->latest()->get();
     return view('frontend.pages.quotations.index', compact('quotations'));
 }
 
@@ -405,4 +416,43 @@ public function generatePDF(Quotation $quotation)
     return trim($words);
 }
 
+public function reportPdf(Request $request)
+{
+    $query = Quotation::with('client');
+
+    if ($request->filled('date_from')) {
+        $query->whereDate('quotation_date', '>=', $request->date_from);
+    }
+
+    if ($request->filled('date_to')) {
+        $query->whereDate('quotation_date', '<=', $request->date_to);
+    }
+
+    $quotations = $query->latest()->get();
+
+    $html = view('pdf.quotations-report', compact('quotations', 'request'))->render();
+
+    $tempDir = storage_path('app/mpdf-temp');
+    if (!is_dir($tempDir)) {
+        @mkdir($tempDir, 0775, true);
+    }
+
+    $mpdf = new Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'tempDir' => $tempDir,
+        'margin_top' => 10,
+        'margin_right' => 10,
+        'margin_bottom' => 10,
+        'margin_left' => 10,
+    ]);
+
+    $mpdf->WriteHTML($html);
+    $pdfContent = $mpdf->Output('quotations-report.pdf', 'S');
+
+    return response($pdfContent, 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'attachment; filename="quotations-report.pdf"',
+    ]);
+}
 }

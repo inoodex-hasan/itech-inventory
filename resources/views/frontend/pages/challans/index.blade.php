@@ -15,44 +15,40 @@
                     </div>
                     <div class="card-body">
                         <!-- Filters -->
-                        <div class="row mb-4">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label">Type</label>
-                                    <select class="form-control" id="typeFilter">
-                                        <option value="">All Types</option>
-                                        <option value="sale" {{ request('type') == 'sale' ? 'selected' : '' }}>Sales
-                                            Challan</option>
-                                        <option value="project" {{ request('type') == 'project' ? 'selected' : '' }}>Project
-                                            Challan</option>
-                                    </select>
+                        <form action="{{ route('challans.index') }}" method="GET">
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Type</label>
+                                        <select class="form-control" name="type">
+                                            <option value="">All Types</option>
+                                            <option value="sale" {{ request('type') == 'sale' ? 'selected' : '' }}>Sales Challan</option>
+                                            <option value="project" {{ request('type') == 'project' ? 'selected' : '' }}>Project Challan</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Date From</label>
+                                        <input type="date" class="form-control" name="date_from" value="{{ request('date_from') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Date To</label>
+                                        <input type="date" class="form-control" name="date_to" value="{{ request('date_to') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-end h-100 gap-2">
+                                        <button type="submit" class="btn btn-primary flex-fill">Filter</button>
+                                        <a href="{{ route('challans.pdf', request()->query()) }}" class="btn btn-danger flex-fill" target="_blank">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label">Date From</label>
-                                    <input type="date" class="form-control" id="dateFrom"
-                                        value="{{ request('date_from') }}">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label">Date To</label>
-                                    <input type="date" class="form-control" id="dateTo"
-                                        value="{{ request('date_to') }}">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="d-flex align-items-end h-100">
-                                    <button type="button" class="btn btn-primary me-2" id="applyFilters">
-                                        Apply
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" id="resetFilters">
-                                        Reset
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        </form>
 
                         <!-- Challan List -->
                         <div class="table-fluid">
@@ -155,82 +151,4 @@
         </div>
     </div>
 
-    <script>
-        // Simple filter functionality
-        function setupFilters() {
-            console.log('Setting up filters...');
-
-            // Get elements
-            const applyBtn = document.getElementById('applyFilters');
-            const resetBtn = document.getElementById('resetFilters');
-            const typeFilter = document.getElementById('typeFilter');
-            const dateFrom = document.getElementById('dateFrom');
-            const dateTo = document.getElementById('dateTo');
-
-            // Check if elements exist
-            if (!applyBtn || !resetBtn || !typeFilter) {
-                console.error('Filter elements not found!');
-                return;
-            }
-
-            console.log('All filter elements found');
-
-            // Apply filters
-            applyBtn.addEventListener('click', function() {
-                console.log('Apply button clicked');
-
-                // Get current values
-                const typeValue = typeFilter.value;
-                const dateFromValue = dateFrom.value;
-                const dateToValue = dateTo.value;
-
-                console.log('Filter values:', {
-                    type: typeValue,
-                    dateFrom: dateFromValue,
-                    dateTo: dateToValue
-                });
-
-                // Build URL parameters
-                let params = [];
-
-                if (typeValue) {
-                    params.push('type=' + typeValue);
-                }
-                if (dateFromValue) {
-                    params.push('date_from=' + dateFromValue);
-                }
-                if (dateToValue) {
-                    params.push('date_to=' + dateToValue);
-                }
-
-                // Create final URL
-                let finalUrl = '{{ route('challans.index') }}';
-                if (params.length > 0) {
-                    finalUrl += '?' + params.join('&');
-                }
-
-                console.log('Redirecting to:', finalUrl);
-
-                // Redirect
-                window.location.href = finalUrl;
-            });
-
-            // Reset filters
-            resetBtn.addEventListener('click', function() {
-                console.log('Reset button clicked');
-                window.location.href = '{{ route('challans.index') }}';
-            });
-
-            // Set current filter values from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            if (typeFilter) typeFilter.value = urlParams.get('type') || '';
-            if (dateFrom) dateFrom.value = urlParams.get('date_from') || '';
-            if (dateTo) dateTo.value = urlParams.get('date_to') || '';
-
-            console.log('Filters setup complete');
-        }
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', setupFilters);
-    </script>
 @endsection

@@ -33,6 +33,22 @@
             <div class="card-body pb-0">
                 <form action="{{ route('sales.report') }}" method="GET">
                     <div class="row align-items-end mb-3">
+                        <!-- Customer Name -->
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                            <div class="input-block">
+                                <label class="form-label">Customer</label>
+                                <select name="customer_id" class="form-control">
+                                    <option value="">-- All Customers --</option>
+                                    @foreach ($customers as $customer)
+                                        <option value="{{ $customer->id }}"
+                                            {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
+                                            {{ $customer->name }} - {{ $customer->phone }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <!-- Product Name -->
                         <div class="col-sm-12 col-md-4 col-lg-3">
                             <div class="input-block">
@@ -65,9 +81,14 @@
                             </div>
                         </div>
 
-                        <!-- Filter Button (aligned to the right) -->
-                        <div class="col-sm-12 col-md-2 col-lg-5 mt-3 mt-md-0">
-                            <button type="submit" class="btn btn-primary px-4">Filter</button>
+                        <!-- Filter + PDF Buttons -->
+                        <div class="col-sm-12 col-md-6 col-lg-2 mt-3 mt-md-0">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary px-3 flex-fill">Filter</button>
+                                <a href="{{ route('sales.report.pdf', request()->query()) }}" class="btn btn-danger px-3 flex-fill" target="_blank">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -83,6 +104,7 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>#</th>
+                                        <th>Customer</th>
                                         <th>Product Name</th>
                                         <th>Qty</th>
                                         <th>Unit Price</th>
@@ -93,14 +115,15 @@
                                     @forelse($salesReport as $index => $purchase)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
+                                            <td>{{ $purchase->customer_name ?? 'N/A' }}</td>
                                             <td>{{ $purchase->product_name ?? 'N/A' }}</td>
-                                            <td>{{ $purchase->unit_price }}</td>
                                             <td>{{ $purchase->qty }}</td>
-                                            <td>{{ $purchase->total_price }}</td>
+                                            <td>{{ number_format($purchase->unit_price, 2) }}</td>
+                                            <td>{{ number_format($purchase->total_price, 2) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="text-center">No data available</td>
+                                            <td colspan="6" class="text-center">No data available</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
