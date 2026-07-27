@@ -54,6 +54,9 @@ class SaleService
             // 5. Create line items and deduct inventory
             $this->createSaleItems($sale, $data);
 
+            // 6. Broadcast real-time Pusher event
+            event(new \App\Events\SaleCreatedEvent($sale));
+
             return $sale;
         });
     }

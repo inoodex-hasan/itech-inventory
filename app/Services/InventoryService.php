@@ -52,8 +52,14 @@ class InventoryService
         }
 
         $inventory->decrement('current_stock', $quantity);
+        $freshInventory = $inventory->fresh();
 
-        return $inventory->fresh();
+        // Dispatch low-stock alert if stock drops to 5 or below
+        if ($freshInventory->current_stock <= 5) {
+            event(new \App\Events\LowStockAlertEvent($product, $freshInventory->current_stock));
+        }
+
+        return $freshInventory;
     }
 
     /**
