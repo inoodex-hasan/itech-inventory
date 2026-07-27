@@ -1,1 +1,48 @@
-node_modules
+# ============================================================
+# Laravel .gitignore — iTech Inventory Project
+# ============================================================
+
+# Laravel core ignores
+/vendor/
+/node_modules/
+/public/hot
+/public/storage
+/storage/*.key
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+
+# Build artifacts
+/public/build/
+
+# IDE & OS files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & error files
+php_error.log
+*.log
+/storage/logs/*.log
+
+# Project documentation (local only — do not push to GitHub)
+PROJECT_ANALYSIS.md
+
+# Database dumps (contain sensitive data — do not push)
+*.sql
+
+# Composer lock is usually committed, but if you want to ignore:
+# composer.lock
