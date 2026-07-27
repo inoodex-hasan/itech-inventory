@@ -3,12 +3,12 @@
 use App\Models\User;
 use App\Models\Notification;
 use Illuminate\Http\Request;
-use App\Models\Admin\Product;
-use App\Models\Admin\Category;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Brand;
 use App\Models\Admin\Currency;
 use App\Models\Admin\SubCategory;
 use App\Models\Admin\ProductImage;
-use App\Models\Admin\Brand;
 use App\Models\Admin\Publisher;
 use App\Models\Admin\Writer;
 use App\Models\Admin\Subject;
@@ -23,6 +23,7 @@ use App\Models\Admin\Area;
 use App\Models\Admin\District;
 use App\Models\Admin\DeliveryPercentage;
 use App\Models\Booking;
+
 
 function pendingBooking()
 {

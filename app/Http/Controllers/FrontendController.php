@@ -7,24 +7,15 @@ use App\Models\Sale;
 use App\Models\Service;
 use App\Models\Purchase;
 use App\Models\DailySale;
-use App\Models\Admin\News;
-use App\Models\Admin\Size;
-use App\Models\Admin\Brand;
-use App\Models\SalesTarget;
-use App\Models\Admin\Slider;
-use App\Models\Admin\Writer;
 use App\Models\DailyExpense;
 use App\Models\RatingReview;
+use App\Models\Product;
+use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Models\Admin\Product;
-use App\Models\Admin\Subject;
-use App\Models\Admin\Category;
-use App\Models\Admin\HomePage;
-use App\Models\Admin\NavItems;
-use App\Models\Admin\Publisher;
-use App\Models\Admin\ProductSize;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+
 
 
 class FrontendController extends Controller
