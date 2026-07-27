@@ -9,6 +9,7 @@ use App\Mail\CreateSalesMail;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
+use App\Services\SaleService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Mpdf\Mpdf;
@@ -17,6 +18,7 @@ use Twilio\Rest\Client;
 
 class SalesController extends Controller
 {
+    public function __construct(private SaleService $saleService) {}
     public function index(Request $request)
     {
         $query = Sale::with(['customer', 'client', 'salesBy']);
@@ -105,159 +107,23 @@ class SalesController extends Controller
      */
 public function store(StoreSaleRequest $request)
 {
-    // Validate the request
-    $validated = $request->validate([
-        'client_type' => 'required|in:new,existing',
-        'existing_client_id' => 'nullable|required_if:client_type,existing|exists:customers,id',
-        'name' => 'nullable|required_if:client_type,new|string',
-        'phone' => 'nullable|required_if:client_type,new|string',
-        'address' => 'nullable|required_if:client_type,new|string',
-        'product' => 'required|array',
-        'product.*' => 'required|integer|exists:products,id',
-        'qty' => 'required|array',
-        'qty.*' => 'required|numeric|min:1',
-        'unit_price' => 'required|array',
-        'unit_price.*' => 'required|numeric|min:1',
-        'subTotal' => 'required|numeric|min:0',
-        'discount' => 'nullable|numeric|min:0',
-        'grandTotal' => 'required|numeric|min:0',
-        'advanced_payment' => 'nullable|numeric|min:0',
-        'duePayment' => 'nullable|numeric|min:0',
-        'vat' => 'nullable|numeric|min:0',
-        'tax' => 'nullable|numeric|min:0',
-        'delivery_charge' => 'nullable|numeric|min:0',
-    ]);
-
-    DB::beginTransaction();
-
     try {
-        // Handle customer logic based on client_type
-        if ($validated['client_type'] === 'new') {
-            // Create new customer
-            $customer = Customer::create([
-                'name' => $validated['name'],
-                'phone' => $validated['phone'],
-                'address' => $validated['address'] ?? null,
-            ]);
-        } else {
-            // Use existing customer
-            $customer = Customer::findOrFail($validated['existing_client_id']);
-        }
+        $sale = $this->saleService->createSale($request->validated());
 
-        // Get warranties for products
-        $warranties = Product::whereIn('id', $validated['product'])->pluck('warranty', 'id');
-        
-        // Calculate total bill from form data
-        $totalBill = $validated['subTotal']; // Use the calculated subtotal from form
-        
-        // Calculate discount (ensure it's not greater than total bill)
-        $discount = $validated['discount'] ?? 0;
-        if ($discount > $totalBill) {
-            $discount = $totalBill;
-        }
-        
-        // Calculate payable amount
-        $payble = $validated['grandTotal']; // Use grand total from form
-        
-        // Handle payments
-        $advancedPayment = $validated['advanced_payment'] ?? 0;
-        $duePayment = $validated['duePayment'] ?? 0;
-        
-        // Ensure advanced payment doesn't exceed payable amount
-        if ($advancedPayment > $payble) {
-            $advancedPayment = $payble;
-            $duePayment = 0;
-        }
-        
-        // Determine payment status
-        if ($duePayment <= 0) {
-            $status = 'paid';
-        } elseif ($advancedPayment > 0) {
-            $status = 'partial';
-        } else {
-            $status = 'credit';
-        }
-
-        // Generate invoice number using your existing format
-        $invoiceNumber = 'INV-' . strtoupper(uniqid());
-
-        // Create sale record
-        $sale = Sale::create([
-            'order_no' => $invoiceNumber,
-            'customer_id' => $customer->id,
-            'product_id' => $validated['product'][0], // First product as main product
-            'qty' => array_sum($validated['qty']), // Total quantity
-            'total' => $totalBill,
-            'payble' => $payble,
-            'bill' => $totalBill,
-            'discount' => $discount,
-            'advanced_payment' => $advancedPayment,
-            'due_payment' => $duePayment,
-            'sales_by' => auth()->id(),
-            'status' => $status,
-            'vat' => $validated['vat'] ?? 0,
-            'tax' => $validated['tax'] ?? 0,
-            'delivery_charge' => $validated['delivery_charge'] ?? 0
-        ]);
-
-        // Create sale items and update inventory
-        $totalSalePrice = 0;
-        
-        foreach ($validated['product'] as $index => $productId) {
-            $qty = $validated['qty'][$index];
-            $unitPrice = $validated['unit_price'][$index];
-            $total = $unitPrice * $qty;
-            $totalSalePrice += $total;
-
-            // Get purchase price for profit calculation
-            $product = Product::find($productId);
-            $purchasePrice = 0;
-            if ($product->latestPurchase) {
-                $purchasePrice = $product->latestPurchase->unit_price ?? 0;
-            }
-
-            // Calculate profit for this item
-            $profitPerUnit = $unitPrice - $purchasePrice;
-            $itemProfit = $profitPerUnit * $qty;
-
-            // Create Sale Item with warranty
-            SalesItem::create([
-                'order_id' => $sale->id,
-                'product_id' => $productId,
-                'unit_price' => $unitPrice,
-                'qty' => $qty,
-                'total_price' => $total,
-                'warranty' => $warranties[$productId] ?? 0,
-                'purchase_price' => $purchasePrice,
-                'profit' => $itemProfit,
-            ]);
-
-            // Update inventory
-            $inventory = Inventory::where('product_id', $productId)->first();
-            if ($inventory) {
-                // Check stock availability
-                if ($inventory->current_stock < $qty) {
-                    throw new \Exception("Insufficient stock for product: {$product->name}. Available: {$inventory->current_stock}, Requested: {$qty}");
-                }
-                
-                $inventory->decrement('current_stock', $qty);
-            } else {
-                throw new \Exception("Inventory not found for product ID: {$productId}");
-            }
-        }
-
-        // Update sale with profit calculation if needed
-        // You might want to add a 'profit' field to your Sale model
-        // $sale->update(['total_profit' => $totalProfit]);
-
-        DB::commit();
-
-        // Return to invoice page
         return redirect()->route('sales.invoice', $sale->id)
-            ->with('success', 'Sale created successfully! Invoice #' . $invoiceNumber);
+            ->with('success', 'Sale created successfully! Invoice #' . $sale->order_no);
 
+    } catch (\RuntimeException $e) {
+        return redirect()->back()
+            ->with('error', $e->getMessage())
+            ->withInput();
     } catch (\Exception $e) {
-        DB::rollBack();
+        Log::error('Sale creation failed: ' . $e->getMessage());
+        return redirect()->back()
+            ->with('error', 'An unexpected error occurred. Please try again.')
+            ->withInput();
+    }
+}
 
         // Log the error
         \Log::error('Sale creation failed: ' . $e->getMessage());
