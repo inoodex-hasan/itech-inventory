@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\Admin\ProductOptionTopping;
 use Illuminate\Support\Facades\Storage;
 
-class ProductContoller extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.

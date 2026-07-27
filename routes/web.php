@@ -4,7 +4,7 @@ use App\Http\Controllers\{
     BillController, BrandController, CategoryController, ChallanController, ClientController,
     CostCategoryController, CustomerController, EmployeeController,
     EmployeeTaDaController, ExpenseCategoryController, ExpenseController,
-    FrontendController, InventoryController, ProductContoller,
+    FrontendController, InventoryController, ProductController,
     ProjectBillController, ProjectController, ProjectCostController,
     ProjectItemController, PurchaseController, QuotationController,
     RevenueController, RoleController, PermissionController,
@@ -47,7 +47,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     // === Products, Inventory, Purchases, Sales, Services, etc. ===
     Route::resource('brands', BrandController::class);
     Route::prefix('product')->group(function () {
-        Route::resource('products', ProductContoller::class);
+        Route::resource('products', ProductController::class);
     });
     Route::prefix('inventory')->group(function () {
         Route::resource('inventory', InventoryController::class);
