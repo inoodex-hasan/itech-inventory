@@ -8,6 +8,7 @@ use App\Models\Sale;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Inventory;
+use App\Http\Requests\StoreReturnRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -87,7 +88,7 @@ class ReturnController extends Controller
     /**
      * Store a newly created return.
      */
-    public function store(Request $request)
+    public function store(StoreReturnRequest $request)
     {
         $validated = $request->validate([
             'sale_id' => 'required|exists:sales,id',

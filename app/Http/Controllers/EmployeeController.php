@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\DailyExpense;
 use App\Models\ExpenseCategory;
+use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -42,7 +44,7 @@ public function show($id)
     return view('frontend.pages.employees.show', compact('employee'));
 }
 
-    public function store(Request $request)
+    public function store(StoreEmployeeRequest $request)
     {
         $request->validate([
             'employee_id' => 'required|unique:employees',

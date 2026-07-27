@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\{DB, Log, Mail};
 use App\Models\{Customer, DailySale, Inventory, Payment, Product, Project, Sale, SalesItem, Service, User};
 use App\Mail\CreateSalesMail;
 use App\Http\Controllers\Controller;
-use Input;
-use Validator;
+use App\Http\Requests\StoreSaleRequest;
+use App\Http\Requests\UpdateSaleRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Mpdf\Mpdf;
@@ -103,7 +103,7 @@ class SalesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-public function store(Request $request)
+public function store(StoreSaleRequest $request)
 {
     // Validate the request
     $validated = $request->validate([

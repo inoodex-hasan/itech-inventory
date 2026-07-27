@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Project;
 use App\Models\Payment;
 use App\Models\ProjectItem;
+use App\Http\Requests\StoreProjectRequest;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -33,7 +34,7 @@ public function create()
     return view('frontend.pages.projects.create', compact('existingClients', 'products'));
 }
 
-public function store(Request $request)
+public function store(StoreProjectRequest $request)
 {
     // Validate the request
     $validationRules = [

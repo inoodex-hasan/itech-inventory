@@ -8,6 +8,7 @@ use App\Models\Purchase;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StorePurchaseRequest;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -67,7 +68,7 @@ class PurchaseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePurchaseRequest $request)
     {
         $request->validate([
             'product_id'     => 'required|exists:products,id',
