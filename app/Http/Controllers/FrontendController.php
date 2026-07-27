@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
@@ -32,80 +33,26 @@ class FrontendController extends Controller
         ]);
     }
         
-        // $todaysRevenue = Service::whereDate('created_at', Carbon::today())->where('status','1')->sum('bill');
-        // $thisWeeksRevenue = Service::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status','1')->sum('bill');
-        // $thisMonthsRevenue = Service::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->where('status','1')->sum('bill');
-        // $thisYearsRevenue = Service::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('status','1')->sum('bill');
-        // $totalServiceDues = Service::where('status','1')->where('due_amount', '>', 0)->sum('due_amount');
+        $stats = Cache::remember('dashboard_stats_' . date('Y-m-d-H'), 300, function () {
+            return [
+                'todaysSalesRevenue'     => Sale::whereDate('created_at', Carbon::today())->sum('payble'),
+                'thisWeeksSalesRevenue'  => Sale::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payble'),
+                'thisMonthsSalesRevenue' => Sale::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->sum('payble'),
+                'thisYearsSalesRevenue'  => Sale::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->sum('payble'),
 
-        $todaysSalesRevenue = Sale::whereDate('created_at', Carbon::today())->sum('payble');
-        $thisWeeksSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek(),])->sum('payble');        
-        $thisMonthsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->sum('payble');
-        $thisYearsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->sum('payble');
+                'todaysPurchaseRevenue'    => Purchase::whereDate('created_at', Carbon::today())->sum('total_price'),
+                'thisWeeksPurchaseRevenue' => Purchase::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('total_price'),
+                'thisMonthsPurchaseRevenue'=> Purchase::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->sum('total_price'),
+                'thisYearsPurchaseRevenue' => Purchase::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->sum('total_price'),
 
-        $todaysPurchaseRevenue = Purchase::whereDate('created_at', Carbon::today())
-         
-            ->sum('total_price');
+                'todaysExpense'     => DailyExpense::whereDate('date', Carbon::today())->sum('amount'),
+                'thisWeeksExpense'  => DailyExpense::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount'),
+                'thisMonthsExpense' => DailyExpense::whereBetween('date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->sum('amount'),
+                'thisYearsExpense'  => DailyExpense::whereBetween('date', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->sum('amount'),
+            ];
+        });
 
-        $thisWeeksPurchaseRevenue = Purchase::whereBetween('created_at', [
-                Carbon::now()->startOfWeek(),
-                Carbon::now()->endOfWeek()
-            ])
-          
-            ->sum('total_price');
-
-        $thisMonthsPurchaseRevenue = Purchase::whereBetween('created_at', [
-                Carbon::now()->startOfMonth(),
-                Carbon::now()->endOfMonth()
-            ])
-         
-            ->sum('total_price');
-
-        $thisYearsPurchaseRevenue = Purchase::whereBetween('created_at', [
-                Carbon::now()->startOfYear(),
-                Carbon::now()->endOfYear()
-            ])
-          
-            ->sum('total_price');
-
-        $todaysExpense = DailyExpense::whereDate('date', Carbon::today())
-            ->sum('amount');
-
-        $thisWeeksExpense = DailyExpense::whereBetween('date', [
-                Carbon::now()->startOfWeek(),
-                Carbon::now()->endOfWeek()
-            ])
-            ->sum('amount');
-
-        $thisMonthsExpense = DailyExpense::whereBetween('date', [
-                Carbon::now()->startOfMonth(),
-                Carbon::now()->endOfMonth()
-            ])
-            ->sum('amount');
-
-        $thisYearsExpense = DailyExpense::whereBetween('date', [
-                Carbon::now()->startOfYear(),
-                Carbon::now()->endOfYear()
-            ])
-            ->sum('amount');
-        
-        
-       return view('frontend.pages.index', compact(
-            'todaysSalesRevenue',
-            'thisWeeksSalesRevenue',
-            'thisMonthsSalesRevenue',
-            'thisYearsSalesRevenue',
-            'todaysPurchaseRevenue',
-            'thisWeeksPurchaseRevenue',
-            'thisMonthsPurchaseRevenue',
-            'thisYearsPurchaseRevenue',
-            'todaysExpense',
-            'thisWeeksExpense',
-            'thisMonthsExpense',
-            'thisYearsExpense'
-        ));
-
-      
+        return view('frontend.pages.index', $stats);
     }
 
     public function about()
