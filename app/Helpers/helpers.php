@@ -165,14 +165,16 @@ function displayNotificationTime($timestamp)
 
 function sendEmployeeCredential($data)
 {
-  $data['email'] = "shawonmahmodul12@gmail.com";
+  // Recipient email comes from the $data array (the employee's actual email)
+  // Falls back to the app's configured FROM address if not provided
+  $recipientEmail = $data['email'] ?? config('mail.from.address');
 
-  $companyName = 'Company Name';
-  $companyEmail = 'shawonmahmodul12@gmail.com';
+  $companyName  = config('app.name', 'Company Name');
+  $companyEmail = config('mail.from.address', 'noreply@example.com');
 
-  Mail::send('emails.employee',  ['data' => $data], function ($m) use ($data, $companyEmail, $companyName) {
+  Mail::send('emails.employee', ['data' => $data], function ($m) use ($data, $recipientEmail, $companyEmail, $companyName) {
     $m->from($companyEmail, 'Credentials of ' . $companyName);
-    $m->to($data['email'])->subject('HRIS Access Information');
+    $m->to($recipientEmail)->subject('HRIS Access Information');
   });
 }
 
