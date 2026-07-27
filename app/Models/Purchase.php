@@ -23,7 +23,6 @@ class Purchase extends Model
         'total_price',
         'payment',
         'due',
-        'vendor_id',
         'created_by',
         'updated_by',
     ];
