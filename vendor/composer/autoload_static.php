@@ -18,14 +18,13 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '35a6ad97d21e794e7e22a17d806652e4' => __DIR__ . '/..' . '/nunomaduro/termwind/src/Functions.php',
         '3bd81c9b8fcc150b69d8b63b4d2ccf23' => __DIR__ . '/..' . '/spatie/flare-client-php/src/helpers.php',
         '09f6b20656683369174dd6fa83b7e5fb' => __DIR__ . '/..' . '/symfony/polyfill-uuid/bootstrap.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '47e1160838b5e5a10346ac4084b58c23' => __DIR__ . '/..' . '/laravel/prompts/src/helpers.php',
-        'db356362850385d08a5381de2638b5fd' => __DIR__ . '/..' . '/mpdf/mpdf/src/functions.php',
+        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
@@ -45,27 +44,23 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
     );
 
     public static $prefixLengthsPsr4 = array (
-        'v' => 
+        'v' =>
         array (
             'voku\\' => 5,
         ),
-        's' => 
-        array (
-            'setasign\\Fpdi\\' => 14,
-        ),
-        'W' => 
+        'W' =>
         array (
             'Whoops\\' => 7,
             'Webmozart\\Assert\\' => 17,
         ),
-        'T' => 
+        'T' =>
         array (
             'Twilio\\' => 7,
             'TijsVerkoyen\\CssToInlineStyles\\' => 31,
             'Tests\\' => 6,
             'Termwind\\' => 9,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Uuid\\' => 22,
             'Symfony\\Polyfill\\Php83\\' => 23,
@@ -103,12 +98,12 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
             'Spatie\\Backtrace\\' => 17,
             'Sabberworm\\CSS\\' => 15,
         ),
-        'R' => 
+        'R' =>
         array (
             'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
-        'P' => 
+        'P' =>
         array (
             'Pusher\\' => 7,
             'Psy\\' => 4,
@@ -123,21 +118,17 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
             'PhpOption\\' => 10,
             'Paytrail\\SDK\\' => 13,
         ),
-        'N' => 
+        'N' =>
         array (
             'NunoMaduro\\Collision\\' => 21,
         ),
-        'M' => 
+        'M' =>
         array (
-            'Mpdf\\PsrLogAwareTrait\\' => 22,
-            'Mpdf\\PsrHttpMessageShim\\' => 24,
-            'Mpdf\\' => 5,
             'Monolog\\' => 8,
             'Mockery\\' => 8,
-            'Mccarlosen\\LaravelMpdf\\' => 23,
             'Masterminds\\' => 12,
         ),
-        'L' => 
+        'L' =>
         array (
             'League\\MimeTypeDetection\\' => 25,
             'League\\Flysystem\\Local\\' => 23,
@@ -151,13 +142,13 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
             'Laravel\\Sail\\' => 13,
             'Laravel\\Prompts\\' => 16,
         ),
-        'I' => 
+        'I' =>
         array (
             'Illuminate\\Support\\' => 19,
             'Illuminate\\Foundation\\Auth\\' => 27,
             'Illuminate\\' => 11,
         ),
-        'G' => 
+        'G' =>
         array (
             'GuzzleHttp\\UriTemplate\\' => 23,
             'GuzzleHttp\\Psr7\\' => 16,
@@ -165,17 +156,17 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
             'GuzzleHttp\\' => 11,
             'GrahamCampbell\\ResultType\\' => 26,
         ),
-        'F' => 
+        'F' =>
         array (
             'Fruitcake\\Cors\\' => 15,
             'FontLib\\' => 8,
             'Faker\\' => 6,
         ),
-        'E' => 
+        'E' =>
         array (
             'Egulias\\EmailValidator\\' => 23,
         ),
-        'D' => 
+        'D' =>
         array (
             'Dotenv\\' => 7,
             'Dompdf\\' => 7,
@@ -186,7 +177,7 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
             'Database\\Seeders\\' => 17,
             'Database\\Factories\\' => 19,
         ),
-        'C' => 
+        'C' =>
         array (
             'Cviebrock\\EloquentSluggable\\' => 28,
             'Cron\\' => 5,
@@ -194,12 +185,12 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
             'Carbon\\Doctrine\\' => 16,
             'Carbon\\' => 7,
         ),
-        'B' => 
+        'B' =>
         array (
             'Brick\\Math\\' => 11,
             'Barryvdh\\DomPDF\\' => 16,
         ),
-        'A' => 
+        'A' =>
         array (
             'App\\' => 4,
             'Anhskohbo\\NoCaptcha\\' => 20,
@@ -207,432 +198,412 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
     );
 
     public static $prefixDirsPsr4 = array (
-        'voku\\' => 
+        'voku\\' =>
         array (
             0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
         ),
-        'setasign\\Fpdi\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/setasign/fpdi/src',
-        ),
-        'Whoops\\' => 
+        'Whoops\\' =>
         array (
             0 => __DIR__ . '/..' . '/filp/whoops/src/Whoops',
         ),
-        'Webmozart\\Assert\\' => 
+        'Webmozart\\Assert\\' =>
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
-        'Twilio\\' => 
+        'Twilio\\' =>
         array (
             0 => __DIR__ . '/..' . '/twilio/sdk/src/Twilio',
         ),
-        'TijsVerkoyen\\CssToInlineStyles\\' => 
+        'TijsVerkoyen\\CssToInlineStyles\\' =>
         array (
             0 => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src',
         ),
-        'Tests\\' => 
+        'Tests\\' =>
         array (
             0 => __DIR__ . '/../..' . '/tests',
             1 => __DIR__ . '/..' . '/paytrail/paytrail-php-sdk/tests',
         ),
-        'Termwind\\' => 
+        'Termwind\\' =>
         array (
             0 => __DIR__ . '/..' . '/nunomaduro/termwind/src',
         ),
-        'Symfony\\Polyfill\\Uuid\\' => 
+        'Symfony\\Polyfill\\Uuid\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-uuid',
         ),
-        'Symfony\\Polyfill\\Php83\\' => 
+        'Symfony\\Polyfill\\Php83\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php83',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Intl\\Idn\\' => 
+        'Symfony\\Polyfill\\Intl\\Idn\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
-        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
+        'Symfony\\Polyfill\\Intl\\Grapheme\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Translation\\' => 
+        'Symfony\\Contracts\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation-contracts',
         ),
-        'Symfony\\Contracts\\Service\\' => 
+        'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\EventDispatcher\\' => 
+        'Symfony\\Contracts\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
-        'Symfony\\Component\\Yaml\\' => 
+        'Symfony\\Component\\Yaml\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
         ),
-        'Symfony\\Component\\VarDumper\\' => 
+        'Symfony\\Component\\VarDumper\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
         ),
-        'Symfony\\Component\\Uid\\' => 
+        'Symfony\\Component\\Uid\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/uid',
         ),
-        'Symfony\\Component\\Translation\\' => 
+        'Symfony\\Component\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation',
         ),
-        'Symfony\\Component\\String\\' => 
+        'Symfony\\Component\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
         ),
-        'Symfony\\Component\\Routing\\' => 
+        'Symfony\\Component\\Routing\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/routing',
         ),
-        'Symfony\\Component\\Process\\' => 
+        'Symfony\\Component\\Process\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
         ),
-        'Symfony\\Component\\Mime\\' => 
+        'Symfony\\Component\\Mime\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/mime',
         ),
-        'Symfony\\Component\\Mailer\\' => 
+        'Symfony\\Component\\Mailer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/mailer',
         ),
-        'Symfony\\Component\\HttpKernel\\' => 
+        'Symfony\\Component\\HttpKernel\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-kernel',
         ),
-        'Symfony\\Component\\HttpFoundation\\' => 
+        'Symfony\\Component\\HttpFoundation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
-        'Symfony\\Component\\Finder\\' => 
+        'Symfony\\Component\\Finder\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
-        'Symfony\\Component\\EventDispatcher\\' => 
+        'Symfony\\Component\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
-        'Symfony\\Component\\ErrorHandler\\' => 
+        'Symfony\\Component\\ErrorHandler\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/error-handler',
         ),
-        'Symfony\\Component\\CssSelector\\' => 
+        'Symfony\\Component\\CssSelector\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/css-selector',
         ),
-        'Symfony\\Component\\Console\\' => 
+        'Symfony\\Component\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
-        'Svg\\' => 
+        'Svg\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
         ),
-        'Spatie\\Permission\\' => 
+        'Spatie\\Permission\\' =>
         array (
             0 => __DIR__ . '/..' . '/spatie/laravel-permission/src',
         ),
-        'Spatie\\LaravelIgnition\\' => 
+        'Spatie\\LaravelIgnition\\' =>
         array (
             0 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
             1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
         ),
-        'Spatie\\Ignition\\' => 
+        'Spatie\\Ignition\\' =>
         array (
             0 => __DIR__ . '/..' . '/spatie/ignition/src',
             1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
         ),
-        'Spatie\\FlareClient\\' => 
+        'Spatie\\FlareClient\\' =>
         array (
             0 => __DIR__ . '/..' . '/spatie/flare-client-php/src',
         ),
-        'Spatie\\ErrorSolutions\\' => 
+        'Spatie\\ErrorSolutions\\' =>
         array (
             0 => __DIR__ . '/..' . '/spatie/error-solutions/src',
         ),
-        'Spatie\\Backtrace\\' => 
+        'Spatie\\Backtrace\\' =>
         array (
             0 => __DIR__ . '/..' . '/spatie/backtrace/src',
         ),
-        'Sabberworm\\CSS\\' => 
+        'Sabberworm\\CSS\\' =>
         array (
             0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
         ),
-        'Ramsey\\Uuid\\' => 
+        'Ramsey\\Uuid\\' =>
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
         ),
-        'Ramsey\\Collection\\' => 
+        'Ramsey\\Collection\\' =>
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
-        'Pusher\\' => 
+        'Pusher\\' =>
         array (
             0 => __DIR__ . '/..' . '/pusher/pusher-php-server/src',
         ),
-        'Psy\\' => 
+        'Psy\\' =>
         array (
             0 => __DIR__ . '/..' . '/psy/psysh/src',
         ),
-        'Psr\\SimpleCache\\' => 
+        'Psr\\SimpleCache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\Http\\Client\\' => 
+        'Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'Psr\\EventDispatcher\\' => 
+        'Psr\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Psr\\Clock\\' => 
+        'Psr\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
         ),
-        'PhpParser\\' => 
+        'PhpParser\\' =>
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
-        'PhpOption\\' => 
+        'PhpOption\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
-        'Paytrail\\SDK\\' => 
+        'Paytrail\\SDK\\' =>
         array (
             0 => __DIR__ . '/..' . '/paytrail/paytrail-php-sdk/src',
         ),
-        'NunoMaduro\\Collision\\' => 
+        'NunoMaduro\\Collision\\' =>
         array (
             0 => __DIR__ . '/..' . '/nunomaduro/collision/src',
         ),
-        'Mpdf\\PsrLogAwareTrait\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mpdf/psr-log-aware-trait/src',
-        ),
-        'Mpdf\\PsrHttpMessageShim\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mpdf/psr-http-message-shim/src',
-        ),
-        'Mpdf\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
-        ),
-        'Monolog\\' => 
+        'Monolog\\' =>
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
-        'Mockery\\' => 
+        'Mockery\\' =>
         array (
             0 => __DIR__ . '/..' . '/mockery/mockery/library/Mockery',
         ),
-        'Mccarlosen\\LaravelMpdf\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/carlos-meneses/laravel-mpdf/src',
-        ),
-        'Masterminds\\' => 
+        'Masterminds\\' =>
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
         ),
-        'League\\MimeTypeDetection\\' => 
+        'League\\MimeTypeDetection\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/mime-type-detection/src',
         ),
-        'League\\Flysystem\\Local\\' => 
+        'League\\Flysystem\\Local\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/flysystem-local',
         ),
-        'League\\Flysystem\\' => 
+        'League\\Flysystem\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/flysystem/src',
         ),
-        'League\\Config\\' => 
+        'League\\Config\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/config/src',
         ),
-        'League\\CommonMark\\' => 
+        'League\\CommonMark\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/commonmark/src',
         ),
-        'Laravel\\Ui\\' => 
+        'Laravel\\Ui\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/ui/src',
         ),
-        'Laravel\\Tinker\\' => 
+        'Laravel\\Tinker\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/tinker/src',
         ),
-        'Laravel\\SerializableClosure\\' => 
+        'Laravel\\SerializableClosure\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/serializable-closure/src',
         ),
-        'Laravel\\Sanctum\\' => 
+        'Laravel\\Sanctum\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/sanctum/src',
         ),
-        'Laravel\\Sail\\' => 
+        'Laravel\\Sail\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/sail/src',
         ),
-        'Laravel\\Prompts\\' => 
+        'Laravel\\Prompts\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/prompts/src',
         ),
-        'Illuminate\\Support\\' => 
+        'Illuminate\\Support\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Macroable',
             1 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Collections',
             2 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Conditionable',
         ),
-        'Illuminate\\Foundation\\Auth\\' => 
+        'Illuminate\\Foundation\\Auth\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/ui/auth-backend',
         ),
-        'Illuminate\\' => 
+        'Illuminate\\' =>
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate',
         ),
-        'GuzzleHttp\\UriTemplate\\' => 
+        'GuzzleHttp\\UriTemplate\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/uri-template/src',
         ),
-        'GuzzleHttp\\Psr7\\' => 
+        'GuzzleHttp\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'GuzzleHttp\\Promise\\' => 
+        'GuzzleHttp\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
         ),
-        'GuzzleHttp\\' => 
+        'GuzzleHttp\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-        'GrahamCampbell\\ResultType\\' => 
+        'GrahamCampbell\\ResultType\\' =>
         array (
             0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
         ),
-        'Fruitcake\\Cors\\' => 
+        'Fruitcake\\Cors\\' =>
         array (
             0 => __DIR__ . '/..' . '/fruitcake/php-cors/src',
         ),
-        'FontLib\\' => 
+        'FontLib\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
         ),
-        'Faker\\' => 
+        'Faker\\' =>
         array (
             0 => __DIR__ . '/..' . '/fakerphp/faker/src/Faker',
         ),
-        'Egulias\\EmailValidator\\' => 
+        'Egulias\\EmailValidator\\' =>
         array (
             0 => __DIR__ . '/..' . '/egulias/email-validator/src',
         ),
-        'Dotenv\\' => 
+        'Dotenv\\' =>
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
-        'Dompdf\\' => 
+        'Dompdf\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
         ),
-        'Doctrine\\Inflector\\' => 
+        'Doctrine\\Inflector\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector',
         ),
-        'Doctrine\\Common\\Lexer\\' => 
+        'Doctrine\\Common\\Lexer\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/lexer/src',
         ),
-        'Dflydev\\DotAccessData\\' => 
+        'Dflydev\\DotAccessData\\' =>
         array (
             0 => __DIR__ . '/..' . '/dflydev/dot-access-data/src',
         ),
-        'DeepCopy\\' => 
+        'DeepCopy\\' =>
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
         ),
-        'Database\\Seeders\\' => 
+        'Database\\Seeders\\' =>
         array (
             0 => __DIR__ . '/../..' . '/database/seeders',
             1 => __DIR__ . '/..' . '/laravel/pint/database/seeders',
         ),
-        'Database\\Factories\\' => 
+        'Database\\Factories\\' =>
         array (
             0 => __DIR__ . '/../..' . '/database/factories',
             1 => __DIR__ . '/..' . '/laravel/pint/database/factories',
         ),
-        'Cviebrock\\EloquentSluggable\\' => 
+        'Cviebrock\\EloquentSluggable\\' =>
         array (
             0 => __DIR__ . '/..' . '/cviebrock/eloquent-sluggable/src',
         ),
-        'Cron\\' => 
+        'Cron\\' =>
         array (
             0 => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron',
         ),
-        'Cocur\\Slugify\\' => 
+        'Cocur\\Slugify\\' =>
         array (
             0 => __DIR__ . '/..' . '/cocur/slugify/src',
         ),
-        'Carbon\\Doctrine\\' => 
+        'Carbon\\Doctrine\\' =>
         array (
             0 => __DIR__ . '/..' . '/carbonphp/carbon-doctrine-types/src/Carbon/Doctrine',
         ),
-        'Carbon\\' => 
+        'Carbon\\' =>
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
-        'Brick\\Math\\' => 
+        'Brick\\Math\\' =>
         array (
             0 => __DIR__ . '/..' . '/brick/math/src',
         ),
-        'Barryvdh\\DomPDF\\' => 
+        'Barryvdh\\DomPDF\\' =>
         array (
             0 => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src',
         ),
-        'App\\' => 
+        'App\\' =>
         array (
             0 => __DIR__ . '/../..' . '/app',
             1 => __DIR__ . '/..' . '/laravel/pint/app',
         ),
-        'Anhskohbo\\NoCaptcha\\' => 
+        'Anhskohbo\\NoCaptcha\\' =>
         array (
             0 => __DIR__ . '/..' . '/anhskohbo/no-captcha/src',
         ),
@@ -643,7 +614,9 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'Anhskohbo\\NoCaptcha\\NoCaptcha' => __DIR__ . '/..' . '/anhskohbo/no-captcha/src/NoCaptcha.php',
         'Anhskohbo\\NoCaptcha\\NoCaptchaServiceProvider' => __DIR__ . '/..' . '/anhskohbo/no-captcha/src/NoCaptchaServiceProvider.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Events\\LowStockAlertEvent' => __DIR__ . '/../..' . '/app/Events/LowStockAlertEvent.php',
         'App\\Events\\PlaceOrder' => __DIR__ . '/../..' . '/app/Events/PlaceOrder.php',
+        'App\\Events\\SaleCreatedEvent' => __DIR__ . '/../..' . '/app/Events/SaleCreatedEvent.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\AdvanceSalaryController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdvanceSalaryController.php',
         'App\\Http\\Controllers\\AttendanceController' => __DIR__ . '/../..' . '/app/Http/Controllers/AttendanceController.php',
@@ -677,7 +650,7 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'App\\Http\\Controllers\\PaymentController' => __DIR__ . '/../..' . '/app/Http/Controllers/PaymentController.php',
         'App\\Http\\Controllers\\PaytrailController' => __DIR__ . '/../..' . '/app/Http/Controllers/PaytrailController.php',
         'App\\Http\\Controllers\\PermissionController' => __DIR__ . '/../..' . '/app/Http/Controllers/PermissionController.php',
-        'App\\Http\\Controllers\\ProductContoller' => __DIR__ . '/../..' . '/app/Http/Controllers/ProductContoller.php',
+        'App\\Http\\Controllers\\ProductController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProductController.php',
         'App\\Http\\Controllers\\ProductSerialController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProductSerialController.php',
         'App\\Http\\Controllers\\ProjectBillController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProjectBillController.php',
         'App\\Http\\Controllers\\ProjectController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProjectController.php',
@@ -707,6 +680,17 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\ValidateSignature' => __DIR__ . '/../..' . '/app/Http/Middleware/ValidateSignature.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
+        'App\\Http\\Requests\\StoreCustomerRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreCustomerRequest.php',
+        'App\\Http\\Requests\\StoreEmployeeRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreEmployeeRequest.php',
+        'App\\Http\\Requests\\StoreProductRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreProductRequest.php',
+        'App\\Http\\Requests\\StoreProjectRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreProjectRequest.php',
+        'App\\Http\\Requests\\StorePurchaseRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StorePurchaseRequest.php',
+        'App\\Http\\Requests\\StoreReturnRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreReturnRequest.php',
+        'App\\Http\\Requests\\StoreSaleRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreSaleRequest.php',
+        'App\\Http\\Requests\\StoreVendorRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreVendorRequest.php',
+        'App\\Http\\Requests\\UpdateEmployeeRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateEmployeeRequest.php',
+        'App\\Http\\Requests\\UpdateProductRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateProductRequest.php',
+        'App\\Http\\Requests\\UpdateSaleRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateSaleRequest.php',
         'App\\Mail\\ContactFormMail' => __DIR__ . '/../..' . '/app/Mail/ContactFormMail.php',
         'App\\Mail\\CreateSalesMail' => __DIR__ . '/../..' . '/app/Mail/CreateSalesMail.php',
         'App\\Mail\\PlaceOrderMail' => __DIR__ . '/../..' . '/app/Mail/PlaceOrderMail.php',
@@ -714,6 +698,7 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'App\\Mail\\VerificationMail' => __DIR__ . '/../..' . '/app/Mail/VerificationMail.php',
         'App\\Mail\\sendPaymentStatusChangeMail' => __DIR__ . '/../..' . '/app/Mail/sendPaymentStatusChangeMail.php',
         'App\\Mail\\sendStatusChangeMail' => __DIR__ . '/../..' . '/app/Mail/sendStatusChangeMail.php',
+        'App\\Models\\ActivityLog' => __DIR__ . '/../..' . '/app/Models/ActivityLog.php',
         'App\\Models\\Address' => __DIR__ . '/../..' . '/app/Models/Address.php',
         'App\\Models\\Admin\\Area' => __DIR__ . '/../..' . '/app/Models/Admin/Area.php',
         'App\\Models\\Admin\\Brand' => __DIR__ . '/../..' . '/app/Models/Admin/Brand.php',
@@ -798,6 +783,10 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
+        'App\\Services\\InventoryService' => __DIR__ . '/../..' . '/app/Services/InventoryService.php',
+        'App\\Services\\PurchaseService' => __DIR__ . '/../..' . '/app/Services/PurchaseService.php',
+        'App\\Services\\SaleService' => __DIR__ . '/../..' . '/app/Services/SaleService.php',
+        'App\\Traits\\LogsActivity' => __DIR__ . '/../..' . '/app/Traits/LogsActivity.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Barryvdh\\DomPDF\\Facade\\Pdf' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/Facade/Pdf.php',
         'Barryvdh\\DomPDF\\PDF' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/PDF.php',
@@ -3681,10 +3670,6 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'Masterminds\\HTML5\\Serializer\\OutputRules' => __DIR__ . '/..' . '/masterminds/html5/src/HTML5/Serializer/OutputRules.php',
         'Masterminds\\HTML5\\Serializer\\RulesInterface' => __DIR__ . '/..' . '/masterminds/html5/src/HTML5/Serializer/RulesInterface.php',
         'Masterminds\\HTML5\\Serializer\\Traverser' => __DIR__ . '/..' . '/masterminds/html5/src/HTML5/Serializer/Traverser.php',
-        'Mccarlosen\\LaravelMpdf\\Facades\\LaravelMpdf' => __DIR__ . '/..' . '/carlos-meneses/laravel-mpdf/src/Facades/LaravelMpdf.php',
-        'Mccarlosen\\LaravelMpdf\\LaravelMpdf' => __DIR__ . '/..' . '/carlos-meneses/laravel-mpdf/src/LaravelMpdf.php',
-        'Mccarlosen\\LaravelMpdf\\LaravelMpdfServiceProvider' => __DIR__ . '/..' . '/carlos-meneses/laravel-mpdf/src/LaravelMpdfServiceProvider.php',
-        'Mccarlosen\\LaravelMpdf\\LaravelMpdfWrapper' => __DIR__ . '/..' . '/carlos-meneses/laravel-mpdf/src/LaravelMpdfWrapper.php',
         'Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegration' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryPHPUnitIntegration.php',
         'Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegrationAssertPostConditions' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryPHPUnitIntegrationAssertPostConditions.php',
         'Mockery\\Adapter\\Phpunit\\MockeryTestCase' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryTestCase.php',
@@ -3897,252 +3882,6 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'Monolog\\SignalHandler' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/SignalHandler.php',
         'Monolog\\Test\\TestCase' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/Test/TestCase.php',
         'Monolog\\Utils' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/Utils.php',
-        'Mpdf\\AssetFetcher' => __DIR__ . '/..' . '/mpdf/mpdf/src/AssetFetcher.php',
-        'Mpdf\\AssetFetcherInterface' => __DIR__ . '/..' . '/mpdf/mpdf/src/AssetFetcherInterface.php',
-        'Mpdf\\Barcode' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode.php',
-        'Mpdf\\Barcode\\AbstractBarcode' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/AbstractBarcode.php',
-        'Mpdf\\Barcode\\BarcodeException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/BarcodeException.php',
-        'Mpdf\\Barcode\\BarcodeInterface' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/BarcodeInterface.php',
-        'Mpdf\\Barcode\\Codabar' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Codabar.php',
-        'Mpdf\\Barcode\\Code11' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Code11.php',
-        'Mpdf\\Barcode\\Code128' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Code128.php',
-        'Mpdf\\Barcode\\Code39' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Code39.php',
-        'Mpdf\\Barcode\\Code93' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Code93.php',
-        'Mpdf\\Barcode\\EanExt' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/EanExt.php',
-        'Mpdf\\Barcode\\EanUpc' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/EanUpc.php',
-        'Mpdf\\Barcode\\I25' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/I25.php',
-        'Mpdf\\Barcode\\Imb' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Imb.php',
-        'Mpdf\\Barcode\\Msi' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Msi.php',
-        'Mpdf\\Barcode\\Postnet' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Postnet.php',
-        'Mpdf\\Barcode\\Rm4Scc' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/Rm4Scc.php',
-        'Mpdf\\Barcode\\S25' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/S25.php',
-        'Mpdf\\Buffer' => __DIR__ . '/..' . '/mpdf/mpdf/src/Buffer.php',
-        'Mpdf\\Cache' => __DIR__ . '/..' . '/mpdf/mpdf/src/Cache.php',
-        'Mpdf\\Color\\ColorConverter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Color/ColorConverter.php',
-        'Mpdf\\Color\\ColorModeConverter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Color/ColorModeConverter.php',
-        'Mpdf\\Color\\ColorSpaceRestrictor' => __DIR__ . '/..' . '/mpdf/mpdf/src/Color/ColorSpaceRestrictor.php',
-        'Mpdf\\Color\\NamedColors' => __DIR__ . '/..' . '/mpdf/mpdf/src/Color/NamedColors.php',
-        'Mpdf\\Config\\ConfigVariables' => __DIR__ . '/..' . '/mpdf/mpdf/src/Config/ConfigVariables.php',
-        'Mpdf\\Config\\FontVariables' => __DIR__ . '/..' . '/mpdf/mpdf/src/Config/FontVariables.php',
-        'Mpdf\\Container\\ContainerInterface' => __DIR__ . '/..' . '/mpdf/mpdf/src/Container/ContainerInterface.php',
-        'Mpdf\\Container\\NotFoundException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Container/NotFoundException.php',
-        'Mpdf\\Container\\SimpleContainer' => __DIR__ . '/..' . '/mpdf/mpdf/src/Container/SimpleContainer.php',
-        'Mpdf\\Conversion\\DecToAlpha' => __DIR__ . '/..' . '/mpdf/mpdf/src/Conversion/DecToAlpha.php',
-        'Mpdf\\Conversion\\DecToCjk' => __DIR__ . '/..' . '/mpdf/mpdf/src/Conversion/DecToCjk.php',
-        'Mpdf\\Conversion\\DecToHebrew' => __DIR__ . '/..' . '/mpdf/mpdf/src/Conversion/DecToHebrew.php',
-        'Mpdf\\Conversion\\DecToOther' => __DIR__ . '/..' . '/mpdf/mpdf/src/Conversion/DecToOther.php',
-        'Mpdf\\Conversion\\DecToRoman' => __DIR__ . '/..' . '/mpdf/mpdf/src/Conversion/DecToRoman.php',
-        'Mpdf\\CssManager' => __DIR__ . '/..' . '/mpdf/mpdf/src/CssManager.php',
-        'Mpdf\\Css\\Border' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/Border.php',
-        'Mpdf\\Css\\BorderMerger' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/BorderMerger.php',
-        'Mpdf\\Css\\CommentParser' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/CommentParser.php',
-        'Mpdf\\Css\\CssLoader' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/CssLoader.php',
-        'Mpdf\\Css\\CssMerger' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/CssMerger.php',
-        'Mpdf\\Css\\CssParser' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/CssParser.php',
-        'Mpdf\\Css\\DefaultCss' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/DefaultCss.php',
-        'Mpdf\\Css\\InlinePropertyConverter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/InlinePropertyConverter.php',
-        'Mpdf\\Css\\InlineStyleParser' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/InlineStyleParser.php',
-        'Mpdf\\Css\\MediaQueryProcessor' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/MediaQueryProcessor.php',
-        'Mpdf\\Css\\NormalizeProperties' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/NormalizeProperties.php',
-        'Mpdf\\Css\\SelectorParser' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/SelectorParser.php',
-        'Mpdf\\Css\\ShadowParser' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/ShadowParser.php',
-        'Mpdf\\Css\\TextVars' => __DIR__ . '/..' . '/mpdf/mpdf/src/Css/TextVars.php',
-        'Mpdf\\DirectWrite' => __DIR__ . '/..' . '/mpdf/mpdf/src/DirectWrite.php',
-        'Mpdf\\Exception\\AssetFetchingException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Exception/AssetFetchingException.php',
-        'Mpdf\\Exception\\FontException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Exception/FontException.php',
-        'Mpdf\\Exception\\InvalidArgumentException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Exception/InvalidArgumentException.php',
-        'Mpdf\\File\\LocalContentLoader' => __DIR__ . '/..' . '/mpdf/mpdf/src/File/LocalContentLoader.php',
-        'Mpdf\\File\\LocalContentLoaderInterface' => __DIR__ . '/..' . '/mpdf/mpdf/src/File/LocalContentLoaderInterface.php',
-        'Mpdf\\File\\StreamWrapperChecker' => __DIR__ . '/..' . '/mpdf/mpdf/src/File/StreamWrapperChecker.php',
-        'Mpdf\\Fonts\\FontCache' => __DIR__ . '/..' . '/mpdf/mpdf/src/Fonts/FontCache.php',
-        'Mpdf\\Fonts\\FontFileFinder' => __DIR__ . '/..' . '/mpdf/mpdf/src/Fonts/FontFileFinder.php',
-        'Mpdf\\Fonts\\GlyphOperator' => __DIR__ . '/..' . '/mpdf/mpdf/src/Fonts/GlyphOperator.php',
-        'Mpdf\\Fonts\\MetricsGenerator' => __DIR__ . '/..' . '/mpdf/mpdf/src/Fonts/MetricsGenerator.php',
-        'Mpdf\\Form' => __DIR__ . '/..' . '/mpdf/mpdf/src/Form.php',
-        'Mpdf\\FpdiTrait' => __DIR__ . '/..' . '/mpdf/mpdf/src/FpdiTrait.php',
-        'Mpdf\\Gif\\ColorTable' => __DIR__ . '/..' . '/mpdf/mpdf/src/Gif/ColorTable.php',
-        'Mpdf\\Gif\\FileHeader' => __DIR__ . '/..' . '/mpdf/mpdf/src/Gif/FileHeader.php',
-        'Mpdf\\Gif\\Gif' => __DIR__ . '/..' . '/mpdf/mpdf/src/Gif/Gif.php',
-        'Mpdf\\Gif\\Image' => __DIR__ . '/..' . '/mpdf/mpdf/src/Gif/Image.php',
-        'Mpdf\\Gif\\ImageHeader' => __DIR__ . '/..' . '/mpdf/mpdf/src/Gif/ImageHeader.php',
-        'Mpdf\\Gif\\Lzw' => __DIR__ . '/..' . '/mpdf/mpdf/src/Gif/Lzw.php',
-        'Mpdf\\Gradient' => __DIR__ . '/..' . '/mpdf/mpdf/src/Gradient.php',
-        'Mpdf\\HTMLParserMode' => __DIR__ . '/..' . '/mpdf/mpdf/src/HTMLParserMode.php',
-        'Mpdf\\Http\\ClientInterface' => __DIR__ . '/..' . '/mpdf/mpdf/src/Http/ClientInterface.php',
-        'Mpdf\\Http\\CurlHttpClient' => __DIR__ . '/..' . '/mpdf/mpdf/src/Http/CurlHttpClient.php',
-        'Mpdf\\Http\\Exception\\ClientException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Http/Exception/ClientException.php',
-        'Mpdf\\Http\\Exception\\ForbiddenRequestException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Http/Exception/ForbiddenRequestException.php',
-        'Mpdf\\Http\\Exception\\NetworkException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Http/Exception/NetworkException.php',
-        'Mpdf\\Http\\Exception\\RequestException' => __DIR__ . '/..' . '/mpdf/mpdf/src/Http/Exception/RequestException.php',
-        'Mpdf\\Http\\SocketHttpClient' => __DIR__ . '/..' . '/mpdf/mpdf/src/Http/SocketHttpClient.php',
-        'Mpdf\\Hyphenator' => __DIR__ . '/..' . '/mpdf/mpdf/src/Hyphenator.php',
-        'Mpdf\\Image\\Bmp' => __DIR__ . '/..' . '/mpdf/mpdf/src/Image/Bmp.php',
-        'Mpdf\\Image\\ImageProcessor' => __DIR__ . '/..' . '/mpdf/mpdf/src/Image/ImageProcessor.php',
-        'Mpdf\\Image\\ImageTypeGuesser' => __DIR__ . '/..' . '/mpdf/mpdf/src/Image/ImageTypeGuesser.php',
-        'Mpdf\\Image\\Svg' => __DIR__ . '/..' . '/mpdf/mpdf/src/Image/Svg.php',
-        'Mpdf\\Image\\Wmf' => __DIR__ . '/..' . '/mpdf/mpdf/src/Image/Wmf.php',
-        'Mpdf\\Language\\LanguageToFont' => __DIR__ . '/..' . '/mpdf/mpdf/src/Language/LanguageToFont.php',
-        'Mpdf\\Language\\LanguageToFontInterface' => __DIR__ . '/..' . '/mpdf/mpdf/src/Language/LanguageToFontInterface.php',
-        'Mpdf\\Language\\ScriptToLanguage' => __DIR__ . '/..' . '/mpdf/mpdf/src/Language/ScriptToLanguage.php',
-        'Mpdf\\Language\\ScriptToLanguageInterface' => __DIR__ . '/..' . '/mpdf/mpdf/src/Language/ScriptToLanguageInterface.php',
-        'Mpdf\\Log\\Context' => __DIR__ . '/..' . '/mpdf/mpdf/src/Log/Context.php',
-        'Mpdf\\Mpdf' => __DIR__ . '/..' . '/mpdf/mpdf/src/Mpdf.php',
-        'Mpdf\\MpdfException' => __DIR__ . '/..' . '/mpdf/mpdf/src/MpdfException.php',
-        'Mpdf\\MpdfImageException' => __DIR__ . '/..' . '/mpdf/mpdf/src/MpdfImageException.php',
-        'Mpdf\\Otl' => __DIR__ . '/..' . '/mpdf/mpdf/src/Otl.php',
-        'Mpdf\\OtlDump' => __DIR__ . '/..' . '/mpdf/mpdf/src/OtlDump.php',
-        'Mpdf\\Output\\Destination' => __DIR__ . '/..' . '/mpdf/mpdf/src/Output/Destination.php',
-        'Mpdf\\PageBox' => __DIR__ . '/..' . '/mpdf/mpdf/src/PageBox.php',
-        'Mpdf\\PageFormat' => __DIR__ . '/..' . '/mpdf/mpdf/src/PageFormat.php',
-        'Mpdf\\Pdf\\Protection' => __DIR__ . '/..' . '/mpdf/mpdf/src/Pdf/Protection.php',
-        'Mpdf\\Pdf\\Protection\\UniqidGenerator' => __DIR__ . '/..' . '/mpdf/mpdf/src/Pdf/Protection/UniqidGenerator.php',
-        'Mpdf\\PsrHttpMessageShim\\Request' => __DIR__ . '/..' . '/mpdf/psr-http-message-shim/src/Request.php',
-        'Mpdf\\PsrHttpMessageShim\\Response' => __DIR__ . '/..' . '/mpdf/psr-http-message-shim/src/Response.php',
-        'Mpdf\\PsrHttpMessageShim\\Stream' => __DIR__ . '/..' . '/mpdf/psr-http-message-shim/src/Stream.php',
-        'Mpdf\\PsrHttpMessageShim\\Uri' => __DIR__ . '/..' . '/mpdf/psr-http-message-shim/src/Uri.php',
-        'Mpdf\\PsrLogAwareTrait\\MpdfPsrLogAwareTrait' => __DIR__ . '/..' . '/mpdf/psr-log-aware-trait/src/MpdfPsrLogAwareTrait.php',
-        'Mpdf\\PsrLogAwareTrait\\PsrLogAwareTrait' => __DIR__ . '/..' . '/mpdf/psr-log-aware-trait/src/PsrLogAwareTrait.php',
-        'Mpdf\\ServiceFactory' => __DIR__ . '/..' . '/mpdf/mpdf/src/ServiceFactory.php',
-        'Mpdf\\Shaper\\Indic' => __DIR__ . '/..' . '/mpdf/mpdf/src/Shaper/Indic.php',
-        'Mpdf\\Shaper\\Myanmar' => __DIR__ . '/..' . '/mpdf/mpdf/src/Shaper/Myanmar.php',
-        'Mpdf\\Shaper\\Sea' => __DIR__ . '/..' . '/mpdf/mpdf/src/Shaper/Sea.php',
-        'Mpdf\\SizeConverter' => __DIR__ . '/..' . '/mpdf/mpdf/src/SizeConverter.php',
-        'Mpdf\\Strict' => __DIR__ . '/..' . '/mpdf/mpdf/src/Strict.php',
-        'Mpdf\\TTFontFile' => __DIR__ . '/..' . '/mpdf/mpdf/src/TTFontFile.php',
-        'Mpdf\\TTFontFileAnalysis' => __DIR__ . '/..' . '/mpdf/mpdf/src/TTFontFileAnalysis.php',
-        'Mpdf\\TableOfContents' => __DIR__ . '/..' . '/mpdf/mpdf/src/TableOfContents.php',
-        'Mpdf\\Tag' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag.php',
-        'Mpdf\\Tag\\A' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/A.php',
-        'Mpdf\\Tag\\Acronym' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Acronym.php',
-        'Mpdf\\Tag\\Address' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Address.php',
-        'Mpdf\\Tag\\Annotation' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Annotation.php',
-        'Mpdf\\Tag\\Article' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Article.php',
-        'Mpdf\\Tag\\Aside' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Aside.php',
-        'Mpdf\\Tag\\B' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/B.php',
-        'Mpdf\\Tag\\BarCode' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/BarCode.php',
-        'Mpdf\\Tag\\Bdi' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Bdi.php',
-        'Mpdf\\Tag\\Bdo' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Bdo.php',
-        'Mpdf\\Tag\\Big' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Big.php',
-        'Mpdf\\Tag\\BlockQuote' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/BlockQuote.php',
-        'Mpdf\\Tag\\BlockTag' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/BlockTag.php',
-        'Mpdf\\Tag\\Bookmark' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Bookmark.php',
-        'Mpdf\\Tag\\Br' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Br.php',
-        'Mpdf\\Tag\\Caption' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Caption.php',
-        'Mpdf\\Tag\\Center' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Center.php',
-        'Mpdf\\Tag\\Cite' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Cite.php',
-        'Mpdf\\Tag\\Code' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Code.php',
-        'Mpdf\\Tag\\ColumnBreak' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/ColumnBreak.php',
-        'Mpdf\\Tag\\Columns' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Columns.php',
-        'Mpdf\\Tag\\Dd' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Dd.php',
-        'Mpdf\\Tag\\Del' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Del.php',
-        'Mpdf\\Tag\\Details' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Details.php',
-        'Mpdf\\Tag\\Div' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Div.php',
-        'Mpdf\\Tag\\Dl' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Dl.php',
-        'Mpdf\\Tag\\DotTab' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/DotTab.php',
-        'Mpdf\\Tag\\Dt' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Dt.php',
-        'Mpdf\\Tag\\Em' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Em.php',
-        'Mpdf\\Tag\\FieldSet' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/FieldSet.php',
-        'Mpdf\\Tag\\FigCaption' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/FigCaption.php',
-        'Mpdf\\Tag\\Figure' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Figure.php',
-        'Mpdf\\Tag\\Font' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Font.php',
-        'Mpdf\\Tag\\Footer' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Footer.php',
-        'Mpdf\\Tag\\Form' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Form.php',
-        'Mpdf\\Tag\\FormFeed' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/FormFeed.php',
-        'Mpdf\\Tag\\H1' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/H1.php',
-        'Mpdf\\Tag\\H2' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/H2.php',
-        'Mpdf\\Tag\\H3' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/H3.php',
-        'Mpdf\\Tag\\H4' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/H4.php',
-        'Mpdf\\Tag\\H5' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/H5.php',
-        'Mpdf\\Tag\\H6' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/H6.php',
-        'Mpdf\\Tag\\HGroup' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/HGroup.php',
-        'Mpdf\\Tag\\Header' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Header.php',
-        'Mpdf\\Tag\\Hr' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Hr.php',
-        'Mpdf\\Tag\\I' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/I.php',
-        'Mpdf\\Tag\\Img' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Img.php',
-        'Mpdf\\Tag\\IndexEntry' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/IndexEntry.php',
-        'Mpdf\\Tag\\IndexInsert' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/IndexInsert.php',
-        'Mpdf\\Tag\\InlineTag' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/InlineTag.php',
-        'Mpdf\\Tag\\Input' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Input.php',
-        'Mpdf\\Tag\\Ins' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Ins.php',
-        'Mpdf\\Tag\\Kbd' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Kbd.php',
-        'Mpdf\\Tag\\Legend' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Legend.php',
-        'Mpdf\\Tag\\Li' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Li.php',
-        'Mpdf\\Tag\\Main' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Main.php',
-        'Mpdf\\Tag\\Mark' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Mark.php',
-        'Mpdf\\Tag\\Meter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Meter.php',
-        'Mpdf\\Tag\\Nav' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Nav.php',
-        'Mpdf\\Tag\\NewColumn' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/NewColumn.php',
-        'Mpdf\\Tag\\NewPage' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/NewPage.php',
-        'Mpdf\\Tag\\Ol' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Ol.php',
-        'Mpdf\\Tag\\Option' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Option.php',
-        'Mpdf\\Tag\\P' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/P.php',
-        'Mpdf\\Tag\\PageBreak' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/PageBreak.php',
-        'Mpdf\\Tag\\PageFooter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/PageFooter.php',
-        'Mpdf\\Tag\\PageHeader' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/PageHeader.php',
-        'Mpdf\\Tag\\Pre' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Pre.php',
-        'Mpdf\\Tag\\Progress' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Progress.php',
-        'Mpdf\\Tag\\Q' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Q.php',
-        'Mpdf\\Tag\\S' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/S.php',
-        'Mpdf\\Tag\\Samp' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Samp.php',
-        'Mpdf\\Tag\\Section' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Section.php',
-        'Mpdf\\Tag\\Select' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Select.php',
-        'Mpdf\\Tag\\SetHtmlPageFooter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/SetHtmlPageFooter.php',
-        'Mpdf\\Tag\\SetHtmlPageHeader' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/SetHtmlPageHeader.php',
-        'Mpdf\\Tag\\SetPageFooter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/SetPageFooter.php',
-        'Mpdf\\Tag\\SetPageHeader' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/SetPageHeader.php',
-        'Mpdf\\Tag\\Small' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Small.php',
-        'Mpdf\\Tag\\Span' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Span.php',
-        'Mpdf\\Tag\\Strike' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Strike.php',
-        'Mpdf\\Tag\\Strong' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Strong.php',
-        'Mpdf\\Tag\\Sub' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Sub.php',
-        'Mpdf\\Tag\\SubstituteTag' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/SubstituteTag.php',
-        'Mpdf\\Tag\\Summary' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Summary.php',
-        'Mpdf\\Tag\\Sup' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Sup.php',
-        'Mpdf\\Tag\\TBody' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/TBody.php',
-        'Mpdf\\Tag\\TFoot' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/TFoot.php',
-        'Mpdf\\Tag\\THead' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/THead.php',
-        'Mpdf\\Tag\\Table' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Table.php',
-        'Mpdf\\Tag\\Tag' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Tag.php',
-        'Mpdf\\Tag\\Td' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Td.php',
-        'Mpdf\\Tag\\TextArea' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/TextArea.php',
-        'Mpdf\\Tag\\TextCircle' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/TextCircle.php',
-        'Mpdf\\Tag\\Th' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Th.php',
-        'Mpdf\\Tag\\Time' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Time.php',
-        'Mpdf\\Tag\\Toc' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Toc.php',
-        'Mpdf\\Tag\\TocEntry' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/TocEntry.php',
-        'Mpdf\\Tag\\TocPageBreak' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/TocPageBreak.php',
-        'Mpdf\\Tag\\Tr' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Tr.php',
-        'Mpdf\\Tag\\Tt' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Tt.php',
-        'Mpdf\\Tag\\Tta' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Tta.php',
-        'Mpdf\\Tag\\Tts' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Tts.php',
-        'Mpdf\\Tag\\Ttz' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Ttz.php',
-        'Mpdf\\Tag\\U' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/U.php',
-        'Mpdf\\Tag\\Ul' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/Ul.php',
-        'Mpdf\\Tag\\VarTag' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/VarTag.php',
-        'Mpdf\\Tag\\WatermarkImage' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/WatermarkImage.php',
-        'Mpdf\\Tag\\WatermarkText' => __DIR__ . '/..' . '/mpdf/mpdf/src/Tag/WatermarkText.php',
-        'Mpdf\\Ucdn' => __DIR__ . '/..' . '/mpdf/mpdf/src/Ucdn.php',
-        'Mpdf\\Utils\\Arrays' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/Arrays.php',
-        'Mpdf\\Utils\\NumericString' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/NumericString.php',
-        'Mpdf\\Utils\\Path' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/Path.php',
-        'Mpdf\\Utils\\PdfDate' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/PdfDate.php',
-        'Mpdf\\Utils\\UtfString' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/UtfString.php',
-        'Mpdf\\Watermark' => __DIR__ . '/..' . '/mpdf/mpdf/src/Watermark.php',
-        'Mpdf\\WatermarkImage' => __DIR__ . '/..' . '/mpdf/mpdf/src/WatermarkImage.php',
-        'Mpdf\\WatermarkText' => __DIR__ . '/..' . '/mpdf/mpdf/src/WatermarkText.php',
-        'Mpdf\\Writer\\BackgroundWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/BackgroundWriter.php',
-        'Mpdf\\Writer\\BaseWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/BaseWriter.php',
-        'Mpdf\\Writer\\BookmarkWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/BookmarkWriter.php',
-        'Mpdf\\Writer\\ColorWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/ColorWriter.php',
-        'Mpdf\\Writer\\FontWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/FontWriter.php',
-        'Mpdf\\Writer\\FormWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/FormWriter.php',
-        'Mpdf\\Writer\\ImageWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/ImageWriter.php',
-        'Mpdf\\Writer\\JavaScriptWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/JavaScriptWriter.php',
-        'Mpdf\\Writer\\MetadataWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/MetadataWriter.php',
-        'Mpdf\\Writer\\ObjectWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/ObjectWriter.php',
-        'Mpdf\\Writer\\OptionalContentWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/OptionalContentWriter.php',
-        'Mpdf\\Writer\\PageWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/PageWriter.php',
-        'Mpdf\\Writer\\ResourceWriter' => __DIR__ . '/..' . '/mpdf/mpdf/src/Writer/ResourceWriter.php',
         'Nette\\ArgumentOutOfRangeException' => __DIR__ . '/..' . '/nette/utils/src/exceptions.php',
         'Nette\\DeprecatedException' => __DIR__ . '/..' . '/nette/utils/src/exceptions.php',
         'Nette\\DirectoryNotFoundException' => __DIR__ . '/..' . '/nette/utils/src/exceptions.php',
@@ -7462,6 +7201,8 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'Tests\\ClientTest' => __DIR__ . '/..' . '/paytrail/paytrail-php-sdk/tests/ClientTest.php',
         'Tests\\CreatesApplication' => __DIR__ . '/../..' . '/tests/CreatesApplication.php',
         'Tests\\Feature\\ExampleTest' => __DIR__ . '/../..' . '/tests/Feature/ExampleTest.php',
+        'Tests\\Feature\\InventoryServiceTest' => __DIR__ . '/../..' . '/tests/Feature/InventoryServiceTest.php',
+        'Tests\\Feature\\SaleServiceTest' => __DIR__ . '/../..' . '/tests/Feature/SaleServiceTest.php',
         'Tests\\Model\\AbstractPaymentRequestTest' => __DIR__ . '/..' . '/paytrail/paytrail-php-sdk/tests/Model/AbstractPaymentRequestTest.php',
         'Tests\\Model\\AddressTest' => __DIR__ . '/..' . '/paytrail/paytrail-php-sdk/tests/Model/AddressTest.php',
         'Tests\\Model\\CallbackUrlTest' => __DIR__ . '/..' . '/paytrail/paytrail-php-sdk/tests/Model/CallbackUrlTest.php',
@@ -10031,57 +9772,6 @@ class ComposerStaticInit1706894160325a3fe9718bf7b46a107c
         'Whoops\\Util\\Misc' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Util/Misc.php',
         'Whoops\\Util\\SystemFacade' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Util/SystemFacade.php',
         'Whoops\\Util\\TemplateHelper' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Util/TemplateHelper.php',
-        'setasign\\Fpdi\\FpdfTpl' => __DIR__ . '/..' . '/setasign/fpdi/src/FpdfTpl.php',
-        'setasign\\Fpdi\\FpdfTplTrait' => __DIR__ . '/..' . '/setasign/fpdi/src/FpdfTplTrait.php',
-        'setasign\\Fpdi\\FpdfTrait' => __DIR__ . '/..' . '/setasign/fpdi/src/FpdfTrait.php',
-        'setasign\\Fpdi\\Fpdi' => __DIR__ . '/..' . '/setasign/fpdi/src/Fpdi.php',
-        'setasign\\Fpdi\\FpdiException' => __DIR__ . '/..' . '/setasign/fpdi/src/FpdiException.php',
-        'setasign\\Fpdi\\FpdiTrait' => __DIR__ . '/..' . '/setasign/fpdi/src/FpdiTrait.php',
-        'setasign\\Fpdi\\GraphicsState' => __DIR__ . '/..' . '/setasign/fpdi/src/GraphicsState.php',
-        'setasign\\Fpdi\\Math\\Matrix' => __DIR__ . '/..' . '/setasign/fpdi/src/Math/Matrix.php',
-        'setasign\\Fpdi\\Math\\Vector' => __DIR__ . '/..' . '/setasign/fpdi/src/Math/Vector.php',
-        'setasign\\Fpdi\\PdfParser\\CrossReference\\AbstractReader' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/CrossReference/AbstractReader.php',
-        'setasign\\Fpdi\\PdfParser\\CrossReference\\CrossReference' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/CrossReference/CrossReference.php',
-        'setasign\\Fpdi\\PdfParser\\CrossReference\\CrossReferenceException' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/CrossReference/CrossReferenceException.php',
-        'setasign\\Fpdi\\PdfParser\\CrossReference\\FixedReader' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/CrossReference/FixedReader.php',
-        'setasign\\Fpdi\\PdfParser\\CrossReference\\LineReader' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/CrossReference/LineReader.php',
-        'setasign\\Fpdi\\PdfParser\\CrossReference\\ReaderInterface' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/CrossReference/ReaderInterface.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\Ascii85' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/Ascii85.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\Ascii85Exception' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/Ascii85Exception.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\AsciiHex' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/AsciiHex.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\FilterException' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/FilterException.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\FilterInterface' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/FilterInterface.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\Flate' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/Flate.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\FlateException' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/FlateException.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\Lzw' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/Lzw.php',
-        'setasign\\Fpdi\\PdfParser\\Filter\\LzwException' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Filter/LzwException.php',
-        'setasign\\Fpdi\\PdfParser\\PdfParser' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/PdfParser.php',
-        'setasign\\Fpdi\\PdfParser\\PdfParserException' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/PdfParserException.php',
-        'setasign\\Fpdi\\PdfParser\\StreamReader' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/StreamReader.php',
-        'setasign\\Fpdi\\PdfParser\\Tokenizer' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Tokenizer.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfArray' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfArray.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfBoolean' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfBoolean.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfDictionary' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfDictionary.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfHexString' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfHexString.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfIndirectObject' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfIndirectObject.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfIndirectObjectReference' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfIndirectObjectReference.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfName' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfName.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfNull' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfNull.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfNumeric' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfNumeric.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfStream' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfStream.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfString' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfString.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfToken' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfToken.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfType' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfType.php',
-        'setasign\\Fpdi\\PdfParser\\Type\\PdfTypeException' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfParser/Type/PdfTypeException.php',
-        'setasign\\Fpdi\\PdfReader\\DataStructure\\Rectangle' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfReader/DataStructure/Rectangle.php',
-        'setasign\\Fpdi\\PdfReader\\Page' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfReader/Page.php',
-        'setasign\\Fpdi\\PdfReader\\PageBoundaries' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfReader/PageBoundaries.php',
-        'setasign\\Fpdi\\PdfReader\\PdfReader' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfReader/PdfReader.php',
-        'setasign\\Fpdi\\PdfReader\\PdfReaderException' => __DIR__ . '/..' . '/setasign/fpdi/src/PdfReader/PdfReaderException.php',
-        'setasign\\Fpdi\\TcpdfFpdi' => __DIR__ . '/..' . '/setasign/fpdi/src/TcpdfFpdi.php',
-        'setasign\\Fpdi\\Tcpdf\\Fpdi' => __DIR__ . '/..' . '/setasign/fpdi/src/Tcpdf/Fpdi.php',
-        'setasign\\Fpdi\\Tfpdf\\FpdfTpl' => __DIR__ . '/..' . '/setasign/fpdi/src/Tfpdf/FpdfTpl.php',
-        'setasign\\Fpdi\\Tfpdf\\Fpdi' => __DIR__ . '/..' . '/setasign/fpdi/src/Tfpdf/Fpdi.php',
         'voku\\helper\\ASCII' => __DIR__ . '/..' . '/voku/portable-ascii/src/voku/helper/ASCII.php',
     );
 
