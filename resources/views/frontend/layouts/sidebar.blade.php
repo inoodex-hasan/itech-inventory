@@ -1,76 +1,29 @@
+@php
+    $canView = function($permission) {
+        if (!auth()->check()) {
+            return true;
+        }
+        $user = auth()->user();
+        return $user->hasRole(['Super Admin', 'Admin', 'admin']) || $user->can($permission);
+    };
+@endphp
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-inner slimscroll">
         <div id="sidebar-menu" class="sidebar-menu">
-            {{-- <nav class="greedys sidebar-horizantal">
-                <ul class="list-inline-item list-unstyled links">
-                    @can('Administration')
-                    <li class="menu-title"><span>Authorization</span></li>
-                    <li class="submenu">
-                        <a href="{{ route('permission.index') }}"><i class="fe fe-home"></i> <span> Permissions</span>
-                            <span class="menu-arrow"></span></a>
-                    </li>
-                    <li class="submenu">
-                        <a href="{{ route('role.index') }}"><i class="fe fe-home"></i> <span> Roles</span> <span
-                                class="menu-arrow"></span></a>
-                    </li>
-                    <li class="submenu">
-                        <a href="{{ route('users.index') }}"><i class="fe fe-home"></i> <span> Users</span> <span
-                                class="menu-arrow"></span></a>
-                    </li>
-                    <li class="submenu">
-                        <a href="{{ route('users.pin') }}"><i class="fe fe-key"></i> <span> PIN Number</span> <span
-                                class="menu-arrow"></span></a>
-                    </li>
-                    @endcan
-                </ul>
-                <!-- /Settings -->
-            </nav> --}}
             <ul class="sidebar-vertical ">
                 <!-- Main -->
-
                 <li>
                     <a href="{{ route('index') }}"><i class="fe fe-grid"></i><span> Dashboard</span></a>
                 </li>
 
-                {{--
-                @can('Booking')
-                <li class="menu-title"><span>Booking</span></li>
-                <li>
-                    @php
-                    $pendingBooking = pendingBooking();
-                    @endphp
-                    <a href="{{ route('booking.index') }}"
-                        class="{{ Route::currentRouteName() == 'booking.index' ? 'active' : '' }}">
-                        <i class="fe fe-list"></i>
-                        <span> Booking List</span>
-                        @if ($pendingBooking)
-                        <span
-                            style="color:white; background:red; border-radius:50%; padding:3px 7px; display:inline-block; text-align:center;">
-                            {{$pendingBooking}}
-                        </span>
-                        @endif
-                    </a>
-                </li>
-                @endcan
-                --}}
-
-
-                @can('Product Management')
+                @if($canView('Product Management'))
                     <li class="menu-title "><span>Product Management</span></li>
                     <li class="">
-                        {{-- <a href="{{ route('sales.create') }}"
-                            class="{{ Route::currentRouteName() == 'sales.create' ? 'active' : '' }}"><i
-                                class="fe fe-plus-circle"></i> <span> Add Sales</span></a>
-                        <a href="{{ route('sales.index') }}"
-                            class="{{ Route::currentRouteName() == 'sales.index' ? 'active' : '' }}"><i
-                                class="fe fe-list"></i> <span>Sales List</span></a> --}}
                         <a href="{{ route('categories.index') }}"
                             class="{{ Route::currentRouteName() == 'categories.index' ? 'active' : '' }}"><i
                                 class="fe fe-layers"></i> <span> Category List</span></a>
-                        {{-- <a href="{{ route('categories.create') }}"
-                            class="{{ Route::currentRouteName() == 'categories.create' ? 'active' : '' }}"><i
-                                class="fe fe-plus-circle"></i> <span> Add Category</span></a> --}}
                         <a href="{{ route('brands.index') }}"
                             class="{{ Route::currentRouteName() == 'brand.index' ? 'active' : '' }}"><i
                                 class="fe fe-box"></i> <span> Brand List</span></a>
@@ -78,9 +31,9 @@
                             class="{{ Route::currentRouteName() == 'products.index' ? 'active' : '' }}"><i
                                 class="fe fe-box"></i> <span> Product List</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Sales Management')
+                @if($canView('Sales Management'))
                     <li class="menu-title "><span>Sales Management</span></li>
                     <li class="">
                         <a href="{{ route('sales.create') }}"
@@ -89,34 +42,25 @@
                         <a href="{{ route('sales.index') }}"
                             class="{{ Route::currentRouteName() == 'sales.index' ? 'active' : '' }}"><i
                                 class="fe fe-shopping-bag"></i> <span>Sales List</span></a>
-                        <!-- <a href="{{ route('returns.create') }}"
-                            class="{{ Route::currentRouteName() == 'returns.create' ? 'active' : '' }}"><i
-                                class="fe fe-corner-down-left"></i> <span> Add Return</span></a> -->
                         <a href="{{ route('returns.index') }}"
                             class="{{ Route::currentRouteName() == 'returns.index' ? 'active' : '' }}"><i
                                 class="fe fe-refresh-cw"></i> <span> Return List</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Service Management')
+                @if($canView('Service Management'))
                     <li class="menu-title"><span>Services</span></li>
                     <li>
                         <a href="{{ route('service.create') }}"
                             class="{{ Route::currentRouteName() == 'service.create' ? 'active' : '' }}"><i
                                 class="fe fe-plus-circle"></i> <span> Add Service</span></a>
-                        {{-- <a href="{{ route('service.index') }}"
-                            class="{{ Route::currentRouteName() == 'service.index' ? 'active' : '' }}"><i
-                                class="fe fe-refresh-cw"></i> <span>Pending Service</span></a>
-                        <a href="{{ route('service.complated') }}"
-                            class="{{ Route::currentRouteName() == 'service.complated' ? 'active' : '' }}"><i
-                                class="fe fe-check-square"></i> <span>Completed Service</span></a> --}}
                         <a href="{{ route('service.index', ['type' => 'service']) }}"
                             class="{{ Route::currentRouteName() == 'service.index' ? 'active' : '' }}"><i
                                 class="fe fe-layers"></i> <span>Service List</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Customer Management')
+                @if($canView('Customer Management'))
                     <li class="menu-title "><span>Customer Management</span></li>
                     <li class="">
                         <a href="{{ route('customers.create') }}"
@@ -126,9 +70,9 @@
                             class="{{ Route::currentRouteName() == 'customers.index' ? 'active' : '' }}"><i
                                 class="fe fe-users"></i> <span>Customers List</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Vendor Management')
+                @if($canView('Vendor Management'))
                     <li class="menu-title "><span>Vendor Management</span></li>
                     <li class="">
                         <a href="{{ route('vendors.create') }}"
@@ -138,44 +82,33 @@
                             class="{{ Route::currentRouteName() == 'vendors.index' ? 'active' : '' }}"><i
                                 class="fe fe-users"></i> <span>Vendor List</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Purchase Management')
+                @if($canView('Purchase Management'))
                     <li class="menu-title "><span>Purchase Management</span></li>
-                    <!-- <li class="">
-                            <a href="{{ route('purchase.create') }}"
-                                class="{{ Route::currentRouteName() == 'purchase.create' ? 'active' : '' }}"><i
-                                    class="fe fe-"></i> <span> Add Purchase</span></a>
-                        </li> -->
                     <li class="">
                         <a href="{{ route('purchase.index') }}"
                             class="{{ Route::currentRouteName() == 'purchase.index' ? 'active' : '' }}"><i
                                 class="fe fe-shopping-cart"></i> <span> Purchase List</span></a>
                     </li>
+                @endif
 
-                @endcan
-
-                @can('Company Management')
+                @if($canView('Company Management'))
                     <li class="menu-title "><span>Company Management</span></li>
                     <li class="">
                         <a href="{{ route('company-details.index') }}"
                             class="{{ Route::currentRouteName() == 'company-details.index' ? 'active' : '' }}"><i
                                 class="fe fe-briefcase"></i> <span> Company Details</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Payment Management')
+                @if($canView('Payment Management'))
                     <li class="menu-title"><span>Payment Management</span></li>
                     <li>
                         <a href="{{ route('due-payments.index') }}"
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-dollar-sign"></i>
                             <span>Due Payment</span></a>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('sales.index') }}"
-                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-plus-circle"></i>
-                            <span>Invoice Generate</span></a>
-                    </li> --}}
                     <li>
                         <a href="{{ route('bills.index') }}"
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-file-text"></i>
@@ -191,27 +124,27 @@
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-clipboard"></i>
                             <span>Quotation Generate</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Inventory Management')
+                @if($canView('Inventory Management'))
                     <li class="menu-title "><span>Inventory Management</span></li>
                     <li class="">
                         <a href="{{ route('inventory.index') }}"
                             class="{{ Route::currentRouteName() == 'inventory.index' ? 'active' : '' }}"><i
                                 class="fe fe-box"></i> <span> Inventory List</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Client Management')
+                @if($canView('Client Management'))
                     <li class="menu-title "><span>Client Management</span></li>
                     <li class="">
                         <a href="{{ route('clients.index') }}"
                             class="{{ Route::currentRouteName() == 'clients.index' ? 'active' : '' }}"><i
                                 class="fe fe-users"></i> <span> Clients List</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Cost Management')
+                @if($canView('Cost Management'))
                     <li class="menu-title "><span>Cost Management</span></li>
                     <li class="">
                         <a href="{{ route('cost-categories.index') }}"
@@ -221,9 +154,9 @@
                             class="{{ Route::currentRouteName() == 'cost-categories.create' ? 'active' : '' }}"><i
                                 class="fe fe-plus-circle"></i> <span>Add Cost-Category</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Employee Management')
+                @if($canView('Employee Management'))
                     <li class="menu-title "><span>Employee Management</span></li>
                     <li class="">
                         <a href="{{ route('employee.tada.index') }}"
@@ -233,9 +166,9 @@
                             class="{{ Route::currentRouteName() == 'employee.tada.create' ? 'active' : '' }}"><i
                                 class="fe fe-upload"></i> <span>Submit TA/DA</span></a>
                     </li>
-                @endcan
+                @endif
 
-                @can('Project Management')
+                @if($canView('Project Management'))
                     <li class="menu-title "><span>Project Management</span></li>
                     <li class="">
                         <a href="{{ route('projects.index') }}"
@@ -249,13 +182,10 @@
                             class="{{ Route::currentRouteName() == 'project-costs.index' ? 'active' : '' }}">
                             <i class="fe fe-dollar-sign"></i> <span>Projects Cost List</span>
                         </a>
-                        {{-- <a href="{{ route('employee.tada.create') }}"
-                            class="{{ Route::currentRouteName() == 'employee.tada.create' ? 'active' : '' }}"><i
-                                class="fe fe-package"></i> <span>Submit TA/DA</span></a> --}}
                     </li>
-                @endcan
+                @endif
 
-                @can('Accounts Management')
+                @if($canView('Accounts Management'))
                     <li class="menu-title"><span>Accounts Management</span></li>
                     <li>
                         <a href="{{ route('expense-categories.index') }}"
@@ -264,9 +194,6 @@
                         <a href="{{ route('dailyExpenses.index') }}"
                             class="{{ Route::currentRouteName() == 'dailyExpenses.index' ? 'active' : '' }}"><i
                                 class="fe fe-list"></i> <span>Expense List</span></a>
-                        {{-- <a href="{{ route('employees.create') }}"
-                            class="{{ Route::currentRouteName() == 'employees.create' ? 'active' : '' }}"><i
-                                class="fe fe-plus-circle"></i> <span>Add Employee</span></a> --}}
                         <a href="{{ route('employees.index') }}"
                             class="{{ Route::currentRouteName() == 'employees.index' ? 'active' : '' }}"><i
                                 class="fe fe-users"></i> <span>Employee List</span></a>
@@ -276,15 +203,13 @@
                         <a href="{{ route('salary.index') }}"
                             class="{{ Route::currentRouteName() == 'salary.index' ? 'active' : '' }}"><i
                                 class="fe fe-dollar-sign"></i> <span>Salary Manage</span></a>
-
                         <a href="{{ route('bank-details.index') }}"
                             class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-layers"></i>
                             <span>Bank Details</span></a>
-
                     </li>
-                @endcan
+                @endif
 
-                @can('Report Management')
+                @if($canView('Report Management'))
                     <li class="menu-title "><span>Report Management</span></li>
                     <li class="">
                         <a href="{{ route('purchase.report') }}"
@@ -300,56 +225,10 @@
                         <a href="{{ route('revenues.index') }}"
                             class="{{ Route::currentRouteName() == 'revenues.index' ? 'active' : '' }}"><i
                                 class="fe fe-bar-chart-2"></i> <span> Revenue Report</span></a>
-                        </a>
                     </li>
-                @endcan
-                {{--
-                <li class="menu-title"><span>Daily Sales</span></li>
-                <li>
-                    <a href="{{ route('dailySales.create') }}"
-                        class="{{ Route::currentRouteName() == 'dailySales.create' ? 'active' : '' }}"><i
-                            class="fe fe-plus-circle"></i> <span> Add Daily Sales</span></a>
-                    <a href="{{ route('dailySales.index') }}"
-                        class="{{ Route::currentRouteName() == 'dailySales.index' ? 'active' : '' }}"><i
-                            class="fe fe-list"></i> <span>Daily Sales List</span></a>
-                    <a href="{{ route('salesTarget.create') }}"
-                        class="{{ Route::currentRouteName() == 'salesTarget.create' ? 'active' : '' }}"><i
-                            class="fe fe-plus-circle"></i> <span> Add Sales Target</span></a>
-                    <a href="{{ route('salesTarget.index') }}"
-                        class="{{ Route::currentRouteName() == 'salesTarget.index' ? 'active' : '' }}"><i
-                            class="fe fe-list"></i> <span>Sales Target List</span></a>
-                </li>
+                @endif
 
-                <li class="menu-title"><span>Daily Expenses</span></li>
-                <li>
-                    <a href="{{ route('dailyExpenses.create') }}"
-                        class="{{ Route::currentRouteName() == 'dailyExpenses.create' ? 'active' : '' }}"><i
-                            class="fe fe-plus-circle"></i> <span> Add Daily Expense</span></a>
-                    <a href="{{ route('dailyExpenses.index') }}"
-                        class="{{ Route::currentRouteName() == 'dailyExpenses.index' ? 'active' : '' }}"><i
-                            class="fe fe-list"></i> <span>Daily Expense List</span></a>
-                </li>
-                <li class="menu-title"><span>All Reports</span></li>
-                <li>
-                    <a href="{{ route('service.payments') }}"
-                        class="{{ Route::currentRouteName() == 'service.payments' ? 'active' : '' }}"><i
-                            class="fe fe-credit-card"></i> <span>Service Payment Report</span></a>
-                    <a href="{{ route('sales.payments') }}"
-                        class="{{ Route::currentRouteName() == 'sales.payments' ? 'active' : '' }}"><i
-                            class="fe fe-credit-card"></i> <span>Sales Payment Report</span></a>
-                </li>
-                <li class="menu-title"><span>Employee Management</span></li> --}}
-                {{-- <li>
-                    <a href="{{ route('staff.index') }}"
-                        class="{{ Route::currentRouteName() == 'staff.index' ? 'active' : '' }}"><i
-                            class="fe fe-user"></i> <span> Employee List</span></a>
-                </li>
-                <li>
-                    <a href="{{ route('attendance.index') }}"
-                        class="{{ Route::currentRouteName() == 'attendance.index' ? 'active' : '' }}"><i
-                            class="fe fe-user"></i> <span> Attendance</span></a>
-                </li> --}}
-                @can('Administration')
+                @if($canView('Administration'))
                     <li class="menu-title"><span>Authorization</span></li>
                     <li>
                         <a href="{{ route('permission.index') }}"
@@ -366,12 +245,7 @@
                             class="{{ Route::currentRouteName() == 'users.index' ? 'active' : '' }}"><i
                                 class="fe fe-user"></i> <span> Users</span></a>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('users.pin') }}"
-                            class="{{ Route::currentRouteName() == 'users.pin' ? 'active' : '' }}"><i
-                                class="fe fe-lock"></i> <span> PIN Number</span></a>
-                    </li> --}}
-                @endcan
+                @endif
             </ul>
         </div>
     </div>
