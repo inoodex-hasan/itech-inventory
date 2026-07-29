@@ -11,19 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activity_logs', function (Blueprint $table) {
-            $table->id();
-            $table->string('log_name')->nullable()->default('default');
-            $table->string('description');
-            $table->nullableMorphs('subject'); // subject_type, subject_id
-            $table->nullableMorphs('causer');  // causer_type, causer_id
-            $table->json('properties')->nullable();
-            $table->string('event')->nullable(); // created, updated, deleted
-            $table->timestamps();
-
-            $table->index(['subject_type', 'subject_id']);
-            $table->index(['causer_type', 'causer_id']);
-        });
+        if (!Schema::hasTable('activity_logs')) {
+            Schema::create('activity_logs', function (Blueprint $table) {
+                $table->id();
+                $table->string('log_name')->nullable()->default('default');
+                $table->string('description');
+                $table->nullableMorphs('subject'); // subject_type, subject_id
+                $table->nullableMorphs('causer');  // causer_type, causer_id
+                $table->json('properties')->nullable();
+                $table->string('event')->nullable(); // created, updated, deleted
+                $table->timestamps();
+            });
+        }
     }
 
     /**
