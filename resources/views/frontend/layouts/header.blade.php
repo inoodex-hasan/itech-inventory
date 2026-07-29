@@ -27,17 +27,23 @@
         </div>
     </div>
     <!-- Sidebar Toggle -->
-    @auth
-        <a href="javascript:void(0);" id="toggle_btn">
-            <span class="toggle-bars">
-                <span class="bar-icons"></span>
-                <span class="bar-icons"></span>
-                <span class="bar-icons"></span>
-                <span class="bar-icons"></span>
-            </span>
-        </a>
-        <!-- /Sidebar Toggle -->
+    <a href="javascript:void(0);" id="toggle_btn">
+        <span class="toggle-bars">
+            <span class="bar-icons"></span>
+            <span class="bar-icons"></span>
+            <span class="bar-icons"></span>
+            <span class="bar-icons"></span>
+        </span>
+    </a>
+    <!-- /Sidebar Toggle -->
 
+    <!-- Mobile Menu Toggle -->
+    <a class="mobile_btn" id="mobile_btn">
+        <i class="fas fa-bars"></i>
+    </a>
+    <!-- /Mobile Menu Toggle -->
+
+    @auth
         <!-- Search -->
         <div class="top-nav-search d-none">
             <form>
@@ -47,12 +53,6 @@
             </form>
         </div>
         <!-- /Search -->
-
-        <!-- Mobile Menu Toggle -->
-        <a class="mobile_btn" id="mobile_btn">
-            <i class="fas fa-bars"></i>
-        </a>
-        <!-- /Mobile Menu Toggle -->
 
         <!-- Header Menu -->
         <ul class="nav nav-tabs user-menu">
