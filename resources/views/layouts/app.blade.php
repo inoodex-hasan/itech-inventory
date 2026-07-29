@@ -9,11 +9,8 @@
 		<div class="main-wrapper">
 		
 			@include('frontend.layouts.header')
+			@include('frontend.layouts.sidebar')
 			
-			@auth
-				
-            @include('frontend.layouts.sidebar')
-			@endauth
 			<!-- Page Wrapper -->
 			<div class="page-wrapper">
 				@yield('content')
@@ -23,9 +20,7 @@
 		</div>
 		<!-- /Main Wrapper -->
 
-		@auth
         @include('frontend.layouts.right_sidebar')
-		@endauth
 
 		<!-- jQuery -->
 		<script src="{{asset('assets')}}/js/jquery-3.7.1.min.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
