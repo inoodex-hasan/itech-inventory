@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->boolean('is_serialized')->default(false)->after('warranty');
+            if (!Schema::hasColumn('products', 'is_serialized')) {
+                $table->boolean('is_serialized')->default(false)->after('warranty');
+            }
         });
     }
 

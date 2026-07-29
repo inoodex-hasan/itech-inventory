@@ -11,21 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sales', function (Blueprint $table) {
-            $table->softDeletes();
-        });
+        if (!Schema::hasColumn('sales', 'deleted_at')) {
+            Schema::table('sales', function (Blueprint $table) {
+                $table->softDeletes();
+            });
+        }
 
-        Schema::table('purchases', function (Blueprint $table) {
-            $table->softDeletes();
-        });
+        if (!Schema::hasColumn('purchases', 'deleted_at')) {
+            Schema::table('purchases', function (Blueprint $table) {
+                $table->softDeletes();
+            });
+        }
 
-        Schema::table('projects', function (Blueprint $table) {
-            $table->softDeletes();
-        });
+        if (!Schema::hasColumn('projects', 'deleted_at')) {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->softDeletes();
+            });
+        }
 
-        Schema::table('products', function (Blueprint $table) {
-            $table->softDeletes();
-        });
+        if (!Schema::hasColumn('products', 'deleted_at')) {
+            Schema::table('products', function (Blueprint $table) {
+                $table->softDeletes();
+            });
+        }
     }
 
     /**
