@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Validator;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use Carbon\Carbon;
 use App\Models\Sale;
 use App\Models\Service;
@@ -28,7 +29,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\Admin\ProductOptionTopping;
 use Illuminate\Support\Facades\Storage;
 
-class ProductContoller extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -89,7 +90,7 @@ class ProductContoller extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
 {
     $validated = $request->validate([
         'brand_id' => 'required|exists:brands,id',
@@ -157,7 +158,7 @@ class ProductContoller extends Controller
     }
 
    
-public function update(Request $request, Product $product)
+public function update(UpdateProductRequest $request, Product $product)
 {
     $validated = $request->validate([
         'brand_id' => 'required|exists:brands,id',

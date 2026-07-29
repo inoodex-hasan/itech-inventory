@@ -8,11 +8,15 @@ use App\Models\Purchase;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StorePurchaseRequest;
+use App\Services\PurchaseService;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PurchaseController extends Controller
 {
+    public function __construct(private PurchaseService $purchaseService) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -67,81 +71,23 @@ class PurchaseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePurchaseRequest $request)
     {
-        $request->validate([
-            'product_id'     => 'required|exists:products,id',
-            'quantity'       => 'required|numeric|min:1',
-            'unit_price'     => 'required|numeric|min:0',
-            'sub_price'      => 'nullable|numeric',
-            'total_price'    => 'required|numeric|min:0',
-            'payment'        => 'required|numeric|min:0',
-            'due'            => 'required|numeric|min:0',
-            'vendor_id'      => 'required|exists:vendors,id',
-            'serial_numbers' => 'nullable|array',
-            'serial_bulk'    => 'nullable|string',
-        ]);
+        try {
+            $this->purchaseService->createPurchase($request->validated());
 
-        // Create purchase
-        $purchase = Purchase::create([
-            'product_id'  => $request->product_id,
-            'quantity'    => $request->quantity,
-            'unit_price'  => $request->unit_price,
-            'sub_price'   => $request->sub_price ?? ($request->quantity * $request->unit_price),
-            'total_price' => $request->total_price,
-            'payment'     => $request->payment,
-            'due'         => $request->due,
-            'vendor_id'   => $request->vendor_id,
-            'created_by'  => Auth::id(),
-        ]);
+            return redirect()->back()
+                ->with('success', 'Purchase created and inventory updated successfully.');
 
-        // Handle Serial Numbers
-        $product = Product::find($request->product_id);
-        if ($product && $product->is_serialized) {
-            $serials = [];
-
-            // From individual inputs
-            if ($request->filled('serial_numbers')) {
-                $serials = array_merge($serials, $request->serial_numbers);
-            }
-
-            // From bulk textarea
-            if ($request->filled('serial_bulk')) {
-                // Split by newline or comma
-                $bulkSerials = preg_split('/[\n,]+/', $request->serial_bulk);
-                $serials = array_merge($serials, array_map('trim', $bulkSerials));
-            }
-
-            // Filter out empty values and limit to quantity
-            $serials = array_filter($serials);
-            $serials = array_slice($serials, 0, $request->quantity);
-
-            foreach ($serials as $serial) {
-                \App\Models\ProductSerial::create([
-                    'product_id'    => $product->id,
-                    'purchase_id'   => $purchase->id,
-                    'serial_number' => $serial,
-                    'status'        => 'available',
-                ]);
-            }
+        } catch (\RuntimeException $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'An unexpected error occurred. Please try again.')
+                ->withInput();
         }
-
-        // Increment inventory quantity
-        $inventory = Inventory::where('product_id', $request->product_id)->first();
-
-        if ($inventory) {
-            $inventory->current_stock += $request->quantity;
-            $inventory->save();
-        } else {
-            $newInventory  = new Inventory();
-            $newInventory->product_id = $request->product_id;
-            $newInventory->current_stock = $request->quantity;
-            $newInventory->opening_stock = $request->quantity;
-            $newInventory->notes = 'Opening stock entry';
-            $newInventory->save();
-        }
-
-        return redirect()->back()->with('success', 'Purchase created and inventory updated successfully.');
     }
 
 
