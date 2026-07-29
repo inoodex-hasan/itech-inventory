@@ -11,7 +11,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Mpdf\Mpdf;
 
 class QuotationController extends Controller
 {
@@ -430,29 +429,9 @@ public function reportPdf(Request $request)
 
     $quotations = $query->latest()->get();
 
-    $html = view('pdf.quotations-report', compact('quotations', 'request'))->render();
+    $pdf = Pdf::loadView('pdf.quotations-report', compact('quotations', 'request'))
+        ->setPaper('A4', 'portrait');
 
-    $tempDir = storage_path('app/mpdf-temp');
-    if (!is_dir($tempDir)) {
-        @mkdir($tempDir, 0775, true);
-    }
-
-    $mpdf = new Mpdf([
-        'mode' => 'utf-8',
-        'format' => 'A4',
-        'tempDir' => $tempDir,
-        'margin_top' => 10,
-        'margin_right' => 10,
-        'margin_bottom' => 10,
-        'margin_left' => 10,
-    ]);
-
-    $mpdf->WriteHTML($html);
-    $pdfContent = $mpdf->Output('quotations-report.pdf', 'S');
-
-    return response($pdfContent, 200, [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'attachment; filename="quotations-report.pdf"',
-    ]);
+    return $pdf->download('quotations-report.pdf');
 }
 }

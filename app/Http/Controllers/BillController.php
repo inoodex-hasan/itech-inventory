@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\{BankDetail, Bill, BillItem, Client, CompanyDetail, Customer, Project, Purchase, Sale, Vendor};
 use Barryvdh\DomPDF\Facade\Pdf;
-use Mpdf\Mpdf;
 
 class BillController extends Controller
 {
@@ -729,30 +728,10 @@ public function reportPdf(Request $request)
 
     $bills = $query->latest()->get();
 
-    $html = view('pdf.bills-report', compact('bills', 'request'))->render();
+    $pdf = Pdf::loadView('pdf.bills-report', compact('bills', 'request'))
+        ->setPaper('A4', 'portrait');
 
-    $tempDir = storage_path('app/mpdf-temp');
-    if (!is_dir($tempDir)) {
-        @mkdir($tempDir, 0775, true);
-    }
-
-    $mpdf = new Mpdf([
-        'mode' => 'utf-8',
-        'format' => 'A4',
-        'tempDir' => $tempDir,
-        'margin_top' => 10,
-        'margin_right' => 10,
-        'margin_bottom' => 10,
-        'margin_left' => 10,
-    ]);
-
-    $mpdf->WriteHTML($html);
-    $pdfContent = $mpdf->Output('bills-report.pdf', 'S');
-
-    return response($pdfContent, 200, [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'attachment; filename="bills-report.pdf"',
-    ]);
+    return $pdf->download('bills-report.pdf');
 }
 
 public function destroy($id)
