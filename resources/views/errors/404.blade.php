@@ -1,11 +1,7 @@
-@extends('frontend.layouts.app')
-@section('content')
-<div class="mad-coming-soon with-overlay mb-5 mt-3" data-bg-image-src="{{ asset('frontend') }}/images/slider/Untitled-5.jpg" style="background-image: url({{ asset('frontend') }}/images/slider/Untitled-5.jpg;);">
-    <div class="mad-coming-soon-content">
-      <h1 class="mad-coming-soon-title">Coming Soon</h1>
-      <p class="mad-text-big content-element-6">Our website is under construction.</p>
-      <!--================ Countdown ================-->
-      <!--================ End of Countdown ================-->
-    </div>
-  </div>
-@endsection
+@extends('errors.layout')
+
+@section('title', 'Page Not Found - iTech Inventory')
+@section('code', '404')
+@section('badge', 'Page Not Found')
+@section('heading', 'Lost in the Inventory?')
+@section('message', 'The page or resource you are looking for does not exist, has been moved, or is temporarily unavailable.')
