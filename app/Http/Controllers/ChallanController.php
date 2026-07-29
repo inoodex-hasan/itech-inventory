@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Mpdf\Mpdf;
 
 class ChallanController extends Controller
 {
@@ -316,30 +315,10 @@ public function reportPdf(Request $request)
 
     $challans = $query->latest()->get();
 
-    $html = view('pdf.challans-report', compact('challans', 'request'))->render();
+    $pdf = Pdf::loadView('pdf.challans-report', compact('challans', 'request'))
+        ->setPaper('A4', 'portrait');
 
-    $tempDir = storage_path('app/mpdf-temp');
-    if (!is_dir($tempDir)) {
-        @mkdir($tempDir, 0775, true);
-    }
-
-    $mpdf = new Mpdf([
-        'mode' => 'utf-8',
-        'format' => 'A4',
-        'tempDir' => $tempDir,
-        'margin_top' => 10,
-        'margin_right' => 10,
-        'margin_bottom' => 10,
-        'margin_left' => 10,
-    ]);
-
-    $mpdf->WriteHTML($html);
-    $pdfContent = $mpdf->Output('challans-report.pdf', 'S');
-
-    return response($pdfContent, 200, [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'attachment; filename="challans-report.pdf"',
-    ]);
+    return $pdf->download('challans-report.pdf');
 }
 
 public function destroy($id)

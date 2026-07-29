@@ -12,8 +12,6 @@ use App\Http\Requests\UpdateSaleRequest;
 use App\Services\SaleService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use Mpdf\Mpdf;
-use Mpdf\MpdfException;
 use Twilio\Rest\Client;
 
 class SalesController extends Controller
@@ -326,32 +324,11 @@ public function store(StoreSaleRequest $request)
         $returns = $sales->returns->where('status', 'completed');
 
         try {
-            $html = view('frontend.pages.sales.invoice_pdf', compact('sales', 'items', 'customer', 'returns'))->render();
-            $tempDir = storage_path('app/mpdf-temp');
-            if (!is_dir($tempDir)) {
-                @mkdir($tempDir, 0775, true);
-            }
+            $pdf = Pdf::loadView('frontend.pages.sales.invoice_pdf', compact('sales', 'items', 'customer', 'returns'))
+                ->setPaper('A4', 'portrait');
 
-            $mpdf = new Mpdf([
-                'mode' => 'utf-8',
-                'format' => 'A4',
-                'tempDir' => $tempDir,
-                'margin_top' => 10,
-                'margin_right' => 10,
-                'margin_bottom' => 10,
-                'margin_left' => 10,
-            ]);
-
-            $mpdf->WriteHTML($html);
-
-            $fileName = ($sales->order_no ?? $sales->id) . '.pdf';
-            $pdfContent = $mpdf->Output($fileName, 'S');
-
-            return response($pdfContent, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
-            ]);
-        } catch (MpdfException $e) {
+            return $pdf->download(($sales->order_no ?? $sales->id) . '.pdf');
+        } catch (\Exception $e) {
             Log::error('Sales invoice PDF generation failed: ' . $e->getMessage(), [
                 'sale_id' => $id,
             ]);
@@ -485,30 +462,10 @@ public function store(StoreSaleRequest $request)
 
         $salesReport = $salesQuery->orderBy('sales.created_at', 'desc')->get();
 
-        $html = view('frontend.pages.report.sales.pdf', compact('salesReport', 'request'))->render();
+        $pdf = Pdf::loadView('frontend.pages.report.sales.pdf', compact('salesReport', 'request'))
+            ->setPaper('A4', 'portrait');
 
-        $tempDir = storage_path('app/mpdf-temp');
-        if (!is_dir($tempDir)) {
-            @mkdir($tempDir, 0775, true);
-        }
-
-        $mpdf = new Mpdf([
-            'mode' => 'utf-8',
-            'format' => 'A4',
-            'tempDir' => $tempDir,
-            'margin_top' => 10,
-            'margin_right' => 10,
-            'margin_bottom' => 10,
-            'margin_left' => 10,
-        ]);
-
-        $mpdf->WriteHTML($html);
-        $pdfContent = $mpdf->Output('sales-report.pdf', 'S');
-
-        return response($pdfContent, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="sales-report.pdf"',
-        ]);
+        return $pdf->download('sales-report.pdf');
     }
 
     public function getSaleDetails($id)
