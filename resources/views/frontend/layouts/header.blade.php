@@ -221,6 +221,12 @@
         </ul>
 
         <!-- /Header Menu -->
+    @else
+        <ul class="nav nav-tabs user-menu">
+            <li class="nav-item">
+                <a href="{{ route('login') }}" class="btn btn-primary btn-sm my-auto px-3 py-2 fw-semibold">Log In</a>
+            </li>
+        </ul>
     @endauth
 </div>
 <!-- /Header -->

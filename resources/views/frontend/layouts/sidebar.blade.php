@@ -106,22 +106,22 @@
                     <li class="menu-title"><span>Payment Management</span></li>
                     <li>
                         <a href="{{ route('due-payments.index') }}"
-                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-dollar-sign"></i>
+                            class="{{ request()->routeIs('due-payments.*') ? 'active' : '' }}"><i class="fe fe-dollar-sign"></i>
                             <span>Due Payment</span></a>
                     </li>
                     <li>
                         <a href="{{ route('bills.index') }}"
-                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-file-text"></i>
+                            class="{{ request()->routeIs('bills.*') ? 'active' : '' }}"><i class="fe fe-file-text"></i>
                             <span>Bill Generate</span></a>
                     </li>
                     <li>
                         <a href="{{ route('challans.index') }}"
-                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-truck"></i>
+                            class="{{ request()->routeIs('challans.*') ? 'active' : '' }}"><i class="fe fe-truck"></i>
                             <span>Challan Generate</span></a>
                     </li>
                     <li>
                         <a href="{{ route('quotations.index') }}"
-                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-clipboard"></i>
+                            class="{{ request()->routeIs('quotations.*') ? 'active' : '' }}"><i class="fe fe-clipboard"></i>
                             <span>Quotation Generate</span></a>
                     </li>
                 @endif
@@ -204,7 +204,7 @@
                             class="{{ Route::currentRouteName() == 'salary.index' ? 'active' : '' }}"><i
                                 class="fe fe-dollar-sign"></i> <span>Salary Manage</span></a>
                         <a href="{{ route('bank-details.index') }}"
-                            class="{{ Route::currentRouteName() == '' ? 'active' : '' }}"><i class="fe fe-layers"></i>
+                            class="{{ request()->routeIs('bank-details.*') ? 'active' : '' }}"><i class="fe fe-layers"></i>
                             <span>Bank Details</span></a>
                     </li>
                 @endif
