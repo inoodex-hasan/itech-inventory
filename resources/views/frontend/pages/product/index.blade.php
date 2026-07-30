@@ -1,534 +1,450 @@
 @extends('frontend.layouts.app')
-@section('content')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <style>
-        .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
-            border-color: transparent transparent #888 transparent;
-            border-width: 0 !important;
-        }
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow b {
-            border-color: #888 transparent transparent transparent;
-            border-style: solid;
-            border-width: 0 !important;
-            height: 0;
-            left: 50%;
-            margin-left: -4px;
-            margin-top: -2px;
-            position: absolute;
-            top: 50%;
-            width: 0;
-
-            @media (min-width: 992px) {
-    .table-responsive {
-        overflow-x: visible;
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
     }
-}
-        }
-    </style>
-    <div class="content container-fluid">
-        <div class="page-header">
-            <div class="content-page-header">
-                <h5>Products</h5>
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+    }
+    .table-custom tbody tr {
+        transition: background-color 0.15s ease;
+    }
+    .table-custom tbody tr:hover {
+        background-color: #fcfbff !important;
+    }
+    .badge-soft-success {
+        background-color: rgba(25, 135, 84, 0.12) !important;
+        color: #198754 !important;
+        font-weight: 600;
+    }
+    .badge-soft-danger {
+        background-color: rgba(220, 53, 69, 0.12) !important;
+        color: #dc3545 !important;
+        font-weight: 600;
+    }
+    .badge-soft-info {
+        background-color: rgba(13, 202, 240, 0.12) !important;
+        color: #0dcaf0 !important;
+        font-weight: 600;
+    }
+    .search-box-custom input {
+        border-radius: 8px;
+    }
+    .btn-action-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dbe2ea !important;
+        border-radius: 8px !important;
+        background-color: #ffffff !important;
+        color: #555e6d !important;
+        padding: 0;
+        transition: all 0.2s ease;
+    }
+    .btn-action-icon:hover {
+        background-color: #7638ff !important;
+        color: #ffffff !important;
+        border-color: #7638ff !important;
+    }
 
-                <div class="list-btn">
-                    <ul class="filter-list">
-                        <li>
-                            <a class="btn btn-primary" href="javascript:void(0)" data-bs-toggle="modal"
-                                data-bs-target="#add-payment-modal">
-                                <i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Add Product </a>
-                        </li>
-                    </ul>
+    .table-custom th, .table-custom td {
+        white-space: nowrap;
+    }
+</style>
+@endpush
 
-                    <div id="add-payment-modal" class="modal fade" tabindex="-1" style="display: none;" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="add-payment-modal">Add Product</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    {{-- <div class="text-center mt-2 mb-4">
-                                        <div class="auth-logo">
-                                            <a href="{{ route('index') }}" class="logo logo-dark">
-                                                <span class="logo-lg">
-                                                    <img src="{{asset('assets/img/logo.png')}}" alt="Logo" height="42">
-                                                </span>
-                                            </a>
-                                        </div>
-                                    </div> --}}
+@section('content')
+<div class="content container-fluid">
 
-                                    <form class="px-3" method="POST" action="{{ route('products.store') }}"
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        <!-- Input for Product Name -->
-                                        <div class="mb-3">
-                                            <label for="brand_id" class="form-label">Brand Name <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-control select2" name="brand_id" id="brand_id" required>
-                                                <option value="">Select Brand</option>
-                                                @foreach ($brands as $brand)
-                                                    <option {{ $brand->id == old('brand_id') ? 'selected' : '' }}
-                                                        value="{{ $brand->id }}">{{ $brand->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <!-- Category Dropdown -->
-                                        <div class="mb-3">
-                                            <label for="category_id" class="form-label">Category</label>
-                                            <select class="form-control select2" name="category_id" id="category_id">
-                                                <option value="">Select Category</option>
-                                                @foreach ($categories as $category)
-                                                    <option {{ $category->id == old('category_id') ? 'selected' : '' }}
-                                                        value="{{ $category->id }}">{{ $category->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="name" class="form-label">Product Name <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="name" id="name" class="form-control"
-                                                placeholder="Enter product name" value="{{ old('name') }}" required>
-                                        </div>
-                                        <!-- Product Model Name Input -->
-                                        <div class="mb-3">
-                                            <label for="model_name" class="form-label">Product Model Name <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="model_name" id="model_name" class="form-control"
-                                                placeholder="Enter product model name" value="{{ old('model_name') }}"
-                                                required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="photos" class="form-label">Product Photos</label>
-                                            <input type="file" name="photos[]" id="photos" class="form-control" multiple
-                                                accept="image/*">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="warranty" class="form-label">Warranty (Days)</label>
-                                            <input type="text" name="warranty" id="warranty" class="form-control"
-                                                placeholder="Enter how many days" value="{{ old('warranty') }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="status" class="form-label">Status</label>
-                                            <select class="form-select mb-3" name="status" required>
-                                                <option selected="" value="1">Active</option>
-                                                <option value="0">InActive</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" name="is_serialized"
-                                                    id="is_serialized" value="1">
-                                                <label class="form-check-label" for="is_serialized">Serialized Product
-                                                    (Track by Serial Number)</label>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                        </div>
-                                    </form>
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Product Catalog</h4>
+                <p class="text-muted small mb-0">Manage inventory items, brand models, tracking types, and catalog status</p>
+            </div>
+            <div>
+                <a class="btn btn-primary px-4 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#add-payment-modal">
+                    <i class="fe fe-plus-circle fs-6"></i>
+                    <span>Add New Product</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Header -->
+
+    <!-- Add Product Modal -->
+    <div id="add-payment-modal" class="modal fade" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header bg-light py-3 border-bottom">
+                    <h5 class="modal-title fw-bold text-dark">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="brand_id" class="form-label fw-semibold small text-secondary">Brand Name <span class="text-danger">*</span></label>
+                                <select class="form-select select2" name="brand_id" id="brand_id" required>
+                                    <option value="">Select Brand</option>
+                                    @foreach ($brands as $brand)
+                                        <option {{ $brand->id == old('brand_id') ? 'selected' : '' }} value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="category_id" class="form-label fw-semibold small text-secondary">Category</label>
+                                <select class="form-select select2" name="category_id" id="category_id">
+                                    <option value="">Select Category</option>
+                                    @foreach ($categories as $category)
+                                        <option {{ $category->id == old('category_id') ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold small text-secondary">Product Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="Enter product name" value="{{ old('name') }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="model_name" class="form-label fw-semibold small text-secondary">Product Model Name <span class="text-danger">*</span></label>
+                                <input type="text" name="model_name" id="model_name" class="form-control" placeholder="Enter product model name" value="{{ old('model_name') }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="warranty" class="form-label fw-semibold small text-secondary">Warranty (Days)</label>
+                                <input type="text" name="warranty" id="warranty" class="form-control" placeholder="e.g. 365" value="{{ old('warranty') }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status" class="form-label fw-semibold small text-secondary">Status <span class="text-danger">*</span></label>
+                                <select class="form-select" name="status" required>
+                                    <option value="1" selected>Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="photos" class="form-label fw-semibold small text-secondary">Product Photos</label>
+                                <input type="file" name="photos[]" id="photos" class="form-control" multiple accept="image/*">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch pt-2">
+                                    <input class="form-check-input" type="checkbox" name="is_serialized" id="is_serialized" value="1">
+                                    <label class="form-check-label fw-semibold text-dark" for="is_serialized">Serialized Product (Track individual items by Serial Number)</label>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!-- /Page Header -->
-
-        <!-- Filter Section -->
-        <div class="row mb-3">
-            <div class="col-sm-12">
-                <div class="card shadow-sm border-0 rounded-3">
-                    <div class="card-body p-3">
-                        <form action="{{ route('products.index') }}" method="GET">
-                            <div class="row align-items-end">
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="search" class="form-label">Search</label>
-                                        <input type="text" class="form-control" id="search" name="search"
-                                            value="{{ request('search') }}" placeholder="Search by name, model...">
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="mb-3">
-                                        <label for="brand_id" class="form-label">Brand</label>
-                                        <select class="form-select select2" id="brand_id" name="brand_id">
-                                            <option value="">All Brands</option>
-                                            @foreach ($brands as $brand)
-                                                <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
-                                                    {{ $brand->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="mb-3">
-                                        <label for="category_id" class="form-label">Category</label>
-                                        <select class="form-select select2" id="category_id" name="category_id">
-                                            <option value="">All Categories</option>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                                    {{ $category->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="mb-3">
-                                        <label for="status" class="form-label">Status</label>
-                                        <select class="form-select" id="status" name="status">
-                                            <option value="">All Status</option>
-                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Active
-                                            </option>
-                                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>
-                                                Inactive</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3 d-flex gap-2">
-                                        <button type="submit" class="btn btn-primary flex-fill">
-                                            <i class="fe fe-filter me-1"></i>Filter
-                                        </button>
-                                        <a href="{{ route('products.index') }}" class="btn btn-secondary">
-                                            <i class="fe fe-refresh-ccw"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Search Filter -->
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card-table">
-                    <div class="card-body">
-                     <div class="table-responsive-md">
-                            <table id="productTable" class="table table-center table-hover">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th style="width: 5%">#</th>
-                                        <th class="d-none d-md-table-cell" style="width: 12%">Brand Name</th>
-                                        <th class="d-none d-xl-table-cell" style="width: 10%">Category</th>
-                                        <th style="width: 35%">Product Name</th>
-                                        <th class="d-none d-lg-table-cell" style="width: 15%">Model</th>
-                                        <th style="width: 8%">Type</th>
-                                        {{-- <th>Photos</th> --}}
-                                        <!-- <th style="width: 8%">Warranty</th> -->
-                                        <th style="width: 7%">Status</th>
-                                        <th class="no-sort">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($products as $product)
-                                        <tr>
-                                            <td>{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
-                                            </td>
-                                            <td class="d-none d-md-table-cell">{{ $product->brand->name ?? 'N/A' }}</td>
-                                            <td class="d-none d-xl-table-cell text-muted small">{{ $product->category->name ?? 'N/A' }}</td>
-                                            <td title="{{ $product->name }}" class="text-wrap" style="min-width: 200px; word-break: break-word;">
-                                                {{ $product->name }}
-                                            </td>
-                                            <td class="d-none d-lg-table-cell text-wrap" style="word-break: break-word;">{{ $product->model }}</td>
-                                            <td>
-                                                @if($product->is_serialized)
-                                                    <span class="badge bg-info">Serial</span>
-                                                @else
-                                                    <span class="badge bg-secondary">Non-Serial</span>
-                                                @endif
-                                            </td>
-                                            {{-- <td>
-                                                @if ($product->photos && count($product->photos) > 0)
-                                                <div class="d-flex gap-1 align-items-center">
-                                                    @foreach ($product->photos as $index => $photo)
-                                                    @if ($index < 2) <img src="{{ asset('storage/' . $photo) }}"
-                                                        alt="Product Photo"
-                                                        style="height: 60px; width: 60px; object-fit: cover;"
-                                                        class="img-thumbnail rounded">
-                                                        @endif
-                                                        @endforeach
-
-                                                        @if (count($product->photos) > 2)
-                                                        <span class="badge bg-secondary ms-1">+{{ count($product->photos) - 2
-                                                            }}</span>
-                                                        @endif
-                                                </div>
-                                                @else
-                                                <span class="text-muted">No photos</span>
-                                                @endif
-                                            </td> --}}
-                                            <!-- <td>{{ $product->warranty ?? 'N/A' }}</td> -->
-                                            <td>
-                                                @if ($product->status == 1)
-                                                    <span class="badge bg-success">Active</span>
-                                                @else
-                                                    <span class="badge bg-danger">Inactive</span>
-                                                @endif
-                                            </td>
-                                            <td class="justify-content-center align-items-center">
-                                                <div class="dropdown">
-                                                    <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end shadow-sm rounded-3">
-                                                        <ul class="list-unstyled mb-0">
-                                                            <li>
-                                                                <a class="dropdown-item" href="javascript:void(0)"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#edit-product-modal{{ $product->id }}">
-                                                                    <i class="far fa-edit me-2"></i>Edit
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a class="dropdown-item text-danger" href="javascript:void(0)"
-                                                                    onclick="if(confirm('Are you sure to delete the product?')) { document.getElementById('serviceDelete{{ $product->id }}').submit(); }">
-                                                                    <i class="far fa-trash-alt me-2"></i>Delete
-                                                                </a>
-                                                                <form id="serviceDelete{{ $product->id }}"
-                                                                    action="{{ route('products.destroy', $product->id) }}"
-                                                                    method="POST" style="display:none;">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                </form>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </td>
-
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8" class="text-center py-4">
-                                                <i class="fe fe-inbox fa-3x text-muted mb-3 d-block"></i>
-                                                <span class="text-muted">No products found</span>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-
-                            @foreach ($products as $product)
-                                <div id="edit-product-modal{{ $product->id }}" class="modal fade" tabindex="-1"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="edit-product-modal{{ $product->id }}">Edit
-                                                    Product</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form class="px-3" method="POST"
-                                                    action="{{ route('products.update', $product->id) }}"
-                                                    enctype="multipart/form-data" id="edit-form-{{ $product->id }}">
-                                                    @csrf
-                                                    @method('PUT')
-
-                                                    <!-- Brand Selection -->
-                                                    <div class="mb-3">
-                                                        <label for="brand_id{{ $product->id }}" class="form-label">Brand Name
-                                                            <span class="text-danger">*</span></label>
-                                                        <select class="form-control select2" name="brand_id"
-                                                            id="brand_id{{ $product->id }}" required>
-                                                            <option value="">Select Brand</option>
-                                                            @foreach ($brands as $brand)
-                                                                <option {{ $brand->id == $product->brand_id ? 'selected' : '' }}
-                                                                    value="{{ $brand->id }}">{{ $brand->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-
-                                                    <!-- Category Selection -->
-                                                    <div class="mb-3">
-                                                        <label for="category_id{{ $product->id }}"
-                                                            class="form-label">Category</label>
-                                                        <select class="form-control select2" name="category_id"
-                                                            id="category_id{{ $product->id }}">
-                                                            <option value="">Select Category</option>
-                                                            @foreach ($categories as $category)
-                                                                <option {{ $category->id == $product->category_id ? 'selected' : '' }}
-                                                                    value="{{ $category->id }}">{{ $category->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-
-                                                    <!-- Product Name -->
-                                                    <div class="mb-3">
-                                                        <label for="name{{ $product->id }}" class="form-label">Product
-                                                            Name <span class="text-danger">*</span></label>
-                                                        <input type="text" name="name" id="name{{ $product->id }}"
-                                                            class="form-control" placeholder="Enter product name"
-                                                            value="{{ old('name', $product->name) }}" required>
-                                                    </div>
-
-                                                    <!-- Product Model Name -->
-                                                    <div class="mb-3">
-                                                        <label for="model_name{{ $product->id }}" class="form-label">Product
-                                                            Model Name <span class="text-danger">*</span></label>
-                                                        <input type="text" name="model_name" id="model_name{{ $product->id }}"
-                                                            class="form-control" placeholder="Enter product model name"
-                                                            value="{{ old('model_name', $product->model ?? '') }}" required>
-                                                    </div>
-
-                                                    <!-- Warranty -->
-                                                    <div class="mb-3">
-                                                        <label for="warranty{{ $product->id }}" class="form-label">Warranty
-                                                            (Days)</label>
-                                                        <input type="text" name="warranty" id="warranty{{ $product->id }}"
-                                                            class="form-control" placeholder="Enter how many days"
-                                                            value="{{ old('model_name', $product->warranty ?? '') }}">
-                                                    </div>
-
-                                                    <!-- Existing Photos with Delete Buttons -->
-                                                    @if ($product->photos && count($product->photos) > 0)
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Existing Photos</label>
-                                                            <div class="d-flex flex-wrap gap-2"
-                                                                id="photos-container-{{ $product->id }}">
-                                                                @foreach ($product->photos as $index => $photo)
-                                                                    <div class="position-relative photo-item" data-photo="{{ $photo }}">
-                                                                        <img src="{{ asset('storage/' . $photo) }}"
-                                                                            class="img-thumbnail"
-                                                                            style="height: 80px; width: 80px; object-fit: cover;">
-                                                                        <button type="button"
-                                                                            class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 delete-photo-btn"
-                                                                            data-product-id="{{ $product->id }}"
-                                                                            data-photo="{{ $photo }}"
-                                                                            style="width: 20px; height: 20px; padding: 0; border-radius: 50%;">
-                                                                            ×
-                                                                        </button>
-                                                                        <small class="d-block text-center">Photo
-                                                                            {{ $index + 1 }}</small>
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
-                                                            <input type="hidden" name="remaining_photos"
-                                                                id="remaining-photos-{{ $product->id }}"
-                                                                value="{{ json_encode($product->photos) }}">
-                                                        </div>
-                                                    @endif
-
-                                                    <!-- New Photos Upload -->
-                                                    <div class="mb-3">
-                                                        <label for="photos{{ $product->id }}" class="form-label">Add New
-                                                            Photos</label>
-                                                        <input type="file" name="photos[]" id="photos{{ $product->id }}"
-                                                            class="form-control" multiple accept="image/*">
-                                                        <div id="image-preview-{{ $product->id }}"
-                                                            class="mt-2 d-flex flex-wrap gap-2"></div>
-                                                    </div>
-
-                                                    <!-- Status -->
-                                                    <div class="mb-3">
-                                                        <label for="status{{ $product->id }}" class="form-label">Status</label>
-                                                        <select class="form-select mb-3" name="status"
-                                                            id="status{{ $product->id }}" required>
-                                                            <option value="1" {{ old('status', $product->status) == 1 ? 'selected' : '' }}>
-                                                                Active</option>
-                                                            <option value="0" {{ old('status', $product->status) == 0 ? 'selected' : '' }}>
-                                                                Inactive</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox" name="is_serialized"
-                                                                id="is_serialized{{ $product->id }}" value="1" {{ $product->is_serialized ? 'checked' : '' }}>
-                                                            <label class="form-check-label"
-                                                                for="is_serialized{{ $product->id }}">Serialized Product (Track
-                                                                by Serial Number)</label>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <button type="submit" class="btn btn-primary">Update</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-
+                        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                            <button type="button" class="btn btn-light px-4 rounded-3 text-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary px-4 rounded-3 shadow-sm">Save Product</button>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Pagination -->
-                <div class="d-flex justify-content-end mt-3">
-                    {{ $products->links('pagination::bootstrap-5') }}
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- /Add Product Modal -->
 
-    <!-- Add this single script at the bottom of your page -->
-    <script>
-        // Single event listener for all delete buttons
-        document.addEventListener('click', function (e) {
-            if (e.target.classList.contains('delete-photo-btn')) {
-                e.preventDefault();
+    <!-- Summary Stats Bar -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-primary-light text-primary rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-box fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Total Products</h6>
+                        <h4 class="mb-0 fw-bold text-dark">{{ number_format($products->count()) }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                if (confirm('Are you sure you want to delete this photo?')) {
-                    const photoItem = e.target.closest('.photo-item');
-                    const productId = e.target.getAttribute('data-product-id');
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-info-light text-info rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fas fa-barcode fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Serialized Items</h6>
+                        <h4 class="mb-0 fw-bold text-dark">
+                            {{ number_format($products->filter(fn($p) => $p->is_serialized)->count()) }}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    if (photoItem) {
-                        photoItem.remove();
-                        updateRemainingPhotos(productId);
-                    }
-                }
-            }
-        });
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-success-light text-success rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-check-circle fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Active Catalog</h6>
+                        <h4 class="mb-0 fw-bold text-dark">
+                            {{ number_format($products->filter(fn($p) => in_array($p->status, ['1', 1]))->count()) }}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        // Single event listener for all file inputs
-        document.addEventListener('change', function (e) {
-            if (e.target && e.target.matches('input[type="file"][name="photos[]"]')) {
-                const input = e.target;
-                const productId = input.id.replace('photos', '');
-                const preview = document.getElementById('image-preview-' + productId);
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-danger-light text-danger rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-x-circle fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Inactive Catalog</h6>
+                        <h4 class="mb-0 fw-bold text-dark">
+                            {{ number_format($products->filter(fn($p) => !in_array($p->status, ['1', 1]))->count()) }}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Summary Stats Bar -->
 
-                if (preview) {
-                    preview.innerHTML = '';
-                    Array.from(input.files).forEach(file => {
-                        const img = document.createElement('img');
-                        img.src = URL.createObjectURL(file);
-                        img.className = 'img-thumbnail';
-                        img.style.height = '80px';
-                        img.style.width = '80px';
-                        img.style.objectFit = 'cover';
-                        preview.appendChild(img);
-                    });
-                }
-            }
-        });
+    <!-- Products Table Card -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- Search & Filter Controls -->
+        <div class="card-header bg-white py-3 border-bottom border-light">
+            <form action="{{ route('products.index') }}" method="GET" id="productFilterForm">
+                <div class="row align-items-center g-3">
+                    <div class="col-12 col-md-4 col-lg-4">
+                        <div class="search-box-custom">
+                            <input type="text" name="search" class="form-control border-light-subtle" placeholder="Search by name, model..." value="{{ request('search') }}">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3 col-lg-3">
+                        <select name="brand_id" class="form-select border-light-subtle" onchange="document.getElementById('productFilterForm').submit()">
+                            <option value="">All Brands</option>
+                            @foreach ($brands as $brand)
+                                <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3 col-lg-3">
+                        <select name="category_id" class="form-select border-light-subtle" onchange="document.getElementById('productFilterForm').submit()">
+                            <option value="">All Categories</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-2 col-lg-2 text-md-end text-muted small">
+                        Showing <span class="fw-bold text-dark">{{ $products->count() }}</span> items
+                    </div>
+                </div>
+            </form>
+        </div>
 
-        function updateRemainingPhotos(productId) {
-            const container = document.getElementById('photos-container-' + productId);
-            const hiddenInput = document.getElementById('remaining-photos-' + productId);
+        <!-- Table Body -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-custom align-middle mb-0" id="productTable">
+                    <thead class="bg-light text-secondary fs-7 text-uppercase">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Product & Model</th>
+                            <th>Brand</th>
+                            <th>Category</th>
+                            <th>Tracking</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        @forelse ($products as $product)
+                            @php
+                                $isActive = in_array($product->status, ['1', 1]);
+                            @endphp
+                            <tr>
+                                <td class="ps-4 text-muted fw-semibold">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td>
+                                    <div>
+                                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#edit-product-modal{{ $product->id }}" class="fw-bold text-dark hover-primary mb-0 text-decoration-none d-block" title="{{ $product->name }}">
+                                            {{ Str::limit($product->name, 40) }}
+                                        </a>
+                                        <small class="text-muted fs-7">Model: {{ $product->model ?? 'N/A' }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-dark fs-7">
+                                        {{ $product->brand->name ?? 'N/A' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-secondary small">
+                                        {{ $product->category->name ?? 'N/A' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($product->is_serialized)
+                                        <span class="badge badge-soft-info px-3 py-1 rounded-pill fs-7">
+                                            <i class="fas fa-barcode me-1"></i> Serial
+                                        </span>
+                                    @else
+                                        <span class="badge bg-light text-secondary border px-3 py-1 rounded-pill fs-7">
+                                            Non-Serial
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($isActive)
+                                        <span class="badge badge-soft-success px-3 py-2 rounded-pill fs-7">
+                                            <i class="fe fe-check-circle me-1"></i> Active
+                                        </span>
+                                    @else
+                                        <span class="badge badge-soft-danger px-3 py-2 rounded-pill fs-7">
+                                            <i class="fe fe-x-circle me-1"></i> Inactive
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0)" class="btn-action-icon shadow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                                            <li>
+                                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#edit-product-modal{{ $product->id }}">
+                                                    <i class="fe fe-edit text-primary"></i>
+                                                    <span>Edit Product</span>
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider opacity-50"></li>
+                                            <li>
+                                                <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-danger" href="javascript:void(0)"
+                                                    onclick="if(confirm('Are you sure you want to delete this product?')) { document.getElementById('productDelete{{ $product->id }}').submit(); }">
+                                                    <i class="fe fe-trash-2 text-danger"></i>
+                                                    <span>Delete Product</span>
+                                                </a>
+                                                <form id="productDelete{{ $product->id }}" action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-none">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
 
-            if (container && hiddenInput) {
-                const remainingPhotos = [];
-                container.querySelectorAll('.photo-item').forEach(item => {
-                    remainingPhotos.push(item.getAttribute('data-photo'));
-                });
-                hiddenInput.value = JSON.stringify(remainingPhotos);
-            }
-        }
-    </script>
+                            <!-- Edit Product Modal -->
+                            <div id="edit-product-modal{{ $product->id }}" class="modal fade" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-content border-0 shadow-lg rounded-3">
+                                        <div class="modal-header bg-light py-3 border-bottom">
+                                            <h5 class="modal-title fw-bold text-dark">Edit Product Details</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body p-4 text-start">
+                                            <form method="POST" action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="row g-3 mb-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small text-secondary">Brand Name <span class="text-danger">*</span></label>
+                                                        <select class="form-select select2" name="brand_id" required>
+                                                            <option value="">Select Brand</option>
+                                                            @foreach ($brands as $brand)
+                                                                <option {{ $brand->id == $product->brand_id ? 'selected' : '' }} value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small text-secondary">Category</label>
+                                                        <select class="form-select select2" name="category_id">
+                                                            <option value="">Select Category</option>
+                                                            @foreach ($categories as $category)
+                                                                <option {{ $category->id == $product->category_id ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small text-secondary">Product Name <span class="text-danger">*</span></label>
+                                                        <input type="text" name="name" class="form-control" value="{{ old('name', $product->name) }}" required>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small text-secondary">Product Model Name <span class="text-danger">*</span></label>
+                                                        <input type="text" name="model_name" class="form-control" value="{{ old('model_name', $product->model) }}" required>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small text-secondary">Warranty (Days)</label>
+                                                        <input type="text" name="warranty" class="form-control" value="{{ old('warranty', $product->warranty) }}">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small text-secondary">Status <span class="text-danger">*</span></label>
+                                                        <select class="form-select" name="status" required>
+                                                            <option value="1" {{ $product->status == 1 ? 'selected' : '' }}>Active</option>
+                                                            <option value="0" {{ $product->status == 0 ? 'selected' : '' }}>Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="form-check form-switch pt-2">
+                                                            <input class="form-check-input" type="checkbox" name="is_serialized" id="is_serialized_{{ $product->id }}" value="1" {{ $product->is_serialized ? 'checked' : '' }}>
+                                                            <label class="form-check-label fw-semibold text-dark" for="is_serialized_{{ $product->id }}">Serialized Product (Track by Serial Number)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                                                    <button type="button" class="btn btn-light px-4 rounded-3 text-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary px-4 rounded-3 shadow-sm">Update Product</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Edit Product Modal -->
+                        @empty
+                            <tr id="emptyStateRow">
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center justify-content-center">
+                                        <div class="avatar avatar-xl bg-primary-light text-primary rounded-circle mb-3 d-flex align-items-center justify-content-center">
+                                            <i class="fe fe-box fs-1"></i>
+                                        </div>
+                                        <h5 class="fw-bold text-dark mb-1">No Products Found</h5>
+                                        <p class="text-muted small mb-3">Get started by creating your first product item</p>
+                                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#add-payment-modal" class="btn btn-primary btn-sm px-3 rounded-2">
+                                            Add Product
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.modal').on('shown.bs.modal', function () {
+            $(this).find('.select2').select2({
+                dropdownParent: $(this),
+                width: '100%'
+            });
+        });
+    });
+</script>
+@endpush

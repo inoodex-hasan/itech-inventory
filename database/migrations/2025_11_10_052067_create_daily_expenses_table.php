@@ -11,18 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daily_expenses', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->date('date')->nullable(false);
-            $table->foreignId('expense_category_id')->constrained('')->onDelete('cascade');
-            $table->decimal('amount', 15, 2)->nullable(false);
-            $table->enum('spend_method', ['cash', 'card', 'bank_transfer'])->nullable(false);
-            $table->text('remarks')->nullable();
-            $table->timestamps();
-
-        });
+        if (!Schema::hasTable('daily_expenses')) {
+            Schema::create('daily_expenses', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+                $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
+                $table->date('date')->nullable(false);
+                $table->foreignId('expense_category_id')->constrained('expense_categories')->onDelete('cascade');
+                $table->decimal('amount', 15, 2)->nullable(false);
+                $table->enum('spend_method', ['cash', 'card', 'bank_transfer'])->nullable(false);
+                $table->text('remarks')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

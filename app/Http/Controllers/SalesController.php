@@ -123,15 +123,6 @@ public function store(StoreSaleRequest $request)
     }
 }
 
-        // Log the error
-        \Log::error('Sale creation failed: ' . $e->getMessage());
-
-        return redirect()->route('sales.index')
-            ->with(['error' => 'Failed to create sale: ' . $e->getMessage()]);
-    }
-}
-
-   
     private function getPaymentStatus($advancedPayment, $payble)
     {
         if ($advancedPayment == 0) {

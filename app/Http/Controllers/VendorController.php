@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Service, User, Vendor};
+use App\Models\{Service, User, Vendor, Purchase};
 use App\Http\Controllers\Controller;
-use Input;
 use Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Barryvdh\DomPDF\PDF as DomPDFPDF;
 
 class VendorController extends Controller
 {
@@ -17,26 +15,9 @@ class VendorController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Vendor::query();
-
-        // Filter by search term
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%");
-            });
-        }
-
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $customers = $query->latest()->paginate(10)->withQueryString();
-        return view('frontend.pages.vendor.index', compact('customers'));
+        $vendors = Vendor::latest()->get();
+        $customers = $vendors; // Alias for compatibility
+        return view('frontend.pages.vendor.index', compact('vendors', 'customers'));
     }
 
     /**
@@ -52,11 +33,10 @@ class VendorController extends Controller
      */
     public function store(Request $request)
     {
-    
         $attributes = $request->all();
         $rules = [
             'name' => 'required',
-            'phone' => 'required|numeric|unique:customers,phone',
+            'phone' => 'required|numeric|unique:vendors,phone',
             'email' => 'nullable|email',
             'address' => 'required|string',
         ];
@@ -65,17 +45,15 @@ class VendorController extends Controller
             return redirect()->back()->with(['error' => getNotify(4), 'error_code' => 'edit'])->withErrors($validation)->withInput();
         }
 
-        $customer = new Vendor;
-        $customer->name = $request->name;
-        $customer->phone = $request->phone;
-        $customer->email = $request->email;
-        $customer->address = $request->address;
-        $customer->status = '1';
-        $customer->save();
-    
-        // return redirect()->back()->with(['success' => getNotify(1)]);
-        return redirect()->route('vendors.index')->with('success', 'Vendor added successfully.');
+        $vendor = new Vendor;
+        $vendor->name = $request->name;
+        $vendor->phone = $request->phone;
+        $vendor->email = $request->email;
+        $vendor->address = $request->address;
+        $vendor->status = '1';
+        $vendor->save();
 
+        return redirect()->route('vendors.index')->with('success', 'Vendor added successfully.');
     }
 
     /**
@@ -83,7 +61,10 @@ class VendorController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $vendor = Vendor::findOrFail($id);
+        $customer = $vendor; // Alias for compatibility
+        $purchases = Purchase::where('vendor_id', $id)->latest()->get();
+        return view('frontend.pages.vendor.show', compact('vendor', 'customer', 'purchases'));
     }
 
     /**
@@ -91,9 +72,9 @@ class VendorController extends Controller
      */
     public function edit(string $id)
     {
-        $customer = Vendor::findOrFail($id);
-        return view('frontend.pages.vendor.edit',compact('customer'));
-        
+        $vendor = Vendor::findOrFail($id);
+        $customer = $vendor; // Alias
+        return view('frontend.pages.vendor.edit', compact('vendor', 'customer'));
     }
 
     /**
@@ -104,7 +85,7 @@ class VendorController extends Controller
         $attributes = $request->all();
         $rules = [
             'name' => 'required',
-            'phone' => 'required|numeric|unique:customers,phone,'. $id,
+            'phone' => 'required|numeric|unique:vendors,phone,'. $id,
             'email' => 'nullable|email',
             'address' => 'required|string',
         ];
@@ -113,16 +94,14 @@ class VendorController extends Controller
             return redirect()->back()->with(['error' => getNotify(4), 'error_code' => 'edit'])->withErrors($validation)->withInput();
         }
 
-        $customer = Vendor::findOrFail($id);
-        $customer->name = $request->name;
-        $customer->phone = $request->phone;
-        $customer->email = $request->email;
-        $customer->address = $request->address;
-        $customer->save();
-    
-        // return redirect()->back()->with(['success' => getNotify(2)]);
-        return redirect()->route('vendors.index')->with('success', 'Vendor data updated successfully.');
+        $vendor = Vendor::findOrFail($id);
+        $vendor->name = $request->name;
+        $vendor->phone = $request->phone;
+        $vendor->email = $request->email;
+        $vendor->address = $request->address;
+        $vendor->save();
 
+        return redirect()->route('vendors.index')->with('success', 'Vendor data updated successfully.');
     }
 
     /**
@@ -130,19 +109,18 @@ class VendorController extends Controller
      */
     public function destroy(string $id)
     {
-       $customer = Vendor::findOrFail($id);
-       $customer->delete();
+       $vendor = Vendor::findOrFail($id);
+       $vendor->delete();
        return redirect()->back()->with(['success' => getNotify(3)]);
     }
 
     public function downloadPdf()
     {
-        $vendors = Vendor::all(); // fetch all vendors
+        $vendors = Vendor::all();
 
         $pdf = Pdf::loadView('pdf.vendors', compact('vendors'))
                 ->setPaper('a4', 'portrait');
 
-        return $pdf->download('vendor-list.pdf'); // direct download
+        return $pdf->download('vendor-list.pdf');
     }
-
 }

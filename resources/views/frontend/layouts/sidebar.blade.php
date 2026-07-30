@@ -12,242 +12,246 @@
 <div class="sidebar" id="sidebar">
     <div class="sidebar-inner slimscroll">
         <div id="sidebar-menu" class="sidebar-menu">
-            <ul class="sidebar-vertical ">
-                <!-- Main -->
+            <ul class="sidebar-vertical">
+                <!-- 1. Dashboard -->
                 <li>
-                    <a href="{{ route('index') }}"><i class="fe fe-grid"></i><span> Dashboard</span></a>
+                    <a href="{{ route('index') }}" class="{{ request()->routeIs('index') ? 'active' : '' }}">
+                        <i class="fe fe-grid"></i><span> Dashboard</span>
+                    </a>
                 </li>
 
-                @if($canView('Product Management'))
-                    <li class="menu-title "><span>Product Management</span></li>
-                    <li class="">
-                        <a href="{{ route('categories.index') }}"
-                            class="{{ Route::currentRouteName() == 'categories.index' ? 'active' : '' }}"><i
-                                class="fe fe-layers"></i> <span> Category List</span></a>
-                        <a href="{{ route('brands.index') }}"
-                            class="{{ Route::currentRouteName() == 'brand.index' ? 'active' : '' }}"><i
-                                class="fe fe-box"></i> <span> Brand List</span></a>
-                        <a href="{{ route('products.index') }}"
-                            class="{{ Route::currentRouteName() == 'products.index' ? 'active' : '' }}"><i
-                                class="fe fe-box"></i> <span> Product List</span></a>
-                    </li>
-                @endif
-
+                <!-- 2. Sales Management -->
                 @if($canView('Sales Management'))
-                    <li class="menu-title "><span>Sales Management</span></li>
-                    <li class="">
-                        <a href="{{ route('sales.create') }}"
-                            class="{{ Route::currentRouteName() == 'sales.create' ? 'active' : '' }}"><i
-                                class="fe fe-shopping-cart"></i> <span> Add Sales</span></a>
-                        <a href="{{ route('sales.index') }}"
-                            class="{{ Route::currentRouteName() == 'sales.index' ? 'active' : '' }}"><i
-                                class="fe fe-shopping-bag"></i> <span>Sales List</span></a>
-                        <a href="{{ route('returns.index') }}"
-                            class="{{ Route::currentRouteName() == 'returns.index' ? 'active' : '' }}"><i
-                                class="fe fe-refresh-cw"></i> <span> Return List</span></a>
+                    <li class="menu-title"><span>Sales Management</span></li>
+                    <li>
+                        <a href="{{ route('sales.create') }}" class="{{ request()->routeIs('sales.create') ? 'active' : '' }}">
+                            <i class="fe fe-shopping-cart"></i> <span> Add Sales</span>
+                        </a>
+                        <a href="{{ route('sales.index') }}" class="{{ request()->routeIs('sales.index') || request()->routeIs('sales.show') ? 'active' : '' }}">
+                            <i class="fe fe-shopping-bag"></i> <span>Sales List</span>
+                        </a>
+                        <a href="{{ route('returns.index') }}" class="{{ request()->routeIs('returns.*') ? 'active' : '' }}">
+                            <i class="fe fe-refresh-cw"></i> <span> Return List</span>
+                        </a>
                     </li>
                 @endif
 
+                <!-- 3. Warranty Management -->
+                @if($canView('Warranty Management'))
+                    <li class="menu-title"><span>Warranty Management</span></li>
+                    <li>
+                        <a href="{{ route('warranties.create') }}" class="{{ request()->routeIs('warranties.create') ? 'active' : '' }}">
+                            <i class="fe fe-plus-circle"></i> <span> Add Claim</span>
+                        </a>
+                        <a href="{{ route('warranties.index') }}" class="{{ request()->routeIs('warranties.index') || request()->routeIs('warranties.show') ? 'active' : '' }}">
+                            <i class="fe fe-shield"></i> <span> Warranty Claims</span>
+                        </a>
+                    </li>
+                @endif
+
+                <!-- 4. Service Management -->
                 @if($canView('Service Management'))
                     <li class="menu-title"><span>Services</span></li>
                     <li>
-                        <a href="{{ route('service.create') }}"
-                            class="{{ Route::currentRouteName() == 'service.create' ? 'active' : '' }}"><i
-                                class="fe fe-plus-circle"></i> <span> Add Service</span></a>
-                        <a href="{{ route('service.index', ['type' => 'service']) }}"
-                            class="{{ Route::currentRouteName() == 'service.index' ? 'active' : '' }}"><i
-                                class="fe fe-layers"></i> <span>Service List</span></a>
+                        <a href="{{ route('service.create') }}" class="{{ request()->routeIs('service.create') ? 'active' : '' }}">
+                            <i class="fe fe-plus-circle"></i> <span> Add Service</span>
+                        </a>
+                        <a href="{{ route('service.index') }}" class="{{ request()->routeIs('service.index') ? 'active' : '' }}">
+                            <i class="fe fe-layers"></i> <span>Service List</span>
+                        </a>
                     </li>
                 @endif
 
+                <!-- 5. Customer Management -->
                 @if($canView('Customer Management'))
-                    <li class="menu-title "><span>Customer Management</span></li>
-                    <li class="">
-                        <a href="{{ route('customers.create') }}"
-                            class="{{ Route::currentRouteName() == 'customers.create' ? 'active' : '' }}"><i
-                                class="fe fe-user-plus"></i> <span> Add Customer</span></a>
-                        <a href="{{ route('customers.index') }}"
-                            class="{{ Route::currentRouteName() == 'customers.index' ? 'active' : '' }}"><i
-                                class="fe fe-users"></i> <span>Customers List</span></a>
-                    </li>
-                @endif
-
-                @if($canView('Vendor Management'))
-                    <li class="menu-title "><span>Vendor Management</span></li>
-                    <li class="">
-                        <a href="{{ route('vendors.create') }}"
-                            class="{{ Route::currentRouteName() == 'vendors.create' ? 'active' : '' }}"><i
-                                class="fe fe-user-plus"></i> <span> Add Vendor</span></a>
-                        <a href="{{ route('vendors.index') }}"
-                            class="{{ Route::currentRouteName() == 'vendors.index' ? 'active' : '' }}"><i
-                                class="fe fe-users"></i> <span>Vendor List</span></a>
-                    </li>
-                @endif
-
-                @if($canView('Purchase Management'))
-                    <li class="menu-title "><span>Purchase Management</span></li>
-                    <li class="">
-                        <a href="{{ route('purchase.index') }}"
-                            class="{{ Route::currentRouteName() == 'purchase.index' ? 'active' : '' }}"><i
-                                class="fe fe-shopping-cart"></i> <span> Purchase List</span></a>
-                    </li>
-                @endif
-
-                @if($canView('Company Management'))
-                    <li class="menu-title "><span>Company Management</span></li>
-                    <li class="">
-                        <a href="{{ route('company-details.index') }}"
-                            class="{{ Route::currentRouteName() == 'company-details.index' ? 'active' : '' }}"><i
-                                class="fe fe-briefcase"></i> <span> Company Details</span></a>
-                    </li>
-                @endif
-
-                @if($canView('Payment Management'))
-                    <li class="menu-title"><span>Payment Management</span></li>
+                    <li class="menu-title"><span>Customer Management</span></li>
                     <li>
-                        <a href="{{ route('due-payments.index') }}"
-                            class="{{ request()->routeIs('due-payments.*') ? 'active' : '' }}"><i class="fe fe-dollar-sign"></i>
-                            <span>Due Payment</span></a>
-                    </li>
-                    <li>
-                        <a href="{{ route('bills.index') }}"
-                            class="{{ request()->routeIs('bills.*') ? 'active' : '' }}"><i class="fe fe-file-text"></i>
-                            <span>Bill Generate</span></a>
-                    </li>
-                    <li>
-                        <a href="{{ route('challans.index') }}"
-                            class="{{ request()->routeIs('challans.*') ? 'active' : '' }}"><i class="fe fe-truck"></i>
-                            <span>Challan Generate</span></a>
-                    </li>
-                    <li>
-                        <a href="{{ route('quotations.index') }}"
-                            class="{{ request()->routeIs('quotations.*') ? 'active' : '' }}"><i class="fe fe-clipboard"></i>
-                            <span>Quotation Generate</span></a>
+                        <a href="{{ route('customers.create') }}" class="{{ request()->routeIs('customers.create') ? 'active' : '' }}">
+                            <i class="fe fe-user-plus"></i> <span> Add Customer</span>
+                        </a>
+                        <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.index') ? 'active' : '' }}">
+                            <i class="fe fe-users"></i> <span>Customers List</span>
+                        </a>
                     </li>
                 @endif
 
+                <!-- 6. Product Catalog -->
+                @if($canView('Product Management'))
+                    <li class="menu-title"><span>Product Catalog</span></li>
+                    <li>
+                        <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
+                            <i class="fe fe-box"></i> <span> Product List</span>
+                        </a>
+                        <a href="{{ route('categories.index') }}" class="{{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                            <i class="fe fe-layers"></i> <span> Category List</span>
+                        </a>
+                        <a href="{{ route('brands.index') }}" class="{{ request()->routeIs('brands.*') ? 'active' : '' }}">
+                            <i class="fe fe-tag"></i> <span> Brand List</span>
+                        </a>
+                    </li>
+                @endif
+
+                <!-- 7. Inventory & Stock -->
                 @if($canView('Inventory Management'))
-                    <li class="menu-title "><span>Inventory Management</span></li>
-                    <li class="">
-                        <a href="{{ route('inventory.index') }}"
-                            class="{{ Route::currentRouteName() == 'inventory.index' ? 'active' : '' }}"><i
-                                class="fe fe-box"></i> <span> Inventory List</span></a>
+                    <li class="menu-title"><span>Inventory & Stock</span></li>
+                    <li>
+                        <a href="{{ route('inventory.index') }}" class="{{ request()->routeIs('inventory.*') ? 'active' : '' }}">
+                            <i class="fe fe-database"></i> <span> Inventory Stock List</span>
+                        </a>
                     </li>
                 @endif
 
-                @if($canView('Client Management'))
-                    <li class="menu-title "><span>Client Management</span></li>
-                    <li class="">
-                        <a href="{{ route('clients.index') }}"
-                            class="{{ Route::currentRouteName() == 'clients.index' ? 'active' : '' }}"><i
-                                class="fe fe-users"></i> <span> Clients List</span></a>
+                <!-- 8. Purchase & Procurement -->
+                @if($canView('Purchase Management'))
+                    <li class="menu-title"><span>Purchases</span></li>
+                    <li>
+                        <a href="{{ route('purchase.index') }}" class="{{ request()->routeIs('purchase.index') ? 'active' : '' }}">
+                            <i class="fe fe-shopping-cart"></i> <span> Purchase List</span>
+                        </a>
                     </li>
                 @endif
 
-                @if($canView('Cost Management'))
-                    <li class="menu-title "><span>Cost Management</span></li>
-                    <li class="">
-                        <a href="{{ route('cost-categories.index') }}"
-                            class="{{ Route::currentRouteName() == 'cost-categories.index' ? 'active' : '' }}"><i
-                                class="fe fe-tag"></i> <span> Cost-Category List</span></a>
-                        <a href="{{ route('cost-categories.create') }}"
-                            class="{{ Route::currentRouteName() == 'cost-categories.create' ? 'active' : '' }}"><i
-                                class="fe fe-plus-circle"></i> <span>Add Cost-Category</span></a>
+                <!-- 9. Vendor Management -->
+                @if($canView('Vendor Management'))
+                    <li class="menu-title"><span>Vendor Management</span></li>
+                    <li>
+                        <a href="{{ route('vendors.create') }}" class="{{ request()->routeIs('vendors.create') ? 'active' : '' }}">
+                            <i class="fe fe-user-plus"></i> <span> Add Vendor</span>
+                        </a>
+                        <a href="{{ route('vendors.index') }}" class="{{ request()->routeIs('vendors.index') ? 'active' : '' }}">
+                            <i class="fe fe-users"></i> <span>Vendor List</span>
+                        </a>
                     </li>
                 @endif
 
-                @if($canView('Employee Management'))
-                    <li class="menu-title "><span>Employee Management</span></li>
-                    <li class="">
-                        <a href="{{ route('employee.tada.index') }}"
-                            class="{{ Route::currentRouteName() == 'employee.tada.index' ? 'active' : '' }}"><i
-                                class="fe fe-list"></i> <span>TA/DA List</span></a>
-                        <a href="{{ route('employee.tada.create') }}"
-                            class="{{ Route::currentRouteName() == 'employee.tada.create' ? 'active' : '' }}"><i
-                                class="fe fe-upload"></i> <span>Submit TA/DA</span></a>
+                <!-- 10. Billing & Documents -->
+                @if($canView('Payment Management'))
+                    <li class="menu-title"><span>Billing & Payments</span></li>
+                    <li>
+                        <a href="{{ route('due-payments.index') }}" class="{{ request()->routeIs('due-payments.*') ? 'active' : '' }}">
+                            <i class="fe fe-dollar-sign"></i> <span>Due Payments</span>
+                        </a>
+                        <a href="{{ route('bills.index') }}" class="{{ request()->routeIs('bills.*') ? 'active' : '' }}">
+                            <i class="fe fe-file-text"></i> <span>Bill Generator</span>
+                        </a>
+                        <a href="{{ route('challans.index') }}" class="{{ request()->routeIs('challans.*') ? 'active' : '' }}">
+                            <i class="fe fe-truck"></i> <span>Challan Generator</span>
+                        </a>
+                        <a href="{{ route('quotations.index') }}" class="{{ request()->routeIs('quotations.*') ? 'active' : '' }}">
+                            <i class="fe fe-clipboard"></i> <span>Quotation Generator</span>
+                        </a>
                     </li>
                 @endif
 
+                <!-- 11. Project & Client Management -->
                 @if($canView('Project Management'))
-                    <li class="menu-title "><span>Project Management</span></li>
-                    <li class="">
-                        <a href="{{ route('projects.index') }}"
-                            class="{{ Route::currentRouteName() == 'projects.index' ? 'active' : '' }}"><i
-                                class="fe fe-briefcase"></i> <span>Projects List</span></a>
-                        <a href="{{ route('project-items.index') }}"
-                            class="{{ Route::currentRouteName() == 'project-items.index' ? 'active' : '' }}">
+                    <li class="menu-title"><span>Project Management</span></li>
+                    <li>
+                        <a href="{{ route('projects.index') }}" class="{{ request()->routeIs('projects.*') ? 'active' : '' }}">
+                            <i class="fe fe-briefcase"></i> <span>Projects List</span>
+                        </a>
+                        <a href="{{ route('project-items.index') }}" class="{{ request()->routeIs('project-items.*') ? 'active' : '' }}">
                             <i class="fe fe-plus-circle"></i> <span>Add Projects Items</span>
                         </a>
-                        <a href="{{ route('project-costs.index') }}"
-                            class="{{ Route::currentRouteName() == 'project-costs.index' ? 'active' : '' }}">
+                        <a href="{{ route('project-costs.index') }}" class="{{ request()->routeIs('project-costs.*') ? 'active' : '' }}">
                             <i class="fe fe-dollar-sign"></i> <span>Projects Cost List</span>
+                        </a>
+                        @if($canView('Client Management'))
+                            <a href="{{ route('clients.index') }}" class="{{ request()->routeIs('clients.*') ? 'active' : '' }}">
+                                <i class="fe fe-users"></i> <span> Clients List</span>
+                            </a>
+                        @endif
+                    </li>
+                @endif
+
+                <!-- 12. Accounts & Expenses -->
+                @if($canView('Accounts Management'))
+                    <li class="menu-title"><span>Accounts & Expenses</span></li>
+                    <li>
+                        <a href="{{ route('expense-categories.index') }}" class="{{ request()->routeIs('expense-categories.*') ? 'active' : '' }}">
+                            <i class="fe fe-tag"></i> <span>Expense Categories</span>
+                        </a>
+                        <a href="{{ route('dailyExpenses.index') }}" class="{{ request()->routeIs('dailyExpenses.*') ? 'active' : '' }}">
+                            <i class="fe fe-list"></i> <span>Daily Expense List</span>
+                        </a>
+                        <a href="{{ route('employees.index') }}" class="{{ request()->routeIs('employees.*') ? 'active' : '' }}">
+                            <i class="fe fe-users"></i> <span>Employees</span>
+                        </a>
+                        <a href="{{ route('ta-da.index') }}" class="{{ request()->routeIs('ta-da.*') ? 'active' : '' }}">
+                            <i class="fe fe-list"></i> <span>TA/DA Management</span>
+                        </a>
+                        <a href="{{ route('salary.index') }}" class="{{ request()->routeIs('salary.*') ? 'active' : '' }}">
+                            <i class="fe fe-dollar-sign"></i> <span>Salary Manage</span>
+                        </a>
+                        <a href="{{ route('bank-details.index') }}" class="{{ request()->routeIs('bank-details.*') ? 'active' : '' }}">
+                            <i class="fe fe-layers"></i> <span>Bank Details</span>
                         </a>
                     </li>
                 @endif
 
-                @if($canView('Accounts Management'))
-                    <li class="menu-title"><span>Accounts Management</span></li>
+                <!-- 13. Employee Portal -->
+                @if($canView('Employee Management'))
+                    <li class="menu-title"><span>Employee Portal</span></li>
                     <li>
-                        <a href="{{ route('expense-categories.index') }}"
-                            class="{{ Route::currentRouteName() == 'expense-categories.index' ? 'active' : '' }}"><i
-                                class="fe fe-tag"></i> <span>Expense Category</span></a>
-                        <a href="{{ route('dailyExpenses.index') }}"
-                            class="{{ Route::currentRouteName() == 'dailyExpenses.index' ? 'active' : '' }}"><i
-                                class="fe fe-list"></i> <span>Expense List</span></a>
-                        <a href="{{ route('employees.index') }}"
-                            class="{{ Route::currentRouteName() == 'employees.index' ? 'active' : '' }}"><i
-                                class="fe fe-users"></i> <span>Employee List</span></a>
-                        <a href="{{ route('ta-da.index') }}"
-                            class="{{ Route::currentRouteName() == 'ta-da.index' ? 'active' : '' }}"><i
-                                class="fe fe-list"></i> <span>TA/DA List</span></a>
-                        <a href="{{ route('salary.index') }}"
-                            class="{{ Route::currentRouteName() == 'salary.index' ? 'active' : '' }}"><i
-                                class="fe fe-dollar-sign"></i> <span>Salary Manage</span></a>
-                        <a href="{{ route('bank-details.index') }}"
-                            class="{{ request()->routeIs('bank-details.*') ? 'active' : '' }}"><i class="fe fe-layers"></i>
-                            <span>Bank Details</span></a>
+                        <a href="{{ route('employee.tada.index') }}" class="{{ request()->routeIs('employee.tada.index') ? 'active' : '' }}">
+                            <i class="fe fe-list"></i> <span>My TA/DA List</span>
+                        </a>
+                        <a href="{{ route('employee.tada.create') }}" class="{{ request()->routeIs('employee.tada.create') ? 'active' : '' }}">
+                            <i class="fe fe-upload"></i> <span>Submit TA/DA</span>
+                        </a>
                     </li>
                 @endif
 
+                <!-- 14. Cost & Company Details -->
+                @if($canView('Cost Management') || $canView('Company Management'))
+                    <li class="menu-title"><span>Company & Cost Config</span></li>
+                    <li>
+                        @if($canView('Company Management'))
+                            <a href="{{ route('company-details.index') }}" class="{{ request()->routeIs('company-details.*') ? 'active' : '' }}">
+                                <i class="fe fe-briefcase"></i> <span> Company Details</span>
+                            </a>
+                        @endif
+                        @if($canView('Cost Management'))
+                            <a href="{{ route('cost-categories.index') }}" class="{{ request()->routeIs('cost-categories.*') ? 'active' : '' }}">
+                                <i class="fe fe-tag"></i> <span> Cost Categories</span>
+                            </a>
+                        @endif
+                    </li>
+                @endif
+
+                <!-- 15. Reports & Analytics -->
                 @if($canView('Report Management'))
-                    <li class="menu-title "><span>Report Management</span></li>
-                    <li class="">
-                        <a href="{{ route('purchase.report') }}"
-                            class="{{ Route::currentRouteName() == 'purchase.report' ? 'active' : '' }}"><i
-                                class="fe fe-file-text"></i> <span> Purchase Report</span></a>
-                    </li>
-                    <li class="">
-                        <a href="{{ route('sales.report') }}"
-                            class="{{ Route::currentRouteName() == 'sales.report' ? 'active' : '' }}"><i
-                                class="fe fe-file-text"></i> <span> Sales Report</span></a>
-                    </li>
-                    <li class="">
-                        <a href="{{ route('revenues.index') }}"
-                            class="{{ Route::currentRouteName() == 'revenues.index' ? 'active' : '' }}"><i
-                                class="fe fe-bar-chart-2"></i> <span> Revenue Report</span></a>
+                    <li class="menu-title"><span>Reports & Analytics</span></li>
+                    <li>
+                        <a href="{{ route('sales.report') }}" class="{{ request()->routeIs('sales.report') ? 'active' : '' }}">
+                            <i class="fe fe-file-text"></i> <span> Sales Report</span>
+                        </a>
+                        <a href="{{ route('purchase.report') }}" class="{{ request()->routeIs('purchase.report') ? 'active' : '' }}">
+                            <i class="fe fe-file-text"></i> <span> Purchase Report</span>
+                        </a>
+                        <a href="{{ route('revenues.index') }}" class="{{ request()->routeIs('revenues.*') ? 'active' : '' }}">
+                            <i class="fe fe-bar-chart-2"></i> <span> Revenue Report</span>
+                        </a>
                     </li>
                 @endif
 
+                <!-- 16. System Authorization & Users -->
                 @if($canView('Administration'))
-                    <li class="menu-title"><span>Authorization</span></li>
+                    <li class="menu-title"><span>System & Security</span></li>
                     <li>
-                        <a href="{{ route('permission.index') }}"
-                            class="{{ Route::currentRouteName() == 'permission.index' ? 'active' : '' }}"><i
-                                class="fe fe-lock"></i> <span> Permissions</span></a>
-                    </li>
-                    <li>
-                        <a href="{{ route('role.index') }}"
-                            class="{{ Route::currentRouteName() == 'role.index' ? 'active' : '' }}"><i
-                                class="fe fe-shield"></i> <span> Roles</span></a>
-                    </li>
-                    <li>
-                        <a href="{{ route('users.index') }}"
-                            class="{{ Route::currentRouteName() == 'users.index' ? 'active' : '' }}"><i
-                                class="fe fe-user"></i> <span> Users</span></a>
+                        <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
+                            <i class="fe fe-user"></i> <span> Users</span>
+                        </a>
+                        <a href="{{ route('role.index') }}" class="{{ request()->routeIs('role.*') ? 'active' : '' }}">
+                            <i class="fe fe-shield"></i> <span> Roles</span>
+                        </a>
+                        <a href="{{ route('permission.index') }}" class="{{ request()->routeIs('permission.*') ? 'active' : '' }}">
+                            <i class="fe fe-lock"></i> <span> Permissions</span>
+                        </a>
                     </li>
                 @endif
+
             </ul>
         </div>
     </div>
 </div>
-<!-- /Sidebar -->
