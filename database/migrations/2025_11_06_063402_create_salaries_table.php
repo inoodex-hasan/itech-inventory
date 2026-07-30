@@ -11,7 +11,8 @@ return new class extends Migration
      */
 public function up()
 {
-    Schema::create('salaries', function (Blueprint $table) {
+    if (!Schema::hasTable('salaries')) {
+        Schema::create('salaries', function (Blueprint $table) {
         $table->id();
         $table->unsignedBigInteger('employee_id');
         $table->string('month'); 
@@ -27,6 +28,7 @@ public function up()
 
         $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
     });
+    }
 }
 
 

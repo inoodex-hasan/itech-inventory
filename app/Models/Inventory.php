@@ -9,6 +9,13 @@ class Inventory extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'product_id',
+        'opening_stock',
+        'current_stock',
+        'notes',
+    ];
+
     // Define relationship with Product
     public function product()
     {

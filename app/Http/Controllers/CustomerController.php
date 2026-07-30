@@ -64,7 +64,9 @@ class CustomerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+        $sales = \App\Models\Sale::where('customer_id', $id)->latest()->get();
+        return view('frontend.pages.customer.show', compact('customer', 'sales'));
     }
 
     /**

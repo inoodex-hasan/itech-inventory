@@ -1,225 +1,321 @@
 @extends('frontend.layouts.app')
+
+@push('styles')
+<style>
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+    }
+    .table-custom tbody tr {
+        transition: background-color 0.15s ease;
+    }
+    .table-custom tbody tr:hover {
+        background-color: #fcfbff !important;
+    }
+    .badge-soft-success {
+        background-color: rgba(25, 135, 84, 0.12) !important;
+        color: #198754 !important;
+        font-weight: 600;
+    }
+    .badge-soft-danger {
+        background-color: rgba(220, 53, 69, 0.12) !important;
+        color: #dc3545 !important;
+        font-weight: 600;
+    }
+    .search-box-custom input {
+        border-radius: 8px;
+    }
+    .btn-action-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dbe2ea !important;
+        border-radius: 8px !important;
+        background-color: #ffffff !important;
+        color: #555e6d !important;
+        padding: 0;
+        transition: all 0.2s ease;
+    }
+    .btn-action-icon:hover {
+        background-color: #7638ff !important;
+        color: #ffffff !important;
+        border-color: #7638ff !important;
+    }
+
+    /* Responsive adjustments for laptop screens */
+    .table-custom th, .table-custom td {
+        white-space: nowrap;
+    }
+</style>
+@endpush
+
 @section('content')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <style>
-        .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
-            border-color: transparent transparent #888 transparent;
-            border-width: 0 !important;
-        }
+<div class="content container-fluid">
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow b {
-            border-color: #888 transparent transparent transparent;
-            border-style: solid;
-            border-width: 0 !important;
-            height: 0;
-            left: 50%;
-            margin-left: -4px;
-            margin-top: -2px;
-            position: absolute;
-            top: 50%;
-            width: 0;
-        }
-    </style>
-    <div class="content container-fluid">
-        <div class="page-header">
-            <div class="content-page-header">
-                <h5>Vendors</h5>
-
-                <div class="list-btn">
-                    <ul class="filter-list">
-                        <li>
-                            <a href="{{ route('vendors.pdf') }}" target="_blank" class="btn btn-info">
-                                Download Vendor List
-                            </a>
-
-
-                            <a class="btn btn-primary" href="{{ route('vendors.create') }}">
-                                <i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Add Vendor </a>
-                        </li>
-                    </ul>
-
-                    <div id="add-payment-modal" class="modal fade" tabindex="-1" style="display: none;" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-body">
-                                    <div class="text-center mt-2 mb-4">
-                                        <div class="auth-logo">
-                                            <a href="{{ route('index') }}" class="logo logo-dark">
-                                                <span class="logo-lg">
-                                                    <img src="{{ asset('assets/img/logo.png') }}" alt="Logo"
-                                                        height="42">
-                                                </span>
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <form class="px-3" method="post" action="{{ route('products.store') }}">
-                                        @csrf
-                                        <!-- Input for Product Name -->
-                                        <div class="mb-3">
-                                            <label for="name" class="form-label">Product Name <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="name" id="name" class="form-control"
-                                                placeholder="Enter product name" value="{{ old('name') }}" required>
-                                        </div>
-                                        <!-- Product Model Name Input -->
-                                        <div class="mb-3">
-                                            <label for="model_name" class="form-label">Product Model Name <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="model_name" id="model_name" class="form-control"
-                                                placeholder="Enter product model name" value="{{ old('model_name') }}"
-                                                required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="status" class="form-label">Status</label>
-                                            <select class="form-select mb-3" name="status" required>
-                                                <option selected="" value="1">Actve</option>
-                                                <option value="0">InActve</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Vendor Directory</h4>
+                <p class="text-muted small mb-0">Manage suppliers, vendor contacts, procurement, and billing status</p>
+            </div>
+            <div class="list-btn d-flex align-items-center gap-2">
+                <a class="btn btn-outline-secondary px-3 py-2 rounded-3" href="{{ route('vendors.pdf') }}">
+                    PDF Report
+                </a>
+                <a class="btn btn-primary px-4 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" href="{{ route('vendors.create') }}">
+                    <i class="fe fe-plus-circle fs-6"></i>
+                    <span>Add New Vendor</span>
+                </a>
             </div>
         </div>
-        <!-- /Page Header -->
-        
-        <!-- Filter Section -->
-        <div class="row mb-3">
-            <div class="col-sm-12">
-                <div class="card shadow-sm border-0 rounded-3">
-                    <div class="card-body p-3">
-                        <form action="{{ route('vendors.index') }}" method="GET">
-                            <div class="row align-items-end">
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="search" class="form-label">Search</label>
-                                        <input type="text" class="form-control" id="search" name="search" 
-                                            value="{{ request('search') }}" placeholder="Search by name, phone, email...">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label for="status" class="form-label">Status</label>
-                                        <select class="form-select" id="status" name="status">
-                                            <option value="">All Status</option>
-                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inactive</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <button type="submit" class="btn btn-primary w-100">
-                                            <i class="fe fe-filter me-1"></i>Filter
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="mb-3">
-                                        <a href="{{ route('vendors.index') }}" class="btn btn-secondary w-100">
-                                            <i class="fe fe-refresh-ccw me-1"></i>Reset
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+    </div>
+    <!-- /Page Header -->
+
+    <!-- Summary Stats Bar -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-primary-light text-primary rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-truck fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Total Vendors</h6>
+                        <h4 class="mb-0 fw-bold text-dark">{{ number_format($vendors->count()) }}</h4>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Search Filter -->
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card-table">
-                    <div class="card-body">
-                        <div class="table-fluid">
-                            <table id="productTable" class="table table-center table-hover ">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Phone</th>
-                                        <th>Email</th>
-                                        <th>Address</th>
-                                        <th>Status</th>
-                                        <th class="no-sort">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($customers as $vendor)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ Str::limit($vendor->name, 20) }}</td>
-                                            <td>{{ Str::limit($vendor->phone, 20) }}</td>
-                                            <td>{{ Str::limit($vendor->email, 20) }}</td>
-                                            <td>{{ Str::limit($vendor->address, 20) }}</td>
-                                            <td>
-                                                @if ($vendor->status == 1)
-                                                    <span class="badge bg-success">Active</span>
-                                                @else
-                                                    <span class="badge bg-danger">Inactive</span>
-                                                @endif
-                                            </td>
-                                            <td class="d-flex align-items-center">
-                                                <div class="dropdown dropdown-action">
-                                                    <a href="#" class="btn-action-icon" data-bs-toggle="dropdown">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <ul>
-                                                            <li>
-                                                                <a class="dropdown-item"
-                                                                    href="{{ route('vendors.edit', $vendor->id) }}">
-                                                                    <i class="far fa-edit me-2"></i>Edit
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a onclick="if (confirm('Are you sure to delete the vendor?')) { document.getElementById('vendorDelete{{ $vendor->id }}').submit(); }"
-                                                                    class="dropdown-item" href="javascript:void(0)">
-                                                                    <i class="far fa-trash-alt me-2"></i>Delete
-                                                                </a>
-                                                                <form id="vendorDelete{{ $vendor->id }}"
-                                                                    action="{{ route('vendors.destroy', $vendor->id) }}"
-                                                                    method="POST" style="display:none;">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                </form>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="7" class="text-center py-4">
-                                                <i class="fe fe-inbox fa-3x text-muted mb-3 d-block"></i>
-                                                <span class="text-muted">No vendors found</span>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
 
-                            <!-- Pagination -->
-                            <div class="d-flex justify-content-end mt-3">
-                                {{ $customers->links('pagination::bootstrap-5') }}
-                            </div>
-                        </div>
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-success-light text-success rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-check-circle fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Active Accounts</h6>
+                        <h4 class="mb-0 fw-bold text-dark">
+                            {{ number_format($vendors->filter(fn($v) => in_array($v->status, ['active', '1', 1]))->count()) }}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-danger-light text-danger rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-x-circle fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Inactive Accounts</h6>
+                        <h4 class="mb-0 fw-bold text-dark">
+                            {{ number_format($vendors->filter(fn($v) => !in_array($v->status, ['active', '1', 1]))->count()) }}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-info-light text-info rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-calendar fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">New This Month</h6>
+                        <h4 class="mb-0 fw-bold text-dark">
+                            {{ number_format($vendors->filter(fn($v) => $v->created_at?->isCurrentMonth())->count()) }}
+                        </h4>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- /Summary Stats Bar -->
+
+    <!-- Vendor Table Card -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <!-- Search & Filter Controls -->
+        <div class="card-header bg-white py-3 border-bottom border-light">
+            <div class="row align-items-center g-3">
+                <div class="col-12 col-md-6 col-lg-5">
+                    <div class="search-box-custom">
+                        <input type="text" id="vendorSearchInput" class="form-control border-light-subtle" placeholder="Search by vendor name, phone, email, address...">
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 col-lg-3">
+                    <select id="statusFilterSelect" class="form-select border-light-subtle">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive Only</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3 col-lg-4 text-md-end text-muted small">
+                    Showing <span id="visibleVendorCount" class="fw-bold text-dark">{{ $vendors->count() }}</span> of {{ $vendors->count() }} records
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Body -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-custom align-middle mb-0" id="vendorsTable">
+                    <thead class="bg-light text-secondary fs-7 text-uppercase">
+                        <tr>
+                            <th class="ps-4" style="width: 50px;">#</th>
+                            <th style="min-width: 180px;">Vendor Name</th>
+                            <th style="min-width: 160px;">Phone & Email</th>
+                            <th style="min-width: 180px;">Address</th>
+                            <th style="width: 100px;">Status</th>
+                            <th class="text-end pe-4" style="width: 70px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        @forelse ($vendors as $key => $vendor)
+                            @php
+                                $isActive = in_array($vendor->status, ['active', '1', 1]);
+                            @endphp
+                            <tr class="vendor-row" data-status="{{ $isActive ? 'active' : 'inactive' }}" data-search="{{ strtolower($vendor->name . ' ' . $vendor->phone . ' ' . $vendor->email . ' ' . $vendor->address) }}">
+                                <td class="ps-4 text-muted fw-semibold">{{ $loop->iteration }}</td>
+                                <td>
+                                    <div>
+                                        <a href="{{ route('vendors.show', $vendor->id) }}" class="fw-bold text-dark hover-primary mb-0 text-decoration-none d-block text-truncate" title="{{ $vendor->name }}" style="max-width: 200px;">
+                                            {{ Str::limit($vendor->name, 25) }}
+                                        </a>
+                                        <small class="text-muted fs-7">Added {{ $vendor->created_at?->format('d M Y') ?? 'N/A' }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="fw-semibold text-dark fs-7 d-flex align-items-center gap-1">
+                                            <span>{{ $vendor->phone }}</span>
+                                        </div>
+                                        @if($vendor->email)
+                                            <div class="text-muted small d-flex align-items-center gap-1 text-truncate" style="max-width: 180px;" title="{{ $vendor->email }}">
+                                                <i class="fe fe-mail text-muted fs-8 me-1"></i>
+                                                <span>{{ Str::limit($vendor->email, 22) }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-secondary small text-truncate d-inline-block" style="max-width: 220px;" title="{{ $vendor->address }}">
+                                        {{ Str::limit($vendor->address, 30) ?: 'N/A' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if ($isActive)
+                                        <span class="badge badge-soft-success px-3 py-2 rounded-pill fs-7">
+                                            <i class="fe fe-check-circle me-1"></i> Active
+                                        </span>
+                                    @else
+                                        <span class="badge badge-soft-danger px-3 py-2 rounded-pill fs-7">
+                                            <i class="fe fe-x-circle me-1"></i> Inactive
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0)" class="btn-action-icon shadow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                                            <li>
+                                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('vendors.show', $vendor->id) }}">
+                                                    <i class="fe fe-eye text-info"></i>
+                                                    <span>View Details</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('vendors.edit', $vendor->id) }}">
+                                                    <i class="fe fe-edit text-primary"></i>
+                                                    <span>Edit Profile</span>
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider opacity-50"></li>
+                                            <li>
+                                                <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-danger" href="javascript:void(0)"
+                                                    onclick="if (confirm('Are you sure you want to delete this vendor?')) { document.getElementById('delete{{ $vendor->id }}').submit(); }">
+                                                    <i class="fe fe-trash-2 text-danger"></i>
+                                                    <span>Delete Vendor</span>
+                                                </a>
+                                                <form id="delete{{ $vendor->id }}" action="{{ route('vendors.destroy', $vendor->id) }}" method="POST" class="d-none">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr id="emptyStateRow">
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center justify-content-center">
+                                        <div class="avatar avatar-xl bg-primary-light text-primary rounded-circle mb-3 d-flex align-items-center justify-content-center">
+                                            <i class="fe fe-truck fs-1"></i>
+                                        </div>
+                                        <h5 class="fw-bold text-dark mb-1">No Vendors Found</h5>
+                                        <p class="text-muted small mb-3">Get started by adding your first vendor record</p>
+                                        <a href="{{ route('vendors.create') }}" class="btn btn-primary btn-sm px-3 rounded-2">
+                                            Add Vendor
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('vendorSearchInput');
+    const statusSelect = document.getElementById('statusFilterSelect');
+    const rows = document.querySelectorAll('.vendor-row');
+    const visibleCountSpan = document.getElementById('visibleVendorCount');
+
+    function filterTable() {
+        const query = searchInput.value.toLowerCase().trim();
+        const statusFilter = statusSelect.value;
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const rowSearchText = row.dataset.search;
+            const rowStatus = row.dataset.status;
+
+            const matchesSearch = query === '' || rowSearchText.includes(query);
+            const matchesStatus = statusFilter === 'all' || rowStatus === statusFilter;
+
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        if (visibleCountSpan) {
+            visibleCountSpan.textContent = visibleCount;
+        }
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterTable);
+    if (statusSelect) statusSelect.addEventListener('change', filterTable);
+});
+</script>
 @endsection

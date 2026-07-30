@@ -10,7 +10,7 @@ use App\Http\Controllers\{
     RevenueController, RoleController, PermissionController,
     SalaryController, SalesController, ServiceController,
     TaDaController, UserController, VendorController, BankDetailController,
-    CompanyDetailController, PaymentController, ReturnController
+    CompanyDetailController, PaymentController, ReturnController, WarrantyController
 };
 
 use Illuminate\Support\Facades\{Auth, Route};
@@ -46,17 +46,18 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
 
     // === Products, Inventory, Purchases, Sales, Services, etc. ===
     Route::resource('brands', BrandController::class);
-    Route::prefix('product')->group(function () {
-        Route::resource('products', ProductController::class);
-    });
-    Route::prefix('inventory')->group(function () {
-        Route::resource('inventory', InventoryController::class);
-        Route::get('{productId}/serials', [\App\Http\Controllers\ProductSerialController::class, 'getSerialsByProduct'])->name('inventory.serials');
-    });
+    Route::resource('products', ProductController::class);
+    Route::resource('inventory', InventoryController::class);
+    Route::get('inventory/{productId}/serials', [\App\Http\Controllers\ProductSerialController::class, 'getSerialsByProduct'])->name('inventory.serials');
     Route::resource('customers', CustomerController::class);
     Route::get('/vendors/pdf', [VendorController::class, 'downloadPdf'])
     ->name('vendors.pdf');
     Route::resource('vendors', VendorController::class);
+
+    // === Warranties ===
+    Route::get('warranties/lookup', [WarrantyController::class, 'lookup'])->name('warranties.lookup');
+    Route::get('warranties/{id}/print', [WarrantyController::class, 'printReceipt'])->name('warranties.print');
+    Route::resource('warranties', WarrantyController::class);
    
 
     Route::prefix('purchase')->group(function () {
