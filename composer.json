@@ -20,7 +20,6 @@
         "paytrail/paytrail-php-sdk": "^2.7",
         "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-permission": "^6.3",
-        "symfony/var-dumper": "*",
         "twilio/sdk": "^8.3"
     },
     "require-dev": {
@@ -75,6 +74,11 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
+        "policy": {
+            "advisories": {
+                "block": false
+            }
+        },
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
