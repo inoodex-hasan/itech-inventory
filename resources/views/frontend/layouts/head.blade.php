@@ -613,13 +613,63 @@
     <!-- Datepicker CSS -->
     <link rel="stylesheet" href="{{ asset('assets') }}/css/bootstrap-datetimepicker.min.css">
 
-    <!-- Datatables CSS -->
-    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables/datatables.min.css">
-
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ asset('assets') }}/css/style.css">
 
+    <!-- jQuery -->
+    <script src="{{ asset('assets') }}/js/jquery-3.7.1.min.js"></script>
+
+    <!-- Select2 CSS & JS -->
+    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/select2/css/select2.min.css">
+    <script src="{{ asset('assets') }}/plugins/select2/js/select2.min.js"></script>
+    <!-- Select2 Global Styling & Arrow Fixes -->
+    <style>
+        select.select2, select.form-select.select2 {
+            background-image: none !important;
+        }
+        .select2-container--default .select2-selection--single {
+            height: 38px !important;
+            border: 1px solid #dbe2ea !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            background-color: #ffffff !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px !important;
+            color: #2c3038 !important;
+            padding-left: 12px !important;
+            padding-right: 28px !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px !important;
+            position: absolute !important;
+            top: 1px !important;
+            right: 8px !important;
+            width: 20px !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: #6c757d transparent transparent transparent !important;
+            border-style: solid !important;
+            border-width: 5px 4px 0 4px !important;
+            height: 0 !important;
+            left: 50% !important;
+            margin-left: -4px !important;
+            margin-top: -2px !important;
+            position: absolute !important;
+            top: 50% !important;
+            width: 0 !important;
+        }
+        .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+            border-color: transparent transparent #6c757d transparent !important;
+            border-width: 0 4px 5px 4px !important;
+        }
+    </style>
+
     <!-- Layout JS -->
-    <script src="{{asset('assets')}}/js/layout.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
+    <script src="{{asset('assets')}}/js/layout.js"></script>
 
 </head>

@@ -21,7 +21,7 @@ class CostCategoryController extends Controller
      */
     public function create()
     {
-        return view('frontend.pages.cost-categories.create');
+        return redirect()->route('cost-categories.index');
     }
 
     /**
@@ -45,8 +45,7 @@ class CostCategoryController extends Controller
      */
    public function edit($id)
     {
-        $category = CostCategory::findOrFail($id);
-        return view('frontend.pages.cost-categories.edit', compact('category'));
+        return redirect()->route('cost-categories.index');
     }
 
     /**

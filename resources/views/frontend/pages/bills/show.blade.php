@@ -1,230 +1,215 @@
-@extends('layouts.app')
+@extends('frontend.layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">Bill Details - {{ $bill->reference_number }}</h4>
-                            <div>
-                                <a href="{{ route('bills.index') }}" class="btn btn-secondary">
-                                    Back
-                                </a>
-                                <a href="{{ route('bills.download', $bill->id) }}" class="btn btn-success">
-                                    Download PDF
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <!-- Bill Information -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="border-bottom pb-2 mb-3">Bill Information</h5>
-                            </div>
-                            <div class="col-md-6">
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th width="40%">Bill Number:</th>
-                                        <td>{{ $bill->bill_number }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Reference Number:</th>
-                                        <td>{{ $bill->reference_number }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Bill Date:</th>
-                                        <td>{{ $bill->bill_date->format('F d, Y') }}</td>
-                                    </tr>
-                                    <tr>
-                                        {{-- <th>Bill Type:</th>
-                                        <td>
-                                            <span class="badge bg-{{ $bill->bill_type == 'sale' ? 'primary' : 'info' }}">
-                                                {{ ucfirst($bill->bill_type) }} Bill
-                                            </span>
-                                        </td> --}}
-                                    </tr>
-                                </table>
-                            </div>
-                            <div class="col-md-6">
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th width="40%">Work Order:</th>
-                                        <td>{{ $bill->work_order_number ?? 'N/A' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Subtotal:</th>
-                                        <td>৳ {{ number_format($bill->subtotal, 2) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Total Amount:</th>
-                                        <td>৳ {{ number_format($bill->total_amount, 2) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Amount in Words:</th>
-                                        <td><em>{{ $amount_in_words }}</em></td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
+<div class="content container-fluid">
 
-                        <!-- Client Information -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="border-bottom pb-2 mb-3">Client Information</h5>
-                            </div>
-                            <div class="col-12">
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th width="20%">Client Name:</th>
-                                        <td>{{ $recipient_organization }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Address:</th>
-                                        <td>{{ $recipient_address }}</td>
-                                    </tr>
-                                    {{-- <tr>
-                                        <th>Attention To:</th>
-                                        <td>{{ $attention_to ?? 'N/A' }}</td>
-                                    </tr> --}}
-                                </table>
-                            </div>
-                        </div>
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Bill Details #{{ $bill->bill_number }}</h4>
+                <p class="text-muted small mb-0">Reference No: <strong class="text-dark">{{ $bill->reference_number }}</strong></p>
+            </div>
+            <div>
+                <a href="{{ route('bills.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm me-2">
+                    <i class="fa fa-arrow-left me-2"></i>Back to Bills
+                </a>
+                <a href="{{ route('bills.download', $bill->id) }}" class="btn btn-primary px-4 py-2 rounded-3 shadow-sm">
+                    <i class="fe fe-download me-2"></i>Download PDF
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Header -->
 
-                        <!-- Bill Items -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-white border-bottom-0 pb-3">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0 text-dark">Bill Items</h5>
-                                            <span class="badge bg-primary rounded-pill">{{ $bill->billItems->count() }}
-                                                items</span>
-                                        </div>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table class="table table-borderless table-hover mb-0">
-                                                <thead class="bg-light">
-                                                    <tr>
-                                                        <th width="5%" class="text-center ps-4">#</th>
-                                                        <th width="50%">Description</th>
-                                                        <th width="15%" class="text-center">Qty</th>
-                                                        <th width="15%" class="text-end">Unit Price</th>
-                                                        <th width="15%" class="text-end pe-4">Total</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($bill->billItems as $index => $item)
-                                                        <tr class="border-bottom">
-                                                            <td class="text-center ps-4">
-                                                                <span
-                                                                    class="badge bg-light text-dark rounded-circle">{{ $index + 1 }}</span>
-                                                            </td>
-                                                            <td>
-                                                                <div class="text-dark">{!! nl2br(e($item->description)) !!}</div>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <span
-                                                                    class="fw-semibold">{{ number_format($item->quantity) }}</span>
-                                                                <small
-                                                                    class="text-muted d-block">{{ $item->unit ?? 'Pcs' }}</small>
-                                                            </td>
-                                                            <td class="text-end text-muted">৳
-                                                                {{ number_format($item->unit_price, 2) }}</td>
-                                                            <td class="text-end fw-bold text-success pe-4">৳
-                                                                {{ number_format($item->total, 2) }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                                <tfoot class="bg-light">
-                                                    <tr>
-                                                        <td colspan="3" class="text-end fw-bold border-0 ps-4">Subtotal
-                                                        </td>
-                                                        <td colspan="2" class="text-end fw-bold border-0 pe-4">৳
-                                                            {{ number_format($bill->subtotal, 2) }}</td>
-                                                    </tr>
-                                                    <tr class="border-top">
-                                                        <td colspan="3" class="text-end fw-bold fs-5 border-0 ps-4">Total
-                                                            Amount</td>
-                                                        <td colspan="2"
-                                                            class="text-end fw-bold fs-5 text-primary border-0 pe-4">
-                                                            ৳ {{ number_format($bill->total_amount, 2) }}
-                                                        </td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Terms and Conditions -->
-                        @if ($terms_conditions)
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h5 class="border-bottom pb-2 mb-3">Terms and Conditions</h5>
-                                    <div class="card">
-                                        <div class="card-body">
-                                            {!! nl2br(e($terms_conditions)) !!}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+    <!-- Info Summary Cards Row -->
+    <div class="row g-4 mb-4">
+        <!-- Bill Information Card -->
+        <div class="col-lg-6 col-12">
+            <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fe fe-file-text me-2 text-primary"></i>Bill Information</h6>
+                    <table class="table table-borderless align-middle mb-0">
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0" style="width: 40%">Bill Number:</td>
+                            <td class="fw-bold text-primary font-monospace">{{ $bill->bill_number }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Reference Number:</td>
+                            <td class="fw-bold text-dark">{{ $bill->reference_number }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Bill Date:</td>
+                            <td class="text-dark">{{ $bill->bill_date ? $bill->bill_date->format('d M Y') : 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Work Order:</td>
+                            <td class="text-muted">{{ $bill->work_order_number ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Total Bill Amount:</td>
+                            <td>
+                                <span class="badge badge-soft-primary px-3 py-1 rounded-pill fs-7">
+                                    ৳{{ number_format($bill->total_amount, 2) }}
+                                </span>
+                            </td>
+                        </tr>
+                        @if(!empty($amount_in_words))
+                            <tr>
+                                <td class="text-secondary small fw-semibold ps-0">Amount in Words:</td>
+                                <td class="text-muted fst-italic">{{ $amount_in_words }}</td>
+                            </tr>
                         @endif
+                    </table>
+                </div>
+            </div>
+        </div>
 
-                        <!-- Bank Details -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="border-bottom pb-2 mb-3">Bank Details</h5>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p><strong>Account Name:</strong> {{ $bank_details['account_name'] }}</p>
-                                                <p><strong>Bank Name:</strong> {{ $bank_details['bank_name'] }}</p>
-                                                <p><strong>Branch:</strong> {{ $bank_details['branch'] }}</p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p><strong>Account Number:</strong> {{ $bank_details['account_number'] }}
-                                                </p>
-                                                <p><strong>Account Type:</strong> {{ $bank_details['account_type'] }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Company Details -->
-                        <div class="row">
-                            <div class="col-12">
-                                <h5 class="border-bottom pb-2 mb-3">Company Details</h5>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <p><strong>Company Name:</strong> {{ $company['name'] }}</p>
-                                                <p><strong>Signatory Name:</strong> {{ $company['signatory_name'] }}</p>
-                                                <p><strong>Designation:</strong> {{ $company['signatory_designation'] }}
-                                                </p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p><strong>Phone:</strong> {{ $company['phone'] ?? 'N/A' }}</p>
-                                                <p><strong>Email:</strong> {{ $company['email'] ?? 'N/A' }}</p>
-                                                <p><strong>Website:</strong> {{ $company['website'] ?? 'N/A' }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Client Information Card -->
+        <div class="col-lg-6 col-12">
+            <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fe fe-user me-2 text-primary"></i>Client Information</h6>
+                    <table class="table table-borderless align-middle mb-0">
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0" style="width: 40%">Client / Company:</td>
+                            <td class="fw-bold text-dark">{{ $recipient_organization }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Client Address:</td>
+                            <td class="text-muted">{{ $recipient_address }}</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Bill Items Table Card -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="fe fe-box me-2 text-primary"></i>Bill Items Breakdown</h6>
+                <span class="badge badge-soft-primary px-3 py-1 rounded-pill">{{ $bill->billItems->count() }} items</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary fs-7 text-uppercase">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th style="width: 50%;">Description</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end pe-4">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        @foreach ($bill->billItems as $index => $item)
+                            <tr>
+                                <td class="ps-4 text-muted fw-semibold">{{ $index + 1 }}</td>
+                                <td>
+                                    <div class="fw-semibold text-dark">{!! nl2br(e($item->description)) !!}</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-soft-info px-2 py-1 rounded-2">{{ number_format($item->quantity) }} {{ $item->unit ?? 'Pcs' }}</span>
+                                </td>
+                                <td class="text-end text-muted">৳{{ number_format($item->unit_price, 2) }}</td>
+                                <td class="text-end fw-bold text-primary pe-4">৳{{ number_format($item->total, 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot class="border-top">
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold text-dark py-3">Subtotal:</td>
+                            <td colspan="2" class="text-end fw-bold text-dark pe-4 py-3">৳{{ number_format($bill->subtotal, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold text-dark py-2">Total Amount:</td>
+                            <td colspan="2" class="text-end fw-bold text-primary fs-5 pe-4 py-2">৳{{ number_format($bill->total_amount, 2) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms & Conditions Card -->
+    @if ($terms_conditions)
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="fe fe-file-text me-2 text-primary"></i>Terms & Conditions</h6>
+                <div class="p-3 bg-light rounded-3 text-secondary small">
+                    {!! nl2br(e($terms_conditions)) !!}
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Bank & Company Details Row -->
+    <div class="row g-4 mb-4">
+        <!-- Bank Details Card -->
+        <div class="col-lg-6 col-12">
+            <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fe fe-credit-card me-2 text-primary"></i>Bank Details</h6>
+                    <table class="table table-borderless align-middle mb-0">
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0" style="width: 40%">Account Name:</td>
+                            <td class="fw-bold text-dark">{{ $bank_details['account_name'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Bank Name:</td>
+                            <td class="text-dark">{{ $bank_details['bank_name'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Branch:</td>
+                            <td class="text-muted">{{ $bank_details['branch'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Account Number:</td>
+                            <td class="fw-bold text-primary font-monospace">{{ $bank_details['account_number'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Account Type:</td>
+                            <td class="text-muted">{{ $bank_details['account_type'] ?? '-' }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Details Card -->
+        <div class="col-lg-6 col-12">
+            <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fe fe-briefcase me-2 text-primary"></i>Company & Signatory</h6>
+                    <table class="table table-borderless align-middle mb-0">
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0" style="width: 40%">Company Name:</td>
+                            <td class="fw-bold text-dark">{{ $company['name'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Signatory Name:</td>
+                            <td class="fw-semibold text-dark">{{ $company['signatory_name'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Designation:</td>
+                            <td class="text-muted">{{ $company['signatory_designation'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Phone:</td>
+                            <td class="text-muted">{{ $company['phone'] ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary small fw-semibold ps-0">Email:</td>
+                            <td class="text-muted">{{ $company['email'] ?? 'N/A' }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 @endsection

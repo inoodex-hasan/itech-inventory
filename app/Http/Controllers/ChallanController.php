@@ -203,99 +203,103 @@ public function download($id)
 
     return $pdf->download($fileName);
 }
-public function getSales()
-{
-    try {
-      
+    public function getSales()
+    {
+        try {
+            $sales = Sale::with(['customer', 'client', 'items.product'])
+                ->latest()
+                ->get()
+                ->map(function ($sale) {
+                    $customerName = $sale->sale_type == 'project' ? ($sale->client->name ?? 'N/A') : ($sale->customer->name ?? 'N/A');
+                    $customerPhone = $sale->sale_type == 'project' ? ($sale->client->phone ?? 'N/A') : ($sale->customer->phone ?? 'N/A');
+                    $customerAddress = $sale->sale_type == 'project' ? ($sale->client->address ?? 'N/A') : ($sale->customer->address ?? 'N/A');
 
-        // Your actual query
-        $sales = Sale::where('order_no', 'LIKE', 'INV-%')
-                    ->with(['customer', 'product']) 
-                    ->get()
-                    ->map(function($sale) {
+                    $items = $sale->items->map(function ($item) {
                         return [
-                            'id' => $sale->id,
-                            'order_no' => $sale->order_no,
-                            'sale_type' => $sale->sale_type,
-                            'date' => $sale->created_at->format('Y-m-d'),
-                            'total_amount' => $sale->payble ?? $sale->total,
-                            'due_payment' => $sale->due_payment,
-                            'status' => $sale->status,
-                            'customer' => $sale->customer ? [
-                                'id' => $sale->customer->id,
-                                'name' => $sale->customer->name ?? 'Unknown',
-                                'email' => $sale->customer->email ?? 'N/A',
-                                'phone' => $sale->customer->phone ?? 'N/A',
-                                'address' => $sale->customer->address ?? 'N/A',
-                            ] : null,
-                            'items' => [
-                                [
-                                    'id' => $sale->product_id ?? $sale->id,
-                                    'description' => $sale->product->name ?? 'Product #' . $sale->order_no, 
-                                    'quantity' => $sale->qty ?? 1,
-                                    'unit' => 'Piece', 
-                                    'unit_price' => $sale->qty ? ($sale->total / $sale->qty) : $sale->total,
-                                    'total' => $sale->total,
-                                ]
-                            ]
+                            'id' => $item->id,
+                            'description' => ($item->product->name ?? 'Product') . ($item->product && $item->product->model ? ' (' . $item->product->model . ')' : ''),
+                            'quantity' => $item->qty ?? 1,
+                            'unit' => 'Pcs',
+                            'unit_price' => $item->unit_price ?? 0,
+                            'total' => $item->total_price ?? 0,
                         ];
                     });
 
-        \Log::info('Final sales count: ' . $sales->count());
-        \Log::info('=== END DEBUG ===');
+                    return [
+                        'id' => $sale->id,
+                        'order_no' => $sale->order_no,
+                        'sale_type' => $sale->sale_type,
+                        'date' => $sale->created_at ? $sale->created_at->format('Y-m-d') : '',
+                        'created_at' => $sale->created_at ? $sale->created_at->format('d M Y') : '',
+                        'customer_name' => $customerName,
+                        'customer_phone' => $customerPhone,
+                        'customer_address' => $customerAddress,
+                        'payble' => $sale->payble ?? $sale->total ?? 0,
+                        'total_amount' => $sale->payble ?? $sale->total ?? 0,
+                        'due_payment' => $sale->due_payment ?? 0,
+                        'customer' => [
+                            'id' => $sale->customer_id ?? $sale->client_id,
+                            'name' => $customerName,
+                            'phone' => $customerPhone,
+                            'address' => $customerAddress,
+                        ],
+                        'items' => $items
+                    ];
+                });
 
-        return response()->json(['sales' => $sales]);
-    } catch (\Exception $e) {
-        \Log::error('Error in getSales: ' . $e->getMessage());
-        return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json($sales);
+        } catch (\Exception $e) {
+            \Log::error('Error in getSales: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
-}
 
+    public function getProjects()
+    {
+        try {
+            $projects = Project::with(['client', 'projectItems.product'])
+                ->latest()
+                ->get()
+                ->map(function ($project) {
+                    $clientName = $project->client->name ?? 'N/A';
+                    $clientAddress = $project->client->address ?? 'N/A';
 
-public function getProjects()
-{
-    try {
-        $projects = Project::with(['client', 'projectItems.product']) 
-                    ->get()
-                    ->map(function($project) {
-                        return [
-                            'id' => $project->id,
-                            'name' => $project->project_name,
-                            'reference' => 'PROJ-' . $project->id,
-                            'date' => $project->start_date ?? $project->created_at->format('Y-m-d'),
-                            'total_amount' => $project->budget,
-                            'due_payment' => $project->due_payment,
-                            'status' => $project->status,
-                            'client' => $project->client ? [
-                                'id' => $project->client->id,
-                                'name' => $project->client->name ?? 'Unknown',
-                                'email' => $project->client->email ?? 'N/A',
-                                'phone' => $project->client->phone ?? 'N/A',
-                                'address' => $project->client->address ?? 'N/A',
-                            ] : null,
-                            'items' => $project->projectItems->map(function($item) {
-                                // Get description from the product relationship
-                                $productName = $item->product ? $item->product->name : null;
-                                $productDescription = $item->product ? $item->product->description : null;
-                                
-                                return [
-                                    'id' => $item->id,
-                                    'description' => $item->description ?? $productDescription ?? $productName ?? 'Project Item',
-                                    'quantity' => $item->quantity ?? 1,
-                                    'unit' => $item->unit ?? 'Unit',
-                                    'unit_price' => $item->unit_price ?? 0,
-                                    'total' => $item->total ?? ($item->quantity * $item->unit_price),
-                                ];
-                            })->toArray()
-                        ];
-                    });
+                    return [
+                        'id' => $project->id,
+                        'name' => $project->name ?? $project->project_name ?? 'Project #' . $project->id,
+                        'reference' => 'PROJ-' . $project->id,
+                        'date' => $project->start_date ?? ($project->created_at ? $project->created_at->format('Y-m-d') : ''),
+                        'created_at' => $project->created_at ? $project->created_at->format('d M Y') : '',
+                        'client_name' => $clientName,
+                        'client_address' => $clientAddress,
+                        'budget' => $project->budget ?? 0,
+                        'total_amount' => $project->budget ?? 0,
+                        'due_payment' => $project->due_payment ?? 0,
+                        'client' => [
+                            'id' => $project->client->id ?? null,
+                            'name' => $clientName,
+                            'address' => $clientAddress,
+                        ],
+                        'items' => $project->projectItems->map(function ($item) {
+                            $productName = $item->product ? $item->product->name : null;
+                            return [
+                                'id' => $item->id,
+                                'description' => $item->description ?? $productName ?? 'Project Item',
+                                'quantity' => $item->quantity ?? 1,
+                                'unit' => $item->unit ?? 'Unit',
+                                'unit_price' => $item->unit_price ?? 0,
+                                'total' => $item->total ?? ($item->quantity * $item->unit_price),
+                            ];
+                        })
+                    ];
+                });
 
-        return response()->json(['projects' => $projects]);
-    } catch (\Exception $e) {
-        \Log::error('getProjects Error: ' . $e->getMessage());
-        return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json($projects);
+        } catch (\Exception $e) {
+            \Log::error('getProjects Error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
-}
 
 public function reportPdf(Request $request)
 {
