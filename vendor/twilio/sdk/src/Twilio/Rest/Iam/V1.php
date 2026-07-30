@@ -20,20 +20,30 @@ use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceContext;
 use Twilio\Rest\Iam\V1\ApiKeyList;
 use Twilio\Rest\Iam\V1\GetApiKeysList;
-use Twilio\Rest\Iam\V1\KeyList;
+use Twilio\Rest\Iam\V1\NewApiKeyList;
+use Twilio\Rest\Iam\V1\OAuthAppList;
+use Twilio\Rest\Iam\V1\RolePermissionList;
+use Twilio\Rest\Iam\V1\TokenList;
 use Twilio\Version;
 
 /**
  * @property ApiKeyList $apiKey
  * @property GetApiKeysList $getApiKeys
- * @property KeyList $keys
+ * @property NewApiKeyList $newApiKey
+ * @property OAuthAppList $oAuthApps
+ * @property RolePermissionList $rolePermission
+ * @property TokenList $token
  * @method \Twilio\Rest\Iam\V1\ApiKeyContext apiKey(string $sid)
+ * @method \Twilio\Rest\Iam\V1\OAuthAppContext oAuthApps(string $sid)
  */
 class V1 extends Version
 {
     protected $_apiKey;
     protected $_getApiKeys;
-    protected $_keys;
+    protected $_newApiKey;
+    protected $_oAuthApps;
+    protected $_rolePermission;
+    protected $_token;
 
     /**
      * Construct the V1 version of Iam
@@ -62,12 +72,36 @@ class V1 extends Version
         return $this->_getApiKeys;
     }
 
-    protected function getKeys(): KeyList
+    protected function getNewApiKey(): NewApiKeyList
     {
-        if (!$this->_keys) {
-            $this->_keys = new KeyList($this);
+        if (!$this->_newApiKey) {
+            $this->_newApiKey = new NewApiKeyList($this);
         }
-        return $this->_keys;
+        return $this->_newApiKey;
+    }
+
+    protected function getOAuthApps(): OAuthAppList
+    {
+        if (!$this->_oAuthApps) {
+            $this->_oAuthApps = new OAuthAppList($this);
+        }
+        return $this->_oAuthApps;
+    }
+
+    protected function getRolePermission(): RolePermissionList
+    {
+        if (!$this->_rolePermission) {
+            $this->_rolePermission = new RolePermissionList($this);
+        }
+        return $this->_rolePermission;
+    }
+
+    protected function getToken(): TokenList
+    {
+        if (!$this->_token) {
+            $this->_token = new TokenList($this);
+        }
+        return $this->_token;
     }
 
     /**
