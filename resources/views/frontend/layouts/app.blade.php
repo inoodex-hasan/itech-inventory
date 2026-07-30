@@ -2,7 +2,6 @@
 <html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="lg"
     data-sidebar-image="none">
 
-<!-- Mirrored from kanakku.dreamstechnologies.com/html/template/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 24 Nov 2024 06:09:13 GMT -->
 @include('frontend.layouts.head')
 
 <body>
@@ -15,15 +14,9 @@
         @include('frontend.layouts.sidebar')
         <!-- Page Wrapper -->
         <div class="page-wrapper">
-            <div class="content container-fluid " style="margin:0; padding-bottom:0; ">
-                <!-- Page Header -->
-
-                <!-- /Page Header -->
-
+            <div class="content container-fluid" style="margin:0; padding-bottom:0;">
                 <!-- Alerts -->
                 @include('layouts.flash-message')
-
-
                 <!-- /Alerts -->
             </div>
             @yield('content')
@@ -33,38 +26,47 @@
     </div>
     <!-- /Main Wrapper -->
 
-
     @include('frontend.layouts.right_sidebar')
 
-    <!-- jQuery -->
-    <script src="{{asset('assets')}}/js/jquery-3.7.1.min.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
-
     <!-- Bootstrap Core JS -->
-    <script src="{{asset('assets')}}/js/bootstrap.bundle.min.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
+    <script src="{{asset('assets')}}/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="{{ asset('assets') }}/plugins/select2/js/select2.min.js"></script>
 
     <!-- Feather Icon JS -->
-    <script src="{{asset('assets')}}/js/feather.min.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
+    <script src="{{asset('assets')}}/js/feather.min.js"></script>
 
     <!-- Slimscroll JS -->
-    <script src="{{asset('assets')}}/plugins/slimscroll/jquery.slimscroll.min.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
+    <script src="{{asset('assets')}}/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 
     <!-- Chart JS -->
-    <script src="{{asset('assets')}}/plugins/apexchart/apexcharts.min.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
-    <script src="{{asset('assets')}}/plugins/apexchart/chart-data.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
+    <script src="{{asset('assets')}}/plugins/apexchart/apexcharts.min.js"></script>
+    <script src="{{asset('assets')}}/plugins/apexchart/chart-data.js"></script>
 
     <!-- Theme Settings JS -->
-    <script src="{{asset('assets')}}/js/theme-settings.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
-    <script src="{{asset('assets')}}/js/greedynav.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
+    <script src="{{asset('assets')}}/js/theme-settings.js"></script>
+    <script src="{{asset('assets')}}/js/greedynav.js"></script>
 
     <!-- Custom JS -->
-    <script src="{{asset('assets')}}/js/script.js" type="19fcc0aa7d222f8686a0e100-text/javascript"></script>
+    <script src="{{asset('assets')}}/js/script.js"></script>
 
-    <script src="{{ asset('assets') }}/js/rocket-loader.min.js" data-cf-settings="19fcc0aa7d222f8686a0e100-|49" defer>
+    <script>
+        $(document).ready(function() {
+            if ($.fn.select2) {
+                $('.select2').each(function() {
+                    const $select = $(this);
+                    const $modal = $select.closest('.modal');
+                    
+                    $select.select2({
+                        width: '100%',
+                        dropdownParent: $modal.length ? $modal : $(document.body)
+                    });
+                });
+            }
+        });
     </script>
 
     @stack('scripts')
 </body>
-
-<!-- Mirrored from kanakku.dreamstechnologies.com/html/template/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 24 Nov 2024 06:10:03 GMT -->
-
 </html>

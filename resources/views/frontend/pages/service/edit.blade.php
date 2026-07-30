@@ -1,316 +1,179 @@
 @extends('frontend.layouts.app')
+
 @section('content')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<div class="content container-fluid">
 
-    <style>
-        .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
-            border-color: transparent transparent #888 transparent;
-            border-width: 0 !important;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow b {
-            border-color: #888 transparent transparent transparent;
-            border-style: solid;
-            border-width: 0 !important;
-            height: 0;
-            left: 50%;
-            margin-left: -4px;
-            margin-top: -2px;
-            position: absolute;
-            top: 50%;
-            width: 0;
-        }
-    </style>
-
-    <div class="content container-fluid">
-        <div class="card mb-0">
-            <div class="card-body">
-                <!-- Page Header -->
-                <div class="page-header">
-                    <div class="content-page-header">
-                        <h5>Update Service</h5>
-                    </div>
-                </div>
-                <!-- /Page Header -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <form action="{{ route('service.update', $service->id) }}" method="post">
-                            @method('PUT')
-                            @csrf
-                            <div class="form-group-item">
-                                <h5 class="form-title d-none">Basic Details</h5>
-                                <div class="profile-picture d-none">
-                                    <div class="upload-profile">
-                                        <div class="profile-img">
-                                            <img id="blah" class="avatar" src="" alt="profile-img">
-                                        </div>
-                                        <div class="add-profile">
-                                            <h5>Upload a New Photo</h5>
-                                            <span id="imageName"></span>
-                                        </div>
-                                    </div>
-                                    <div class="img-upload">
-                                        <label class="btn btn-upload">
-                                            Upload <input type="file">
-                                        </label>
-                                        <a class="btn btn-remove d-none">Remove</a>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Name <span class="text-danger">*</span></label>
-                                            <input type="text" name="name" class="form-control"
-                                                placeholder="Enter Name" value="{{ $service->name }}" required
-                                                autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Phone<span class="text-danger">*</span> </label>
-                                            <div class="input-group">
-                                                <select name="country_code" id="country_code" class="form-select phoneCode"
-                                                    style="max-width:110px;">
-                                                    @foreach (country_codes() as $key => $data)
-                                                        <option value="{{ $key }}"
-                                                            {{ $service->country_code == $key ? 'selected' : '' }}
-                                                            data-show="{{ $data['flag'] . ' ' . $data['code'] }}"
-                                                            data-showdefault="{{ $data['flag'] . ' ' . $data['code'] . ' ' . $data['name'] }}">
-                                                            {{ $data['flag'] . ' ' . $data['code'] }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <input type="text" class="form-control" placeholder="Phone Number"
-                                                    name="phone" value="{{ $service->phone }}" required
-                                                    autocomplete="off">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3 ">
-                                            <label>Email </label>
-                                            <input type="email" name="email" class="form-control"
-                                                placeholder="Enter Email Address" value="{{ $service->email }}"
-                                                autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Address </label>
-                                            <textarea type="text" class="form-control" placeholder="Address" name="address" autocomplete="off">{{ $service->address }}</textarea>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Product Name <span class="text-danger">*</span></label>
-                                            <select name="product_id" id="product_select"
-                                                class="form-control js-example-basic-single" required>
-                                                <option value=""></option>
-                                                @foreach ($products as $product)
-                                                    <option value="{{ $product->id }}"
-                                                        data-category-id="{{ $product->category_id }}"
-                                                        {{ (string) old('product_id', $service->product_id) === (string) $product->id || (!$service->product_id && $service->product_name === $product->name) ? 'selected' : '' }}>
-                                                        {{ $product->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Category</label>
-                                            <select id="category_select"
-                                                class="form-control js-example-basic-single-no-new-value" disabled>
-                                                <option value="">-- Select Category --</option>
-                                                @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}"
-                                                        {{ (string) optional($service->product)->category_id === (string) $category->id ? 'selected' : '' }}>
-                                                        {{ $category->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Product EMEI or Serial number </label>
-                                            <input type="text" class="form-control"
-                                                placeholder="Product EMEI or Serial number" name="product_number"
-                                                value="{{ $service->product_number }}" autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Service Details </label>
-                                            <textarea type="text" class="form-control" placeholder="Service Details" name="details" autocomplete="off">{{ $service->details }}</textarea>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Warranty Duration (In days) <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" placeholder="Warranty Duration"
-                                                name="warranty_duration" value="{{ $service->warranty_duration }}"
-                                                autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Repaired By</label>
-                                            <Select class="form-select" name="repaired_by">
-                                                <option value="">--Select--</option>
-                                                @foreach ($serviceMans as $key => $user)
-                                                    <option value="{{ $key }}"
-                                                        {{ $service->repaired_by == $key ? 'selected' : '' }}>
-                                                        {{ $user }}</option>
-                                                @endforeach
-                                            </Select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Price <span class="text-danger">*</span></label>
-                                            <input onchange="calculateDue()" type="text" class="form-control"
-                                                placeholder="Price" id="total" name="total"
-                                                value="{{ $service->total }}" required autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Discount </label>
-                                            <input type="number" onchange="calculateDue()" class="form-control"
-                                                placeholder="Discount" id="discount" name="discount"
-                                                value="{{ $service->discount }}" autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Bill <span class="text-danger">*</span></label>
-                                            <input onchange="calculateDue()" type="text" class="form-control"
-                                                placeholder="Price" id="bill" name="bill"
-                                                value="{{ $service->bill }}" required autocomplete="off" readonly>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Paid Amount</label>
-                                            <input type="number" class="form-control" placeholder="Paid Amount"
-                                                id="paid_amount" name="paid_amount" value="{{ $service->paid_amount }}"
-                                                readonly autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Due Amount</label>
-                                            <input type="number" class="form-control" placeholder="Due Amount"
-                                                id="due_amount" name="due_amount" value="{{ $service->due_amount }}"
-                                                readonly autocomplete="off">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-8 col-md-12 col-sm-12">
-                                        <div class="input-block mb-3">
-                                            <label>Remarks / Notes</label>
-                                            <textarea class="form-control" placeholder="Add any remarks or notes..." name="remarks" rows="3">{{ $service->remarks }}</textarea>
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                            </div>
-
-                            <div class="add-customer-btns text-left">
-                                <button type="submit" class="btn customer-btn-save">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Edit Service</h4>
+                <p class="text-muted small mb-0">Update repair service details, customer information, and pricing</p>
+            </div>
+            <div>
+                <a href="{{ route('service.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
+                 <i class="fa fa-arrow-left me-2"></i>    
+                Back to Services
+                </a>
             </div>
         </div>
     </div>
+    <!-- /Page Header -->
 
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <form action="{{ route('service.update', $service->id) }}" method="POST">
+                @method('PUT')
+                @csrf
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
+                <!-- Section: Customer Details -->
+                <h6 class="fw-bold text-dark mb-3"><i class="fe fe-user me-2 text-primary"></i>Customer Details</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Customer Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control border-light-subtle" placeholder="Enter Customer Name" value="{{ old('name', $service->name) }}" required autocomplete="off">
+                    </div>
 
-            $('.js-example-basic-single').select2();
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Phone Number <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control border-light-subtle" placeholder="Phone Number" name="phone" value="{{ old('phone', $service->phone) }}" required autocomplete="off">
+                    </div>
 
-            $('.js-example-basic-single-no-new-value').select2({});
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Email Address</label>
+                        <input type="email" name="email" class="form-control border-light-subtle" placeholder="Enter Email Address" value="{{ old('email', $service->email) }}" autocomplete="off">
+                    </div>
 
-            $('#product_select').on('change', function() {
-                const selected = this.options[this.selectedIndex];
-                const categoryId = selected ? selected.getAttribute('data-category-id') : '';
-                $('#category_select').val(categoryId).trigger('change');
-            }).trigger('change');
-        });
+                    <div class="col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Address</label>
+                        <textarea class="form-control border-light-subtle" placeholder="Enter Customer Address" name="address" rows="2" autocomplete="off">{{ old('address', $service->address) }}</textarea>
+                    </div>
+                </div>
 
-        function calculateDue() {
-            // var bill = (document.getElementById("bill").value.trim() * 1)??0;
-            var total = (document.getElementById("total").value.trim() * 1) ?? 0;
-            var discount = (document.getElementById("discount").value.trim() * 1) ?? 0;
-            document.getElementById("bill").value = Math.max(total - discount, 0);
-            var bill = (document.getElementById("bill").value.trim() * 1) ?? 0;
-            var paid_amount = (document.getElementById("paid_amount").value.trim() * 1) ?? 0;
+                <hr class="my-4 opacity-50">
 
-            document.getElementById("due_amount").value = Math.max(0, bill - paid_amount);
-        }
-    </script>
-    <script>
-        const selectElements = document.querySelectorAll('.phoneCode');
-        selectElements.forEach(selectElement => {
-            selectElement.addEventListener('focus', function() {
-                // console.log('open');
-                const options = selectElement.options;
-                Array.from(options).forEach(option => {
-                    option.text = option.dataset.showdefault;
-                });
-            });
-            selectElement.addEventListener('blur', function() {
-                // console.log('close')
-                const options = selectElement.options;
-                Array.from(options).forEach(option => {
-                    option.text = option.dataset.show;
-                });
-            });
+                <!-- Section: Product & Repair Details -->
+                <h6 class="fw-bold text-dark mb-3"><i class="fe fe-tool me-2 text-primary"></i>Product & Repair Info</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Product Name <span class="text-danger">*</span></label>
+                        <select name="product_id" id="product_select" class="form-select select2 border-light-subtle" required>
+                            <option value="">Select Product</option>
+                            @foreach ($products as $product)
+                                <option value="{{ $product->id }}"
+                                    data-category-id="{{ $product->category_id }}"
+                                    {{ (string) old('product_id', $service->product_id) === (string) $product->id || (!$service->product_id && $service->product_name === $product->name) ? 'selected' : '' }}>
+                                    {{ $product->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-            selectElement.addEventListener('change', function() {
-                // console.log('close')
-                const options = selectElement.options;
-                Array.from(options).forEach(option => {
-                    option.text = option.dataset.show;
-                });
-                selectElement.blur();
-            });
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Category</label>
+                        <select id="category_select" class="form-select select2 border-light-subtle" disabled>
+                            <option value="">Select Category</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ (string) optional($service->product)->category_id === (string) $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-            selectElement.addEventListener('mousedown', function(event) {
-                // console.log('close')
-                const options = selectElement.options;
-                Array.from(options).forEach(option => {
-                    option.text = option.dataset.show;
-                });
-                selectElement.blur();
-            });
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Serial / IMEI Number</label>
+                        <input type="text" class="form-control border-light-subtle" placeholder="Product IMEI or Serial Number" name="product_number" value="{{ old('product_number', $service->product_number) }}" autocomplete="off">
+                    </div>
 
-            // Handling touchend event for touch devices
-            selectElement.addEventListener('touchend', function(event) {
-                // console.log('close');
-                const options = selectElement.options;
-                Array.from(options).forEach(option => {
-                    option.text = option.dataset.show;
-                });
-                selectElement.blur();
-            });
-        });
-    </script>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Warranty Duration (Days)</label>
+                        <input type="number" class="form-control border-light-subtle" placeholder="Warranty duration in days" name="warranty_duration" value="{{ old('warranty_duration', $service->warranty_duration) }}" autocomplete="off">
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Repaired By</label>
+                        <select class="form-select border-light-subtle" name="repaired_by">
+                            <option value="">Select Technician</option>
+                            @foreach ($serviceMans as $key => $user)
+                                <option value="{{ $key }}" {{ old('repaired_by', $service->repaired_by) == $key ? 'selected' : '' }}>
+                                    {{ $user }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Service Details</label>
+                        <textarea class="form-control border-light-subtle" placeholder="Enter problem diagnosis or service details..." name="details" rows="2" autocomplete="off">{{ old('details', $service->details) }}</textarea>
+                    </div>
+                </div>
+
+                <hr class="my-4 opacity-50">
+
+                <!-- Section: Financial Breakdown -->
+                <h6 class="fw-bold text-dark mb-3"><i class="fe fe-dollar-sign me-2 text-primary"></i>Financial Details</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-3 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Price Total <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" oninput="calculateDue()" class="form-control border-light-subtle" placeholder="Price" id="total" name="total" value="{{ old('total', $service->total) }}" required autocomplete="off">
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Discount Amount</label>
+                        <input type="number" step="0.01" oninput="calculateDue()" class="form-control border-light-subtle" placeholder="Discount" id="discount" name="discount" value="{{ old('discount', $service->discount) }}" autocomplete="off">
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Final Bill Amount</label>
+                        <input type="number" step="0.01" class="form-control border-light-subtle bg-light" id="bill" name="bill" value="{{ old('bill', $service->bill) }}" required readonly>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Paid Amount</label>
+                        <input type="number" step="0.01" class="form-control border-light-subtle bg-light" id="paid_amount" name="paid_amount" value="{{ old('paid_amount', $service->paid_amount) }}" readonly>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Outstanding Due</label>
+                        <input type="number" step="0.01" class="form-control border-light-subtle bg-light fw-bold text-danger" id="due_amount" name="due_amount" value="{{ old('due_amount', $service->due_amount) }}" readonly>
+                    </div>
+
+                    <div class="col-lg-9 col-12">
+                        <label class="form-label small text-secondary fw-semibold mb-1">Remarks / Notes</label>
+                        <textarea class="form-control border-light-subtle" placeholder="Add any service remarks..." name="remarks" rows="1">{{ old('remarks', $service->remarks) }}</textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a href="{{ route('service.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 py-2 rounded-3">Update Service</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#product_select').on('change', function() {
+            const selected = this.options[this.selectedIndex];
+            const categoryId = selected ? selected.getAttribute('data-category-id') : '';
+            $('#category_select').val(categoryId).trigger('change');
+        }).trigger('change');
+    });
+
+    function calculateDue() {
+        var total = parseFloat(document.getElementById("total").value) || 0;
+        var discount = parseFloat(document.getElementById("discount").value) || 0;
+        var bill = Math.max(total - discount, 0);
+        document.getElementById("bill").value = bill.toFixed(2);
+        
+        var paid_amount = parseFloat(document.getElementById("paid_amount").value) || 0;
+        document.getElementById("due_amount").value = Math.max(0, bill - paid_amount).toFixed(2);
+    }
+</script>
+@endpush

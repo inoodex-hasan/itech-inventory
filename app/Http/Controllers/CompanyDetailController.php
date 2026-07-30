@@ -15,7 +15,7 @@ class CompanyDetailController extends Controller
 
     public function create()
     {
-        return view('frontend.pages.company-details.create');
+        return redirect()->route('company-details.index');
     }
 
     public function store(Request $request)
@@ -45,7 +45,7 @@ class CompanyDetailController extends Controller
 
     public function edit(CompanyDetail $companyDetail)
     {
-        return view('frontend.pages.company-details.edit', compact('companyDetail'));
+        return redirect()->route('company-details.index');
     }
 
     public function update(Request $request, CompanyDetail $companyDetail)

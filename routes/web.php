@@ -60,10 +60,8 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('warranties', WarrantyController::class);
    
 
-    Route::prefix('purchase')->group(function () {
-        Route::resource('purchase', PurchaseController::class);
-        Route::get('latest-price/{id}', [PurchaseController::class, 'getLatestPrice'])->name('purchase.latest_price');
-    });
+    Route::resource('purchase', PurchaseController::class);
+    Route::get('purchase/latest-price/{id}', [PurchaseController::class, 'getLatestPrice'])->name('purchase.latest_price');
 
     Route::resource('sales', SalesController::class);
     Route::get('sales/invoice/{id}', [SalesController::class, 'makeInvoice'])->name('sales.invoice');
@@ -149,13 +147,13 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('company-details', CompanyDetailController::class);
     Route::post('company-details/{companyDetail}/set-default', [CompanyDetailController::class, 'setDefault'])->name('company-details.set-default');
 
-        Route::get('returns', [ReturnController::class, 'index'])->name('returns.index');
-        Route::get('returns/create', [ReturnController::class, 'create'])->name('returns.create');
-        Route::post('returns', [ReturnController::class, 'store'])->name('returns.store');
-        Route::get('returns/sale-items/{saleId}', [ReturnController::class, 'getSaleItems'])->name('returns.sale.items');
-        Route::get('returns/{id}', [ReturnController::class, 'show'])->name('returns.show');
-        Route::delete('returns/{id}', [ReturnController::class, 'destroy'])->name('returns.destroy');
-        Route::patch('returns/{id}/approve', [ReturnController::class, 'approve'])->name('returns.approve');
-        Route::patch('returns/{id}/complete', [ReturnController::class, 'complete'])->name('returns.complete');
-        Route::patch('returns/{id}/reject', [ReturnController::class, 'reject'])->name('returns.reject');
+        Route::get('product-returns', [ReturnController::class, 'index'])->name('returns.index');
+        Route::get('product-returns/create', [ReturnController::class, 'create'])->name('returns.create');
+        Route::post('product-returns', [ReturnController::class, 'store'])->name('returns.store');
+        Route::get('product-returns/sale-items/{saleId}', [ReturnController::class, 'getSaleItems'])->name('returns.sale.items');
+        Route::get('product-returns/{id}', [ReturnController::class, 'show'])->name('returns.show');
+        Route::delete('product-returns/{id}', [ReturnController::class, 'destroy'])->name('returns.destroy');
+        Route::patch('product-returns/{id}/approve', [ReturnController::class, 'approve'])->name('returns.approve');
+        Route::patch('product-returns/{id}/complete', [ReturnController::class, 'complete'])->name('returns.complete');
+        Route::patch('product-returns/{id}/reject', [ReturnController::class, 'reject'])->name('returns.reject');
 });

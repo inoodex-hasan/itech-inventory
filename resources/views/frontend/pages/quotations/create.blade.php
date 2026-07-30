@@ -1,21 +1,23 @@
-@extends('layouts.app')
+@extends('frontend.layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">Create New Quotation</h4>
-                            <div>
-                                <a href="{{ route('quotations.index') }}" class="btn btn-secondary">
-                                    Back
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
+<div class="content container-fluid">
+
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Create New Quotation</h4>
+                <p class="text-muted small mb-0">Generate formal price quotes and client proposal estimates</p>
+            </div>
+            <div>
+                <a href="{{ route('quotations.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
+                    <i class="fa fa-arrow-left me-2"></i>Back to Quotations
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Header -->
                         <form id="billForm" action="{{ route('quotations.store') }}" method="POST">
                             @csrf
                             <!-- Client Information Section (Always Required) -->
@@ -337,9 +339,10 @@ Yours Sincerely,</textarea>
                             <!-- Submit Button -->
                             <div class="row">
                                 <div class="col-12">
-                                    <div class="d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-success btn-lg">
-                                            Save Quotation
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ route('quotations.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3">Cancel</a>
+                                        <button type="submit" class="btn btn-primary px-4 py-2 rounded-3">
+                                            Create Quotation
                                         </button>
                                     </div>
                                 </div>

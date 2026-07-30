@@ -1,17 +1,25 @@
-@extends('layouts.app')
+@extends('frontend.layouts.app')
 
 @section('title', 'Edit Quotation')
 
 @section('content')
-    <div class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box">
-                        <h4 class="page-title">Edit Quotation</h4>
-                    </div>
-                </div>
+<div class="content container-fluid">
+
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Edit Quotation #{{ $quotation->quotation_number }}</h4>
+                <p class="text-muted small mb-0">Update price quotation details and product items</p>
             </div>
+            <div>
+                <a href="{{ route('quotations.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
+                    <i class="fa fa-arrow-left me-2"></i>Back to Quotations
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Header -->
 
             <div class="row">
                 <div class="col-12">
@@ -113,13 +121,11 @@
                                                                             <span
                                                                                 class="product-total">{{ number_format($item->total, 2) }}</span>
                                                                         </td>
-                                                                        <td>
                                                                             <button type="button"
-                                                                                class="btn btn-sm btn-danger remove-product"
+                                                                                class="btn btn-sm btn-outline-danger border-0 remove-product"
                                                                                 data-row="product-{{ $index }}">
-                                                                                <i class="mdi mdi-delete"></i>
+                                                                                <i class="fa fa-times"></i>
                                                                             </button>
-                                                                        </td>
                                                                     </tr>
                                                                 @endforeach
                                                             @else

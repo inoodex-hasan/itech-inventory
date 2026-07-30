@@ -1,23 +1,26 @@
-@extends('layouts.app')
+@extends('frontend.layouts.app')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">Quotation Details</h4>
-                            <div>
-                                <button type="button" id="generatePdf" class="btn btn-success me-2">
-                                    <i class="mdi mdi-file-pdf me-1"></i> Generate PDF
-                                </button>
-                                <a href="{{ route('quotations.index') }}" class="btn btn-secondary">
-                                    <i class="mdi mdi-arrow-left me-1"></i> Back to List
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+<div class="content container-fluid">
+
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Quotation Details #{{ $quotation->quotation_number }}</h4>
+                <p class="text-muted small mb-0">View formal quote estimate and line item summary</p>
+            </div>
+            <div>
+                <a href="{{ route('quotations.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm me-2">
+                    <i class="fa fa-arrow-left me-2"></i>Back to Quotations
+                </a>
+                <a href="{{ route('quotations.pdf', $quotation->id) }}" class="btn btn-primary px-4 py-2 rounded-3 shadow-sm" target="_blank">
+                    <i class="fe fe-download me-2"></i>Download PDF
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Header -->
                     <div class="card-body" id="quotation-content">
                         <!-- Quotation Header -->
                         <div class="row mb-4">
