@@ -10,7 +10,7 @@ class TaDaController extends Controller
 {
     public function index()
     {
-        $taDas = TaDa::latest()->get();
+        $taDas = TaDa::with('employee')->latest()->get();
         return view('frontend.pages.ta_da.index', compact('taDas'));
     }
 

@@ -26,7 +26,7 @@ class ClientController extends Controller
             });
         }
 
-        $clients = $query->latest()->paginate(10)->withQueryString();
+        $clients = $query->with('projects')->latest()->paginate(10)->withQueryString();
         return view('frontend.pages.clients.index', compact('clients'));
     }
 

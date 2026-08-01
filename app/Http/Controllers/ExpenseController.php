@@ -64,6 +64,7 @@ class ExpenseController extends Controller
 
         // Select what we need
         $dailyExpense = $query
+            ->with('employee')
             ->select(
                 'daily_expenses.*',
                 'expense_categories.name as category_name'
