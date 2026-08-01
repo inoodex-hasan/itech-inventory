@@ -190,7 +190,7 @@
                 @endif
 
                 <!-- 13. Employee Portal -->
-                @if($canView('Employee Management'))
+                @if(auth()->check() && (auth()->user()->hasRole(['Employee', 'employee']) || auth()->user()->employee))
                     <li class="menu-title"><span>Employee Portal</span></li>
                     <li>
                         <a href="{{ route('employee.tada.index') }}" class="{{ request()->routeIs('employee.tada.index') ? 'active' : '' }}">
@@ -255,3 +255,24 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(function() {
+        const activeLink = document.querySelector('#sidebar .sidebar-inner a.active') || document.querySelector('#sidebar a.active');
+        if (activeLink) {
+            activeLink.scrollIntoView({ block: 'center', inline: 'nearest' });
+            
+            // Expand parent submenu if nested
+            const parentSubmenu = activeLink.closest('li.submenu');
+            if (parentSubmenu) {
+                parentSubmenu.classList.add('active');
+                const subUl = parentSubmenu.querySelector('ul');
+                if (subUl) {
+                    subUl.style.display = 'block';
+                }
+            }
+        }
+    }, 100);
+});
+</script>

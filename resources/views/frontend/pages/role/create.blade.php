@@ -1,41 +1,23 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    <div class="content container-fluid col-sm-10">
-        <!-- Page Header -->
-        <div class="page-header">
-            <div class="content-page-header">
-                <h5>Create Role</h5>
+<div class="content container-fluid">
+
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Create New Role</h4>
+                <p class="text-muted small mb-0">Define role title and assign module access permissions</p>
+            </div>
+            <div>
+                <a href="{{ route('role.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
+                    <i class="fa fa-arrow-left me-2"></i>Back to Roles
+                </a>
             </div>
         </div>
-        <!-- /Page Header -->
-        @if ($errors->any())
-            <div class="alert alert-danger" id="validation-error-alert">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-
-            <script>
-                // Set a timeout to hide the alert after 2000 milliseconds (2 seconds)
-                setTimeout(function() {
-                    document.getElementById('validation-error-alert').style.display = 'none';
-                }, 3000);
-            </script>
-        @endif
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-header align-items-center d-flex">
-                        <h4 class="card-title mb-0 flex-grow-1">Create Role</h4>
-                        <div class="flex-shrink-0">
-                            <div class="form-check form-switch form-switch-right form-switch-md">
-                                <a href="{{ route('role.index') }}" class="btn btn-info">Role List</a>
-                            </div>
-                        </div>
-                    </div>
+    </div>
+    <!-- /Page Header -->
                     <!-- end card header -->
                     <div class="card-body">
                         <div class="live-preview">
@@ -68,7 +50,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary float-end">Submit</button>
+                                    <div class="d-flex justify-content-end gap-2 mt-4">
+                                        <a href="{{ route('role.index') }}" class="btn btn-outline-secondary px-4 rounded-3">Cancel</a>
+                                        <button type="submit" class="btn btn-primary px-4 rounded-3">Create Role</button>
+                                    </div>
                                 </form>
 
                             </div>

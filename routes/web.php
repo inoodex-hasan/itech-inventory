@@ -119,7 +119,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('employees/{id}', [EmployeeController::class, 'show'])->name('employees.view');
     Route::resource('ta-da', TaDaController::class);
     Route::resource('salary', SalaryController::class);
-    Route::resource('dailyExpenses', ExpenseController::class);
+    Route::resource('daily-expenses', ExpenseController::class)->names('dailyExpenses');
     Route::resource('expense-categories', ExpenseCategoryController::class);
 
     Route::post('/salary/get-tada-data-ajax', [SalaryController::class, 'getTaDaDataAjax'])->name('salary.get-tada-data-ajax');
