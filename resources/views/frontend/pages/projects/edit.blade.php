@@ -2,14 +2,21 @@
 
 @section('content')
     <div class="content container-fluid">
-        <div class="page-header">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h3 class="page-title">Edit Project</h3>
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h4 class="card-title fw-bold text-dark mb-1">Edit Project</h4>
+                    <p class="text-muted small mb-0">Update project parameters, client information, and budget</p>
                 </div>
-
+                <div>
+                    <a href="{{ route('projects.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
+                        <i class="fa fa-arrow-left me-2"></i>Back to Projects
+                    </a>
+                </div>
             </div>
         </div>
+        <!-- /Page Header -->
 
         <form action="{{ route('projects.update', $project->id) }}" method="post">
             @csrf

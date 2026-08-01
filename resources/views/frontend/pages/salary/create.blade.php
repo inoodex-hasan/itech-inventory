@@ -17,11 +17,27 @@
             });
         </script>
     @endif
-    <div class="row justify-content-center p-3">
-        <div class="col col-sm-10">
-            <div class="card p-4 shadow">
-                <h2 class="mb-3">Create Salary</h2>
-                <form method="POST" action="{{ route('salary.store') }}" id="salaryForm">
+<div class="content container-fluid">
+
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h4 class="card-title fw-bold text-dark mb-1">Process Employee Salary</h4>
+                <p class="text-muted small mb-0">Calculate net salary, allowances, deductions, and payment status</p>
+            </div>
+            <div>
+                <a href="{{ route('salary.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
+                    <i class="fa fa-arrow-left me-2"></i>Back to Salary List
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Header -->
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <form method="POST" action="{{ route('salary.store') }}" id="salaryForm">
                     @csrf
                     <div class="row">
 
@@ -111,9 +127,9 @@
                             <textarea name="note" class="form-control" rows="3"></textarea>
                         </div>
 
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                            <a href="{{ route('salary.index') }}" class="btn btn-secondary">Back</a>
+                        <div class="d-flex justify-content-end gap-2 border-top pt-3 mt-3">
+                            <a href="{{ route('salary.index') }}" class="btn btn-outline-secondary px-4 rounded-3">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 rounded-3">Save Salary</button>
                         </div>
                     </div>
                 </form>

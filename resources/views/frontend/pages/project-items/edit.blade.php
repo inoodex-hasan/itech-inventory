@@ -78,16 +78,21 @@
 </div> --}}
 
     <div class="content container-fluid">
-        <div class="page-header">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h3 class="page-title">Edit Project Items</h3>
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div class="content-page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h4 class="card-title fw-bold text-dark mb-1">Edit Project Item</h4>
+                    <p class="text-muted small mb-0">Update item details, quantity, unit price, and project allocation</p>
                 </div>
-                <div class="col-auto">
-                    <a href="{{ route('project-items.index') }}" class="btn btn-secondary">Back</a>
+                <div>
+                    <a href="{{ route('project-items.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
+                        <i class="fa fa-arrow-left me-2"></i>Back to Project Items
+                    </a>
                 </div>
             </div>
         </div>
+        <!-- /Page Header -->
 
         <div class="row justify-content-center">
             <div class="col-md-12">
