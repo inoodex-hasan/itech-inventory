@@ -396,7 +396,11 @@ Govt. VAT & TAX: Prices are inclusive of all kinds of TAX & VAT as per governmen
             subtotal += lineTotal;
             html += `<tr>
                 <td class="ps-3 text-muted">${index + 1}</td>
-                <td><input type="text" name="items[${index}][description]" class="form-control border-light-subtle" value="${item.description}" required></td>
+                <td>
+                    <input type="text" name="items[${index}][description]" class="form-control border-light-subtle" value="${item.description}" required>
+                    <input type="hidden" name="items[${index}][unit]" value="${item.unit || 'Pcs'}">
+                    <input type="hidden" name="items[${index}][total]" class="line-total-input" value="${lineTotal}">
+                </td>
                 <td><input type="number" name="items[${index}][quantity]" class="form-control border-light-subtle qty-calc" value="${item.quantity}" min="1" required style="width: 100px;"></td>
                 <td><input type="number" step="0.01" name="items[${index}][unit_price]" class="form-control border-light-subtle price-calc" value="${item.unit_price}" required style="width: 120px;"></td>
                 <td class="text-end pe-3 fw-bold text-dark">৳<span class="line-total">${lineTotal.toFixed(2)}</span></td>

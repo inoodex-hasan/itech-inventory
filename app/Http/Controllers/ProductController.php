@@ -7,7 +7,7 @@ use App\Http\Requests\UpdateProductRequest;
 use Carbon\Carbon;
 use App\Models\Sale;
 use App\Models\Service;
-use App\Models\DailySale;
+
 use App\Models\Admin\Size;
 use App\Models\Admin\Brand;
 use Illuminate\Support\Str;

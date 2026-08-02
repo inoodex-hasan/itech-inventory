@@ -189,6 +189,12 @@
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
                                             <li>
+                                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('quotations.preview', $quotation->id) }}" target="_blank">
+                                                    <i class="fe fe-file-text text-success"></i>
+                                                    <span>Preview PDF</span>
+                                                </a>
+                                            </li>
+                                            <li>
                                                 <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('quotations.show', $quotation->id) }}">
                                                     <i class="fe fe-eye text-primary"></i>
                                                     <span>View Details</span>

@@ -33,7 +33,24 @@ public function index(Request $request)
     public function create()
     {
         $clients = Client::get();
-        $products = Product::with('brand')->get();
+        $products = Product::with(['brand', 'latestPurchase'])->get()->map(function ($product) {
+            $price = 0;
+            if ($product->latestPurchase && $product->latestPurchase->unit_price > 0) {
+                $price = (float)$product->latestPurchase->unit_price;
+            } else {
+                $lastSaleItem = \App\Models\SalesItem::where('product_id', $product->id)->latest()->first();
+                if ($lastSaleItem && $lastSaleItem->unit_price > 0) {
+                    $price = (float)$lastSaleItem->unit_price;
+                } else {
+                    $lastProjectItem = \App\Models\ProjectItem::where('product_id', $product->id)->latest()->first();
+                    if ($lastProjectItem && $lastProjectItem->unit_price > 0) {
+                        $price = (float)$lastProjectItem->unit_price;
+                    }
+                }
+            }
+            $product->calculated_purchase_price = $price;
+            return $product;
+        });
         return view('frontend.pages.quotations.create', compact('clients', 'products'));
     }
 
@@ -129,7 +146,24 @@ public function store(Request $request)
     public function edit(Quotation $quotation)
     {
         $clients = Client::get();
-        $products = Product::with('brand')->get();
+        $products = Product::with(['brand', 'latestPurchase'])->get()->map(function ($product) {
+            $price = 0;
+            if ($product->latestPurchase && $product->latestPurchase->unit_price > 0) {
+                $price = (float)$product->latestPurchase->unit_price;
+            } else {
+                $lastSaleItem = \App\Models\SalesItem::where('product_id', $product->id)->latest()->first();
+                if ($lastSaleItem && $lastSaleItem->unit_price > 0) {
+                    $price = (float)$lastSaleItem->unit_price;
+                } else {
+                    $lastProjectItem = \App\Models\ProjectItem::where('product_id', $product->id)->latest()->first();
+                    if ($lastProjectItem && $lastProjectItem->unit_price > 0) {
+                        $price = (float)$lastProjectItem->unit_price;
+                    }
+                }
+            }
+            $product->calculated_purchase_price = $price;
+            return $product;
+        });
         $quotation->load('items');
         
         return view('frontend.pages.quotations.edit', compact('quotation', 'clients', 'products'));
@@ -227,6 +261,36 @@ public function store(Request $request)
         $quotation->delete();
         return redirect()->route('quotations.index')->with('success', 'Quotation deleted successfully.');
     }
+
+public function preview(Quotation $quotation)
+{
+    $quotation->load(['client', 'items.product.brand']);
+    $amount_in_words = $this->convertNumberToWords($quotation->total_amount). ' Taka Only';
+    
+    $data = [
+        'quotation' => $quotation,
+        'amount_in_words' => $amount_in_words,
+        'client_name' => $quotation->client_name ?? ($quotation->client?->name ?? ''),
+        'client_designation' => $quotation->client_designation ?? '',
+        'client_address' => $quotation->client_address ?? ($quotation->client?->address ?? ''),
+        'client_phone' => $quotation->client_phone ?? ($quotation->client?->phone ?? ''),
+        'client_email' => $quotation->client_email ?? ($quotation->client?->email ?? ''),
+        'attention_to' => $quotation->attention_to ?? '',
+        'body_content' => $quotation->body_content ?? '',
+        'terms_conditions' => $quotation->terms_conditions ?? '',
+        'subject' => $quotation->subject ?? '',
+        'company_name' => $quotation->company_name ?? '',
+        'signatory_name' => $quotation->signatory_name ?? '',
+        'signatory_designation' => $quotation->signatory_designation ?? '',
+        'company_phone' => $quotation->company_phone ?? '',
+        'company_email' => $quotation->company_email ?? '',
+        'company_website' => $quotation->company_website ?? '',
+        'additional_enclosed' => $quotation->additional_enclosed ?? '',
+    ];
+    
+    $pdf = PDF::loadView('pdf.quotations', $data);
+    return $pdf->stream('quotation-' . $quotation->id . '.pdf');
+}
 
 public function download(Quotation $quotation)
 {

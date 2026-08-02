@@ -178,33 +178,32 @@
             text-align: center;
             font-weight: bold;
             text-decoration: underline;
-            margin: 20px 0 10px 0;
+            margin: 15px 0 8px 0;
         }
 
-        .terms-table {
-            margin: 10px 0;
+        .terms-list {
+            margin: 5px 0 15px 25px;
+            padding: 0;
         }
 
-        .terms-table td {
-            vertical-align: top;
-            padding: 5px 8px;
-        }
-
-        .terms-table td:first-child {
-            width: 30px;
-            font-weight: bold;
+        .terms-list li {
+            margin-bottom: 3px;
+            line-height: 1.3;
         }
 
         .bank-details {
             margin: 10px 0;
-            padding: 15px;
-            /* background-color: #f5f5f5; */
-            /* border-left: 2px solid #333; */
+            padding: 5px 0;
+        }
+
+        .bank-details p {
+            margin: 2px 0 !important;
+            line-height: 1.25 !important;
         }
 
         .bank-details strong {
             display: inline-block;
-            width: 180px;
+            width: 190px;
         }
 
         .closing {
@@ -349,33 +348,30 @@ Cell: +88 01904400202, +88 01904400203
 
         <div class="amount-in-words">In Word: {{ $amount_in_words }}</div>
 
-        <!-- Fixed Terms & Conditions Section -->
+        <!-- Terms & Conditions Section -->
         @if (!empty($terms_conditions))
             <div class="terms-title">Terms and Conditions</div>
-            <table class="terms-table">
-                @foreach (explode("\n", $terms_conditions) as $index => $term)
-                    @if (trim($term) !== '')
-                        <tr>
-                            <td>{{ $index + 1 }}.</td>
-                            <td>{{ trim($term) }}</td>
-                        </tr>
-                    @endif
-                @endforeach
-            </table>
+            <div class="terms-content">
+                <ol class="terms-list">
+                    @foreach (explode("\n", $terms_conditions) as $term)
+                        @if (trim($term) !== '')
+                            <li>{{ trim($term) }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </div>
         @endif
 
         <!-- Bank Details -->
         @if (!empty($bank_details))
             <div class="bank-details">
                 <p>Please take necessary step to clear the bill to the following account details.</p>
-                <br>
                 <p><strong>Account Name:</strong> {{ $bank_details['account_name'] ?? 'N/A' }}</p>
                 <p><strong>Bank Name:</strong> {{ $bank_details['bank_name'] ?? 'N/A' }}</p>
                 <p><strong>Branch:</strong> {{ $bank_details['branch'] ?? 'N/A' }}</p>
                 <p><strong>Account Number:</strong> {{ $bank_details['account_number'] ?? 'N/A' }}</p>
                 <p><strong>Account Type:</strong> {{ $bank_details['account_type'] ?? 'N/A' }}</p>
-                <p><strong>Receiving Bank Routing Number:</strong> {{ $bank_details['routing_number'] ?? 'N/A' }}
-                </p>
+                <p><strong>Routing Number:</strong> {{ $bank_details['routing_number'] ?? 'N/A' }}</p>
             </div>
         @endif
 

@@ -101,6 +101,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
 
     Route::get('/challans/pdf', [ChallanController::class, 'reportPdf'])->name('challans.pdf');
     Route::resource('challans', ChallanController::class);
+    Route::get('/challans/{challan}/preview', [ChallanController::class, 'preview'])->name('challans.preview');
     Route::get('/challans/{challan}/download', [ChallanController::class, 'download'])->name('challans.download');
     Route::get('/get-sales', [ChallanController::class, 'getSales'])->name('challans.get-sales');
     Route::get('/get-projects', [ChallanController::class, 'getProjects'])->name('challans.get-projects');
@@ -108,6 +109,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('/quotations/pdf-report', [QuotationController::class, 'reportPdf'])->name('quotations.pdf-report');
     Route::resource('quotations', QuotationController::class);
     Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
+    Route::get('/quotations/{quotation}/preview', [QuotationController::class, 'preview'])->name('quotations.preview');
     Route::get('/quotations/{quotation}/download', [QuotationController::class, 'download'])->name('quotations.download');
     Route::post('quotations/{quotation}/send', [QuotationController::class, 'sendQuotation'])->name('quotations.send');
 
