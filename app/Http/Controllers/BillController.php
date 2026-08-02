@@ -247,13 +247,17 @@ public function store(Request $request)
 
     // Create bill items
     foreach ($request->items as $item) {
+        $qty = (int)($item['quantity'] ?? 1);
+        $price = (float)($item['unit_price'] ?? 0);
+        $lineTotal = isset($item['total']) ? (float)$item['total'] : ($qty * $price);
+
         BillItem::create([
             'bill_id' => $bill->id,
-            'description' => $item['description'],
-            'quantity' => (int)$item['quantity'],
-            'unit' => $item['unit'],
-            'unit_price' => (float)$item['unit_price'],
-            'total' => (float)$item['total'],
+            'description' => $item['description'] ?? '',
+            'quantity' => $qty,
+            'unit' => $item['unit'] ?? 'Pcs',
+            'unit_price' => $price,
+            'total' => $lineTotal,
         ]);
     }
 
@@ -328,9 +332,7 @@ public function store(Request $request)
     $billDate = $billWithRelations->bill_date
         ? Carbon::parse($billWithRelations->bill_date)->format('d-m-Y')
         : now()->format('d-m-Y');
-    $fileName = $clientSlug . '-' . $billDate . '.pdf';
-
-    return $pdf->download($fileName);
+    return redirect()->route('bills.index')->with('success', 'Bill generated successfully!');
 }
 
 public function show($id)
@@ -509,32 +511,64 @@ private function updateRelatedEntities(Bill $bill, array $validated)
     }
 }
 
-   public function preview(Bill $bill)
+public function preview($id)
 {
-    $bill->load(['client', 'vendor', 'project', 'purchase', 'items']);
-    
-    $company = $this->getCompanyDetails();
-    $bankDetails = $this->getBankDetails();
-    $amountInWords = $bill->amount_in_words;
+    $bill = Bill::with([
+        'billItems',
+        'sale.customer',
+        'project.client',
+        'bankDetail',
+        'companyDetail',
+        'customer',
+        'client'
+    ])->findOrFail($id);
 
-    // Customize PDF title based on bill type
-    $title = match($bill->type) {
-        'project' => 'PROJECT BILL',
-        'sale' => 'SALES INVOICE',
-        'purchase' => 'PURASE BILL',
-        'vendor' => 'VENDOR BILL',
-        default => 'BILL'
-    };
+    $clientName = $bill->client_name;
+    $clientAddress = $bill->client_address;
 
-    $pdf = Pdf::loadView('bills.pdf.template', [
+    if (empty($clientName)) {
+        if ($bill->sale && $bill->sale->customer) {
+            $clientName = $bill->sale->customer->name;
+            $clientAddress = $bill->sale->customer->address;
+        } elseif ($bill->project && $bill->project->client) {
+            $clientName = $bill->project->client->name;
+            $clientAddress = $bill->project->client->address;
+        }
+    }
+
+    if (empty($clientName)) $clientName = 'N/A';
+    if (empty($clientAddress)) $clientAddress = 'N/A';
+
+    $pdfData = [
         'bill' => $bill,
-        'company' => $company,
-        'bank_details' => $bankDetails,
-        'amount_in_words' => $amountInWords,
-        'title' => $title,
-    ]);
+        'amount_in_words' => $this->convertToWords($bill->total_amount),
+        'subject' => $bill->subject,
+        'bank_details' => [
+            'account_name' => $bill->bankDetail->account_name ?? 'Intelligent Technology',
+            'bank_name' => $bill->bankDetail->bank_name ?? 'Bank Asia Ltd.',
+            'branch' => $bill->bankDetail->branch ?? 'Satmosjid Road',
+            'account_number' => $bill->bankDetail->account_number ?? '06933000526',
+            'account_type' => $bill->bankDetail->account_type ?? 'Current',
+            'routing_number' => $bill->bankDetail->routing_number ?? 'N/A',
+        ],
+        'company' => [
+            'name' => $bill->companyDetail->name ?? 'Intelligent Technology',
+            'signatory_name' => $bill->companyDetail->signatory_name ?? 'Engr. Shamsul Alam',
+            'signatory_designation' => $bill->companyDetail->signatory_designation ?? 'Director (Technical)',
+            'phone' => $bill->companyDetail->phone ?? '+880 XXXX-XXXXXX',
+            'email' => $bill->companyDetail->email ?? 'info@intelligenttech.com',
+            'website' => $bill->companyDetail->website ?? 'www.intelligenttech.com',
+            'address' => $bill->companyDetail->address ?? 'N/A',
+        ],
+        'recipient_designation' => $bill->designation ?: 'Director (IT)',
+        'recipient_organization' => $clientName,
+        'recipient_address' => $clientAddress,
+        'attention_to' => $bill->attention_to,
+        'terms_conditions' => $bill->terms_conditions,
+    ];
 
-    return $pdf->stream("{$bill->bill_number}.pdf");
+    $pdf = Pdf::loadView('pdf.bill', $pdfData);
+    return $pdf->stream('bill-' . $bill->bill_number . '.pdf');
 }
 
 public function download($id)
@@ -732,6 +766,5 @@ public function destroy($id)
     $bill->delete(); 
 
     return redirect()->route('bills.index')->with('success', 'Bill deleted successfully.');
- 
 }
 }

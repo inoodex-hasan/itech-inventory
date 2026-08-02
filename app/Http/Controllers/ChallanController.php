@@ -154,6 +154,46 @@ $pdf = Pdf::loadView('pdf.challan', $pdfData);
         return view('challans.show', compact('challan'));
     }
 
+public function preview($id)
+{
+    $challan = Challan::with([
+        'challanItems',
+        'sale.customer',
+        'project.client'
+    ])->findOrFail($id);
+
+    $recipientName = $challan->recipient_organization;
+    $recipientAddress = $challan->recipient_address;
+    
+    if (!$recipientName) {
+        if ($challan->type === 'sale' && $challan->sale && $challan->sale->customer) {
+            $recipientName = $challan->sale->customer->name;
+        } elseif ($challan->type === 'project' && $challan->project && $challan->project->client) {
+            $recipientName = $challan->project->client->name;
+        }
+    }
+    
+    if (!$recipientAddress) {
+        if ($challan->type === 'sale' && $challan->sale && $challan->sale->customer) {
+            $recipientAddress = $challan->sale->customer->address;
+        } elseif ($challan->type === 'project' && $challan->project && $challan->project->client) {
+            $recipientAddress = $challan->project->client->address;
+        }
+    }
+
+    $pdfData = [
+        'challan' => $challan,
+        'recipient_organization' => $recipientName ?? 'N/A',
+        'recipient_designation' => $challan->recipient_designation ?? 'The Managing Director',
+        'recipient_address' => $recipientAddress ?? 'N/A',
+        'attention_to' => $challan->attention_to ?? '',
+        'subject' => $challan->subject ?? 'Delivery Challan',
+    ];
+
+    $pdf = Pdf::loadView('pdf.challan', $pdfData);
+    return $pdf->stream('challan-' . $challan->id . '.pdf');
+}
+
 public function download($id)
 {
     $challan = Challan::with([

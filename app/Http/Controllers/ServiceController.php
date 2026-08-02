@@ -12,7 +12,6 @@ use App\Models\Product;
 use App\Models\Service;
 use App\Models\Admin\Category;
 use App\Models\Customer;
-use App\Models\DailySale;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
@@ -387,10 +386,10 @@ class ServiceController extends Controller
         $thisYearsSalesRevenue = Sale::whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('status','1')->sum('bill');
         $totalSalesDues = Sale::where('due_amount', '>', 0)->sum('due_amount');
 
-        $todaysDailySalesRevenue = DailySale::whereDate('date', Carbon::today())->where('status','1')->sum('total_amount');
-        $thisWeeksDailySalesRevenue = DailySale::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status','1')->sum('total_amount');
-        $thisMonthsDailySalesRevenue = DailySale::whereBetween('date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->where('status','1')->sum('total_amount');
-        $thisYearsDailySalesRevenue = DailySale::whereBetween('date', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('status','1')->sum('total_amount');
+        $todaysDailySalesRevenue = 0;
+        $thisWeeksDailySalesRevenue = 0;
+        $thisMonthsDailySalesRevenue = 0;
+        $thisYearsDailySalesRevenue = 0;
 
         $monthlyRevenue = Service::selectRaw('MONTH(created_at) as month, SUM(bill) as total')
         ->whereYear('created_at', Carbon::now()->year)

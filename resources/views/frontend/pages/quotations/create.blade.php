@@ -137,32 +137,49 @@ Yours Sincerely,</textarea>
                                         </div>
 
                                         <!-- Add Product Section -->
-                                        <div class="row mt-4">
-                                            <div class="col-md-6">
-                                                <label class="form-label">Select Product</label>
+                                        <div class="row mt-4 px-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Select Product</label>
                                                 <select class="form-control select2" id="product-select"
                                                     data-toggle="select2">
                                                     <option value="">Choose a product...</option>
                                                     @foreach ($products as $product)
+                                                        @php
+                                                            $purchasePrice = 0;
+                                                            if (isset($product->calculated_purchase_price) && $product->calculated_purchase_price > 0) {
+                                                                $purchasePrice = $product->calculated_purchase_price;
+                                                            } elseif ($product->latestPurchase && $product->latestPurchase->unit_price > 0) {
+                                                                $purchasePrice = $product->latestPurchase->unit_price;
+                                                            } else {
+                                                                $lastSale = \App\Models\SalesItem::where('product_id', $product->id)->latest()->first();
+                                                                $purchasePrice = $lastSale ? $lastSale->unit_price : 0;
+                                                            }
+                                                        @endphp
                                                         <option value="{{ $product->id }}" data-name="{{ $product->name }}"
                                                             data-model="{{ $product->model }}"
                                                             data-description="{{ $product->description }}"
-                                                            data-price="{{ $product->price ?? 0 }}"
+                                                            data-purchase-price="{{ (float)$purchasePrice }}"
                                                             data-photos="{{ $product->photos ? json_encode($product->photos) : '[]' }}"
                                                             data-brand="{{ $product->brand->name ?? '' }}">
-                                                            {{ $product->name }}
+                                                            {{ $product->name }} @if($product->model)({{ $product->model }})@endif
                                                         </option>
                                                     @endforeach
                                                 </select>
                                             </div>
 
                                             <div class="col-md-2">
-                                                <label class="form-label">Unit Price</label>
+                                                <label class="form-label fw-semibold text-muted">Purchase Price</label>
+                                                <input type="number" class="form-control bg-light" id="product-purchase-price"
+                                                    value="0" step="0.01" readonly placeholder="0.00">
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-semibold">Unit Price *</label>
                                                 <input type="number" class="form-control" id="product-price"
                                                     value="0" step="0.01" min="0" placeholder="Price">
                                             </div>
                                             <div class="col-md-2">
-                                                <label class="form-label">Quantity</label>
+                                                <label class="form-label fw-semibold">Quantity *</label>
                                                 <input type="number" class="form-control" id="product-quantity"
                                                     value="1" min="1" placeholder="Qty">
                                             </div>
@@ -448,18 +465,38 @@ Yours Sincerely,`;
                                 // Products functionality
                                 let productCounter = 0;
 
-                                // Product selection change handler - Auto-fill price but allow editing
-                                document.getElementById('product-select').addEventListener('change', function() {
-                                    const selectedOption = this.options[this.selectedIndex];
+                                // Product selection change handler - Handles both Native & Select2 change events
+                                function handleProductSelect() {
+                                    const selectElem = document.getElementById('product-select');
+                                    if (!selectElem) return;
+                                    const selectedOption = selectElem.options[selectElem.selectedIndex];
 
-                                    if (selectedOption.value) {
-                                        const unitPrice = selectedOption.getAttribute('data-price');
-                                        // Set the price but keep it editable
-                                        document.getElementById('product-price').value = unitPrice;
+                                    if (selectedOption && selectedOption.value) {
+                                        const purchasePrice = parseFloat(selectedOption.getAttribute('data-purchase-price')) || 0;
+                                        const purchasePriceInput = document.getElementById('product-purchase-price');
+                                        purchasePriceInput.value = purchasePrice;
+                                        
+                                        if (purchasePrice === 0) {
+                                            purchasePriceInput.removeAttribute('readonly');
+                                            purchasePriceInput.classList.remove('bg-light');
+                                            purchasePriceInput.placeholder = "Enter cost";
+                                        } else {
+                                            purchasePriceInput.setAttribute('readonly', 'readonly');
+                                            purchasePriceInput.classList.add('bg-light');
+                                        }
+
+                                        document.getElementById('product-price').value = purchasePrice;
                                     } else {
+                                        document.getElementById('product-purchase-price').value = '0';
                                         document.getElementById('product-price').value = '0';
                                     }
-                                });
+                                }
+
+                                document.getElementById('product-select').addEventListener('change', handleProductSelect);
+
+                                if (window.jQuery) {
+                                    $('#product-select').on('change select2:select', handleProductSelect);
+                                }
 
                                 // Add product button handler
                                 document.getElementById('add-product').addEventListener('click', function() {

@@ -6,12 +6,12 @@ use Carbon\Carbon;
 use App\Models\Sale;
 use App\Models\Purchase;
 use App\Models\DailyExpense;
-use App\Models\RatingReview;
 use App\Models\Product;
+use App\Models\Customer;
+use App\Models\Project;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-
-
 
 class FrontendController extends Controller
 {
@@ -28,6 +28,43 @@ class FrontendController extends Controller
         }
 
         $stats = Cache::remember('dashboard_stats_' . date('Y-m-d-H'), 300, function () {
+            $currentYear = date('Y');
+            $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            $monthlyRev = [];
+            foreach ($months as $key => $monthName) {
+                $monthNumber = $key + 1;
+                $monthlyRev[$monthName] = Sale::whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $monthNumber)
+                    ->sum('payble');
+            }
+
+            $currentYearInt = (int)$currentYear;
+            $yearlyRev = [];
+            for ($i = 0; $i < 10; $i++) {
+                $yr = $currentYearInt - $i;
+                $yearlyRev[$yr] = Sale::whereYear('created_at', $yr)->sum('payble');
+            }
+
+            // Project Status Breakdown
+            $projectStatusCounts = [
+                'In Progress' => Project::where('status', 'in_progress')->count(),
+                'Completed'   => Project::where('status', 'completed')->count(),
+                'Pending'     => Project::where('status', 'pending')->count(),
+                'Cancelled'   => Project::where('status', 'cancelled')->count(),
+            ];
+
+            // Top Projects Budget vs Costs
+            $topProjects = Project::with('costs')->latest()->take(5)->get();
+            $projectChartNames = [];
+            $projectChartBudgets = [];
+            $projectChartCosts = [];
+
+            foreach ($topProjects as $p) {
+                $projectChartNames[] = \Illuminate\Support\Str::limit($p->project_name, 15);
+                $projectChartBudgets[] = (float)$p->budget;
+                $projectChartCosts[] = (float)$p->costs->sum('amount');
+            }
+
             return [
                 'todaysSalesRevenue'     => Sale::whereDate('created_at', Carbon::today())->sum('payble'),
                 'thisWeeksSalesRevenue'  => Sale::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payble'),
@@ -43,6 +80,21 @@ class FrontendController extends Controller
                 'thisWeeksExpense'  => DailyExpense::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount'),
                 'thisMonthsExpense' => DailyExpense::whereBetween('date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->sum('amount'),
                 'thisYearsExpense'  => DailyExpense::whereBetween('date', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->sum('amount'),
+
+                'totalCustomers'    => Customer::count(),
+                'totalProjects'     => Project::count(),
+                'totalEmployees'    => Employee::count(),
+                'totalProducts'     => Product::count(),
+
+                'recentSales'       => Sale::latest()->take(5)->get(),
+                'recentProjects'    => Project::with('client')->latest()->take(5)->get(),
+
+                'monthlyRevenue'        => $monthlyRev,
+                'yearlyRevenue'         => $yearlyRev,
+                'projectStatusCounts'   => $projectStatusCounts,
+                'projectChartNames'     => $projectChartNames,
+                'projectChartBudgets'   => $projectChartBudgets,
+                'projectChartCosts'     => $projectChartCosts,
             ];
         });
 
