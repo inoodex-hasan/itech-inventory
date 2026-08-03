@@ -47,8 +47,10 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     // === Products, Inventory, Purchases, Sales, Services, etc. ===
     Route::resource('brands', BrandController::class);
     Route::resource('products', ProductController::class);
+    Route::get('/inventory/pdf', [InventoryController::class, 'downloadPdf'])->name('inventory.pdf');
     Route::resource('inventory', InventoryController::class);
     Route::get('inventory/{productId}/serials', [\App\Http\Controllers\ProductSerialController::class, 'getSerialsByProduct'])->name('inventory.serials');
+    Route::get('/customers/pdf', [CustomerController::class, 'downloadPdf'])->name('customers.pdf');
     Route::resource('customers', CustomerController::class);
     Route::get('/vendors/pdf', [VendorController::class, 'downloadPdf'])
     ->name('vendors.pdf');
@@ -134,6 +136,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('purchase/report/pdf', [PurchaseController::class, 'reportPdf'])->name('purchase.report.pdf');
     Route::get('sales-report', [SalesController::class, 'report'])->name('sales.report');
     Route::get('sales-report/pdf', [SalesController::class, 'reportPdf'])->name('sales.report.pdf');
+    Route::get('/revenues/pdf', [RevenueController::class, 'downloadPdf'])->name('revenues.pdf');
     Route::get('/revenues', [RevenueController::class, 'index'])->name('revenues.index');
     Route::post('/revenues/generate', [RevenueController::class, 'generate'])->name('revenues.generate');
     Route::get('/revenues/export/{id}', [RevenueController::class, 'export'])->name('revenues.export');

@@ -78,7 +78,11 @@
                 <h4 class="card-title fw-bold text-dark mb-1">Inventory Stock List</h4>
                 <p class="text-muted small mb-0">Monitor product stock levels, opening quantities, available stock, and serial tracking</p>
             </div>
-            <div>
+            <div class="d-flex align-items-center gap-2">
+                <a class="btn btn-outline-danger px-3 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" href="{{ route('inventory.pdf') }}" target="_blank">
+                    <i class="fe fe-file-text fs-6"></i>
+                    <span>Export PDF</span>
+                </a>
                 <a class="btn btn-primary px-4 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#add-product-modal">
                     <i class="fe fe-plus-circle fs-6"></i>
                     <span>Add Opening Stock</span>

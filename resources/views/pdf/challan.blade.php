@@ -14,8 +14,7 @@
             color: #000;
             margin: 0;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.2) url("{{ public_path('big-logo.png') }}")
-                no-repeat 310px -10px / 340px auto fixed transparent !important;
+            background: url("{{ public_path('assets/invoice/final_pad.png') }}") no-repeat center top / 100% 100% fixed transparent !important;
         }
 
         @page {

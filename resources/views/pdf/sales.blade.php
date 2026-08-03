@@ -1,284 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice</title>
+    <title>Sales List Report</title>
     <style>
+        @page {
+            margin: 140px 45px 80px 45px;
+            size: A4 portrait;
+        }
+        .pdf-bg-pad {
+            position: fixed;
+            top: -140px;
+            left: -45px;
+            width: 210mm;
+            height: 297mm;
+            z-index: -1000;
+        }
+        .pdf-bg-pad img {
+            width: 210mm;
+            height: 297mm;
+        }
         body {
             font-family: DejaVu Sans, Arial, sans-serif;
+            font-size: 10px;
+            color: #1e293b;
             margin: 0;
-            padding: 20px;
-            color: #000;
-            font-size: 12px;
-            line-height: 1.3;
+            padding: 0;
         }
-
-        .container {
-            width: 100%;
-        }
-
         .header {
             width: 100%;
-            margin-bottom: 20px;
-            overflow: hidden;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4f46e5;
+            padding-bottom: 10px;
         }
-
-        .company-info {
-            float: left;
-            width: 45%;
-        }
-
-        .invoice-info {
-            float: right;
-            width: 45%;
-            text-align: right;
-        }
-
         .company-name {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 5px;
+            color: #4f46e5;
         }
-
-        .logo {
+        .report-title {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #0f172a;
+            margin-top: 5px;
+        }
+        .filter-info {
+            font-size: 9px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        table.sales-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table.sales-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: bold;
+            font-size: 9px;
+            text-transform: uppercase;
+            border: 1px solid #cbd5e1;
+            padding: 6px 8px;
+            text-align: left;
+        }
+        table.sales-table td {
+            border: 1px solid #e2e8f0;
+            padding: 6px 8px;
+            font-size: 9px;
+        }
+        table.sales-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .text-end { text-align: right; }
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: bold; }
+        .badge {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            background: #000;
-            color: #fff;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 20px;
-            margin-right: 5px;
-        }
-
-        .invoice-title {
-            font-size: 24px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8px;
             font-weight: bold;
-            text-align: center;
-            margin: 10px 0;
-            clear: both;
+            text-transform: uppercase;
         }
-
-        .customer-info {
-            width: 100%;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .customer-left {
-            float: left;
-            width: 45%;
-        }
-
-        .customer-right {
+        .badge-retail { background-color: #e0e7ff; color: #4338ca; }
+        .badge-project { background-color: #fef3c7; color: #b45309; }
+        .summary-box {
+            margin-top: 15px;
             float: right;
-            width: 45%;
-            text-align: right;
-        }
-
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            page-break-inside: avoid;
-        }
-
-        .items-table th,
-        .items-table td {
-            border: 1px solid #000;
+            width: 250px;
+            border: 1px solid #cbd5e1;
+            background-color: #f8fafc;
             padding: 8px;
-            text-align: left;
+            border-radius: 4px;
         }
-
-        .items-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-
-        .footer-section {
+        .summary-box table { width: 100%; font-size: 10px; }
+        .summary-box td { padding: 3px 0; }
+        .footer {
+            margin-top: 40px;
             width: 100%;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .terms {
-            float: left;
-            width: 50%;
-        }
-
-        .totals {
-            float: right;
-            width: 45%;
-        }
-
-        .totals table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .totals td {
-            padding: 5px 0;
-            text-align: right;
-        }
-
-        .totals td:first-child {
-            text-align: left;
-            padding-right: 10px;
-        }
-
-        .in-words {
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-        }
-
-        .signatures {
-            width: 100%;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .signature {
-            float: left;
-            width: 45%;
-            border-top: 1px solid #000;
+            font-size: 8px;
+            color: #94a3b8;
             text-align: center;
-            padding-top: 40px;
-            margin-right: 5%;
-        }
-
-        .signature:last-child {
-            margin-right: 0;
-            float: right;
-        }
-
-        .page-number {
-            text-align: right;
-            font-size: 10px;
-            margin-top: 20px;
-        }
-
-        /* Clearfix */
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
         }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <div class="header clearfix">
-            <div class="company-info">
-                <div class="company-name">
-                    <span class="logo">i</span> Intelligent Technology
-                </div>
-                Phone: 01904400202<br>
-                Email: info.itechbd@yahoo.com
-            </div>
-            <div class="invoice-info">
-                Date: 09/10/2025<br>
-                Address: House # 7, (3rd floor), Road # 4,<br>
-                Mirpur-10, Dhaka -1216, Bangladesh.
-            </div>
-        </div>
+    <div class="pdf-bg-pad">
+        <img src="{{ public_path('assets/invoice/final_pad.png') }}" />
+    </div>
 
-        <div class="invoice-title">INVOICE</div>
-
-        <div class="customer-info clearfix">
-            <div class="customer-left">
-                <strong>Customer:</strong> {{ $services[0]->name ?? 'N/A' }}<br>
-                <strong>Phone:</strong> {{ $services[0]->phone ?? 'N/A' }}<br>
-                <strong>Address:</strong> {{ $services[0]->address ?? 'N/A' }}
-            </div>
-            <div class="customer-right">
-                <strong>Invoice No:</strong>{{ $services[0]->id ?? 'N/A' }}<br>
-                <strong>Invoice Date:</strong> {{ $services[0]->created_at->format('Y-m-d') ?? date('Y-m-d') }}
-            </div>
-        </div>
-
-        <table class="items-table">
-            <thead>
-                <tr>
-                    <th>Sl</th>
-                    <th>Items Name</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Total Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>#</td>
-                    <td>{{ $service->product_name ?? 'N/A' }}</td>
-                    <td>{{ $service->qty ?? 'N/A' }}</td>
-                    <td>{{ $service->price ?? 'N/A' }}</td>
-                    <td>{{ $service->bill ?? 'N/A' }}</td>
-                </tr>
-            </tbody>
+    <div class="header">
+        <table width="100%">
+            <tr>
+                <td>
+                    <div class="company-name">Intelligent Technology</div>
+                    <div style="font-size: 9px; color: #475569;">Inventory &amp; Sales Management System</div>
+                </td>
+                <td class="text-end">
+                    <div class="report-title">Sales Summary Report</div>
+                    <div class="filter-info">Generated on: {{ date('d M Y, h:i A') }}</div>
+                    @if(request('from') && request('to'))
+                        <div class="filter-info">Date Range: {{ date('d M Y', strtotime(request('from'))) }} — {{ date('d M Y', strtotime(request('to'))) }}</div>
+                    @elseif(request('month'))
+                        <div class="filter-info">Month: {{ date('F Y', strtotime(request('month'))) }}</div>
+                    @endif
+                </td>
+            </tr>
         </table>
+    </div>
 
-        <div class="footer-section clearfix">
-            <div class="terms">
-                <strong>Terms & Conditions</strong><br>
-                Products can be returned within 7 days in their
-                original, unopened condition. Refunds or exchanges
-                are offered, but perishable goods cannot be
-                returned. Contact us at 01904400205 with a valid
-                receipt for assistance.
-            </div>
-            <div class="totals">
-                <table>
-                    <tr>
-                        <td>Sub Total:</td>
-                        <td>9,600.00 Tk</td>
-                    </tr>
-                    <tr>
-                        <td>Delivery Fee:</td>
-                        <td>200.00 Tk</td>
-                    </tr>
-                    <tr>
-                        <td>Total Price:</td>
-                        <td>9,800.00 Tk</td>
-                    </tr>
-                    <tr>
-                        <td>Received:</td>
-                        <td>0.00 Tk</td>
-                    </tr>
-                    <tr>
-                        <td>Total Due:</td>
-                        <td>9,800.00 Tk</td>
-                    </tr>
-                    <tr>
-                        <td>Previous Receivable:</td>
-                        <td>0.00 Tk</td>
-                    </tr>
-                    <tr>
-                        <td>Current Receivable:</td>
-                        <td>9,800.00 Tk</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+    <table class="sales-table">
+        <thead>
+            <tr>
+                <th width="4%" class="text-center">#</th>
+                <th width="12%">Date</th>
+                <th width="15%">Order No</th>
+                <th width="26%">Customer / Client Name</th>
+                <th width="14%">Phone</th>
+                <th width="10%" class="text-center">Sale Type</th>
+                <th width="10%">Sales By</th>
+                <th width="9%" class="text-end">Payable (৳)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php $totalSalesAmount = 0; @endphp
+            @forelse($services as $index => $sale)
+                @php
+                    $custName = $sale->sale_type == 'project' ? ($sale->client->name ?? 'N/A') : ($sale->customer->name ?? 'N/A');
+                    $custPhone = $sale->sale_type == 'project' ? ($sale->client->phone ?? 'N/A') : ($sale->customer->phone ?? 'N/A');
+                    $salesPersonName = $sale->salesPerson->name ?? 'N/A';
+                    $amount = $sale->payble ?? $sale->bill ?? $sale->total ?? 0;
+                    $totalSalesAmount += $amount;
+                @endphp
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ $sale->created_at ? $sale->created_at->format('d M Y') : 'N/A' }}</td>
+                    <td class="fw-bold">{{ $sale->order_no }}</td>
+                    <td>{{ $custName }}</td>
+                    <td>{{ $custPhone }}</td>
+                    <td class="text-center">
+                        <span class="badge {{ $sale->sale_type == 'project' ? 'badge-project' : 'badge-retail' }}">
+                            {{ ucfirst($sale->sale_type) }}
+                        </span>
+                    </td>
+                    <td>{{ $salesPersonName }}</td>
+                    <td class="text-end fw-bold">{{ number_format($amount, 2) }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="8" class="text-center" style="padding: 20px; color: #64748b;">No sales records found for the selected filter criteria.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 
-        <div class="in-words">
-            <strong>In Words:</strong> Nine Thousand Eight Hundred Taka Only
-        </div>
+    <div class="summary-box">
+        <table>
+            <tr>
+                <td><strong>Total Sales Records:</strong></td>
+                <td class="text-end fw-bold">{{ count($services) }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Sales Revenue:</strong></td>
+                <td class="text-end fw-bold" style="color: #4f46e5; font-size: 11px;">৳{{ number_format($totalSalesAmount, 2) }}</td>
+            </tr>
+        </table>
+    </div>
 
-        <div class="signatures clearfix">
-            <div class="signature">Customer Signature</div>
-            <div class="signature">Authorized Signature</div>
-        </div>
+    <div style="clear: both;"></div>
 
-        <div class="page-number">
-            Page 1/1
-        </div>
+    <div class="footer">
+        Intelligent Technology Inventory System &bull; Confidential Sales List Report
     </div>
 </body>
-
 </html>

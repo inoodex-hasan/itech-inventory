@@ -3,455 +3,240 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Invoice</title>
+    <title>Invoice #{{ $sales->order_no }}</title>
     @php
-        $toFileUrl = function ($path) {
-            return 'file:///' . str_replace(['\\', ' '], ['/', '%20'], public_path($path));
-        };
+        $padPath = public_path('assets/invoice/final_pad.png');
+        $padBase64 = file_exists($padPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($padPath)) : '';
     @endphp
     <style>
-        /* ── mPDF: page background image ── */
         @page {
-            background-image: url('{{ $toFileUrl('assets/invoice/invoice-bg.jpg') }}');
-            background-image-resize: 6;
+            margin: 145px 45px 50px 45px;
+            size: A4 portrait;
+        }
+
+        .pdf-bg-pad {
+            position: fixed;
+            top: -145px;
+            left: -45px;
+            width: 210mm;
+            height: 297mm;
+            z-index: -1000;
+        }
+
+        .pdf-bg-pad img {
+            width: 210mm;
+            height: 297mm;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
         }
 
         body {
-            font-family: Arial, sans-serif;
             font-size: 12px;
-            color: #333;
+            color: #0f172a;
+            line-height: 1.4;
         }
-
-        /* ── Header ── */
-        .header-table {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .header-table td {
-            vertical-align: top;
-            padding: 4px;
-        }
-
-        .invoice-title {
-            text-align: right;
-        }
-
-        .invoice-title h1 {
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-
-        .invoice-title p {
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        /* ── Customer details ── */
-        .details-table {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-       .details-table td {
-            padding: 6px 6px;
-            font-size: 12px;
-            vertical-align: top;
-        }
-
-        .details-table .value {
-            border-bottom: 1px solid #ccc;
-            width: 100%;
-        }
-
-        .details-table .label {
-            font-weight: bold;
-            width: 80px;
-            color: #555;
-        }
-
-        /* ── Items table ── */
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .items-table thead tr {
-            background-color: #626262;
-        }
-
-        .items-table th {
-            background-color: #626262;
-            color: #fff !important;
-        }
-
-        .items-table th,
-        .items-table td {
-            border: 1px solid #ccc;
-            padding: 7px 10px;
-            text-align: left;
-            font-size: 11px;
-        }
-
-        .items-table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        /* ── Returns section ── */
-        .returns-section {
-            margin-top: 20px;
-            border: 1px dashed #dc3545;
-            padding: 15px;
-            background: #fff5f5;
-            margin-bottom: 20px;
-        }
-
-        .returns-section h4 {
-            color: #dc3545;
-            margin-bottom: 10px;
-            font-size: 13px;
-        }
-
-        .returns-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .returns-table th,
-        .returns-table td {
-            border: 1px solid #f5c6cb;
-            padding: 6px 8px;
-            font-size: 11px;
-        }
-
-        .returns-table thead tr {
-            background-color: #626262;
-        }
-
-        .returns-table th {
-            background-color: #626262;
-            color: #fff !important;
-        }
-
-        .returns-table tfoot tr {
-            background-color: #ffe0e0;
-            font-weight: bold;
-        }
-
-        /* ── Totals + Terms row ── */
-        .bottom-table {
-            width: 100%;
-            margin-bottom: 15px;
-        }
-
-        .bottom-table > tbody > tr > td {
-            vertical-align: top;
-            padding: 0 6px;
-        }
-
-        /* ── Terms & Conditions ── */
-        .conditions h2 {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 16px;
-            color: #111;
-        }
-
-        .conditions p {
-            font-size: 13px;
-            margin-bottom: 12px;
-            line-height: 1.7;
-            color: #333;
-        }
-
-        /* ── Totals sub-table ── */
-        .totals-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .totals-table td {
-            padding: 7px 10px;
-            font-size: 12px;
-            border-bottom: 1px solid #e8e8e8;
-            color: #333;
-        }
-
-        .totals-table .text-right {
-            text-align: right;
-        }
-
-        .totals-table .row-strikethrough td {
-            text-decoration: line-through;
-            color: #999;
-        }
-
-        .totals-table .row-refund td {
-            color: #dc3545;
-        }
-
-        .totals-table .row-due td {
-            background-color: #2d3748;
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 13px;
-            border-bottom: none;
-        }
-
-        /* ── In-words ── */
-        .in-words {
-            font-size: 12px;
-            margin-bottom: 30px;
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            background: #fafafa;
-            text-align: center;
-        }
-
-        /* ── Signature ── */
-        .signature-table {
-            width: 100%;
-            margin-top: 40px;
-        }
-
-        .signature-table td {
-            text-align: center;
-            font-size: 11px;
-            width: 50%;
-            padding: 0 40px;
-        }
-
-        hr.signature-line {
-            border: none;
-            border-top: 1px solid #333;
-            margin: 0 0 6px 0;
-        }
-
-        /* ── Utility ── */
-        .text-right { text-align: right; }
     </style>
 </head>
 
 <body>
+    <!-- DomPDF Full-bleed A4 background pad with Base64 encoding -->
+    @if($padBase64)
+    <div class="pdf-bg-pad">
+        <img src="{{ $padBase64 }}" />
+    </div>
+    @endif
 
-    {{-- ═══════════════════════════════════════════
-         HEADER: logo (left) | invoice info (right)
-    ═══════════════════════════════════════════ --}}
-    <table class="header-table" cellpadding="0" cellspacing="0">
+    <!-- Header Title & Order Meta -->
+    <table style="width: 100%; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;">
         <tr>
-            <td style="width:50%;">
-                {{-- <img src="{{ $toFileUrl('assets/invoice/logo.png') }}" height="60" alt="Logo"> --}}
-            </td>
-            <td style="width:50%;" class="invoice-title">
-                <h1>INVOICE</h1>
-                <p>Invoice No: {{ $sales->order_no }}</p>
-                <p>Invoice Date: {{ $sales->created_at->format('d-m-Y') }}</p>
+            <td align="right">
+                <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">INVOICE</h1>
+                <div style="font-size: 15px; font-weight: 700; color: #4f46e5;">Invoice No: #{{ $sales->order_no }}</div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 3px;">Invoice Date: {{ $sales->created_at ? $sales->created_at->format('d M Y') : date('d M Y') }}</div>
             </td>
         </tr>
     </table>
 
-    {{-- ═══════════════════════════════════════════
-         CUSTOMER DETAILS
-    ═══════════════════════════════════════════ --}}
-    <table class="details-table" cellpadding="0" cellspacing="0">
-       <tr>
-        <td class="label">Customer:</td>
-        <td class="value">{{ $customer->name }}</td>
-    </tr>
-    <tr>
-        <td class="label">Phone:</td>
-        <td class="value">{{ $customer->phone }}</td>
-    </tr>
-    <tr>
-        <td class="label">Address:</td>
-        <td class="value">{{ $customer->address }}</td>
-    </tr>
+    <!-- Customer Info Card -->
+    <table style="width: 100%; border-collapse: separate; border-spacing: 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 25px;">
+        <tr>
+            <td style="padding: 14px 18px; width: 33.33%; vertical-align: top;">
+                <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-bottom: 4px;">CUSTOMER / CLIENT</div>
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a;">{{ $customer->name ?? 'N/A' }}</div>
+            </td>
+            <td style="padding: 14px 18px; width: 33.33%; vertical-align: top; border-left: 1px solid #e2e8f0;">
+                <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-bottom: 4px;">PHONE NUMBER</div>
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a;">{{ $customer->phone ?? 'N/A' }}</div>
+            </td>
+            <td style="padding: 14px 18px; width: 33.33%; vertical-align: top; border-left: 1px solid #e2e8f0;">
+                <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-bottom: 4px;">ADDRESS / LOCATION</div>
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a;">{{ $customer->address ?? 'N/A' }}</div>
+            </td>
+        </tr>
     </table>
 
-    {{-- ═══════════════════════════════════════════
-         ITEMS TABLE
-    ═══════════════════════════════════════════ --}}
-    <table class="items-table" cellpadding="0" cellspacing="0">
+    <!-- Items Table -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
         <thead>
-            <tr>
-                <th>SL</th>
-                <th>Item Names</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Total Price</th>
+            <tr style="background: #1e293b; color: #ffffff;">
+                <th style="padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 6%;">#</th>
+                <th style="padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; width: 48%;">Item Description &amp; Model</th>
+                <th style="padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 12%;">Qty</th>
+                <th style="padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; width: 17%;">Unit Price</th>
+                <th style="padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; width: 17%;">Total Price</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($items as $item)
-                <tr>
-                    <td>{{ $loop->index + 1 }}</td>
-                    <td>{{ $item->name }}</td>
-                    <td>{{ $item->qty ?? 'N/A' }}</td>
-                    <td>{{ $item->unit_price ? number_format($item->unit_price, 2) : 'N/A' }}</td>
-                    <td>{{ $item->total_price ? number_format($item->total_price, 2) : 'N/A' }}</td>
+                <tr style="background-color: {{ $loop->even ? '#f8fafc' : '#ffffff' }};">
+                    <td style="padding: 10px 14px; font-size: 12px; color: #334155; border-bottom: 1px solid #f1f5f9; text-align: center;">{{ $loop->index + 1 }}</td>
+                    <td style="padding: 10px 14px; font-size: 12px; color: #334155; border-bottom: 1px solid #f1f5f9;">
+                        <strong>{{ $item->name }}</strong>
+                        @if(!empty($item->model))
+                            <div style="font-size: 10px; color: #64748b;">Model: {{ $item->model }}</div>
+                        @endif
+                    </td>
+                    <td style="padding: 10px 14px; font-size: 12px; color: #334155; border-bottom: 1px solid #f1f5f9; text-align: center;">{{ $item->qty ?? 1 }}</td>
+                    <td style="padding: 10px 14px; font-size: 12px; color: #334155; border-bottom: 1px solid #f1f5f9; text-align: right;">৳{{ $item->unit_price ? number_format($item->unit_price, 2) : '0.00' }}</td>
+                    <td style="padding: 10px 14px; font-size: 12px; color: #334155; border-bottom: 1px solid #f1f5f9; text-align: right;">৳{{ $item->total_price ? number_format($item->total_price, 2) : '0.00' }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
-    {{-- ═══════════════════════════════════════════
-         RETURNS SECTION (only shown when present)
-    ═══════════════════════════════════════════ --}}
     @php
-        $completedReturns  = $returns->where('status', 'completed');
-        $totalRefundAmount = $completedReturns->sum(function ($return) {
+        $completedReturns = $returns->where('status', 'completed');
+        $totalRefundAmount = $completedReturns->sum(function($return) {
             return $return->total_refund_amount ?? $return->items->sum('total_price');
         });
         $hasReturns = $completedReturns->count() > 0;
     @endphp
 
-    @if ($hasReturns)
-    <div class="returns-section">
-        <h4>Returned Items</h4>
-        <table class="returns-table" cellpadding="0" cellspacing="0">
+    @if($hasReturns)
+    <!-- Returns Section -->
+    <div style="border: 1px dashed #f87171; background: #fff5f5; border-radius: 10px; padding: 14px 18px; margin-bottom: 25px;">
+        <h4 style="color: #dc2626; font-size: 13px; font-weight: 700; margin-bottom: 10px;">Returned Items</h4>
+        <table style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th>Return #</th>
-                    <th>Product</th>
-                    <th>Qty Returned</th>
-                    <th>Reason</th>
-                    <th>Condition</th>
-                    <th>Refund Amount</th>
+                <tr style="background: #dc2626; color: white;">
+                    <th style="padding: 8px; font-size: 11px;">Return #</th>
+                    <th style="padding: 8px; font-size: 11px;">Product</th>
+                    <th style="padding: 8px; font-size: 11px; text-align: center;">Qty</th>
+                    <th style="padding: 8px; font-size: 11px;">Reason</th>
+                    <th style="padding: 8px; font-size: 11px;">Condition</th>
+                    <th style="padding: 8px; font-size: 11px; text-align: right;">Refund Amount</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($completedReturns as $return)
-                    @foreach ($return->items as $returnItem)
+                @foreach($completedReturns as $return)
+                    @foreach($return->items as $returnItem)
                         <tr>
-                            <td>#{{ $return->id }}</td>
-                            <td>{{ $returnItem->product->name ?? 'N/A' }}</td>
-                            <td>{{ $returnItem->quantity }}</td>
-                            <td>{{ $returnItem->reason_label }}</td>
-                            <td>{{ $returnItem->condition_label }}</td>
-                            <td>{{ number_format($returnItem->total_price, 2) }} Tk</td>
+                            <td style="padding: 8px; font-size: 11px; border-bottom: 1px solid #fecaca;">#{{ $return->id }}</td>
+                            <td style="padding: 8px; font-size: 11px; border-bottom: 1px solid #fecaca;">{{ $returnItem->product->name ?? 'N/A' }}</td>
+                            <td style="padding: 8px; font-size: 11px; border-bottom: 1px solid #fecaca; text-align: center;">{{ $returnItem->quantity }}</td>
+                            <td style="padding: 8px; font-size: 11px; border-bottom: 1px solid #fecaca;">{{ $returnItem->reason_label }}</td>
+                            <td style="padding: 8px; font-size: 11px; border-bottom: 1px solid #fecaca;">{{ $returnItem->condition_label }}</td>
+                            <td style="padding: 8px; font-size: 11px; border-bottom: 1px solid #fecaca; text-align: right;">৳{{ number_format($returnItem->total_price, 2) }}</td>
                         </tr>
                     @endforeach
                 @endforeach
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5" class="text-right">Total Refund:</td>
-                    <td>{{ number_format($totalRefundAmount, 2) }} Tk</td>
-                </tr>
-            </tfoot>
         </table>
     </div>
     @endif
 
-    {{-- ═══════════════════════════════════════════
-         TERMS & CONDITIONS  |  TOTALS
-    ═══════════════════════════════════════════ --}}
-    <table class="bottom-table" cellpadding="0" cellspacing="0">
+    <!-- Summary & Terms Grid -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
         <tr>
-            {{-- Terms --}}
-            <td style="width:55%;">
-                <div class="conditions">
-                    <h2>Terms &amp; Conditions</h2> <br>
-                    <p>1. Products can be returned within 7 days in their original, unopened condition.</p> <br>
-                    <p>2. Refunds or exchanges are offered, but perishable goods cannot be returned.</p> <br>
-                    <p>Contact us at <strong>01904400205</strong> with a valid receipt for assistance.</p>
+            <td style="width: 55%; vertical-align: top; padding-right: 20px;">
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px;">
+                    <h3 style="font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">Terms &amp; Conditions</h3>
+                    <p style="font-size: 11px; color: #64748b; line-height: 1.6; margin-bottom: 6px;">&bull; Products can be returned within 7 days in their original, unopened condition.</p>
+                    <p style="font-size: 11px; color: #64748b; line-height: 1.6; margin-bottom: 6px;">&bull; Refunds or exchanges are offered, but perishable/custom items cannot be returned.</p>
+                    <p style="font-size: 11px; color: #64748b; margin-top: 10px;">Contact support at <strong>01904400205</strong> for valid receipt claims.</p>
                 </div>
             </td>
-
-            {{-- Totals --}}
-            <td style="width:45%;">
-                <table class="totals-table" cellpadding="0" cellspacing="0">
-
-                    @if ($hasReturns)
-                    <tr class="row-strikethrough">
-                        <td>Original Sub Total:</td>
-                        <td class="text-right">{{ number_format($sales->bill + $totalRefundAmount, 2) }} Tk</td>
-                    </tr>
-                    <tr class="row-refund">
-                        <td>Returns / Refund:</td>
-                        <td class="text-right">- {{ number_format($totalRefundAmount, 2) }} Tk</td>
-                    </tr>
-                    @endif
-
-                    <tr>
-                        <td>Sub Total:</td>
-                        <td class="text-right">{{ number_format($sales->bill, 2) }} Tk</td>
-                    </tr>
-
-                    @if (($sales->vat ?? 0) > 0)
+            <td style="width: 45%; vertical-align: top;">
+                <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px 16px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        @if($hasReturns)
+                        <tr style="color: #94a3b8; text-decoration: line-through;">
+                            <td style="padding: 5px 0;">Original Sub Total:</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600;">৳{{ number_format($sales->bill + $totalRefundAmount, 2) }}</td>
+                        </tr>
+                        <tr style="color: #dc2626;">
+                            <td style="padding: 5px 0;">Returns / Refund:</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600;">- ৳{{ number_format($totalRefundAmount, 2) }}</td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <td style="padding: 5px 0; color: #475569;">Sub Total:</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">৳{{ number_format($sales->bill, 2) }}</td>
+                        </tr>
+                        @if(($sales->vat ?? 0) > 0)
                         @php $vatAmount = ($sales->bill * $sales->vat) / 100; @endphp
                         <tr>
-                            <td>VAT ({{ number_format($sales->vat, 2) }}%):</td>
-                            <td class="text-right">{{ number_format($vatAmount, 2) }} Tk</td>
+                            <td style="padding: 5px 0; color: #475569;">VAT ({{ number_format($sales->vat, 2) }}%):</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">৳{{ number_format($vatAmount, 2) }}</td>
                         </tr>
-                    @endif
-
-                    @if (($sales->tax ?? 0) > 0)
+                        @endif
+                        @if(($sales->tax ?? 0) > 0)
                         @php $taxAmount = ($sales->bill * $sales->tax) / 100; @endphp
                         <tr>
-                            <td>Tax ({{ number_format($sales->tax, 2) }}%):</td>
-                            <td class="text-right">{{ number_format($taxAmount, 2) }} Tk</td>
+                            <td style="padding: 5px 0; color: #475569;">Tax ({{ number_format($sales->tax, 2) }}%):</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">৳{{ number_format($taxAmount, 2) }}</td>
                         </tr>
-                    @endif
-
-                    @if (($sales->delivery_charge ?? 0) > 0)
+                        @endif
+                        @if(($sales->delivery_charge ?? 0) > 0)
                         <tr>
-                            <td>Delivery Charge:</td>
-                            <td class="text-right">{{ number_format($sales->delivery_charge, 2) }} Tk</td>
+                            <td style="padding: 5px 0; color: #475569;">Delivery Charge:</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">৳{{ number_format($sales->delivery_charge, 2) }}</td>
                         </tr>
-                    @endif
-
-                    <tr>
-                        <td>Discount:</td>
-                        <td class="text-right">{{ number_format($sales->discount ?? 0, 2) }} Tk</td>
-                    </tr>
-                    <tr>
-                        <td>Total:</td>
-                        <td class="text-right">{{ number_format($sales->payble, 2) }} Tk</td>
-                    </tr>
-                    <tr>
-                        <td>Received:</td>
-                        <td class="text-right">{{ number_format($sales->advanced_payment ?? 0, 2) }} Tk</td>
-                    </tr>
-                    <tr class="row-due">
-                        <td>Total Due:</td>
-                        <td class="text-right">{{ number_format($sales->due_payment ?? 0, 2) }} Tk</td>
-                    </tr>
-
-                </table>
+                        @endif
+                        <tr>
+                            <td style="padding: 5px 0; color: #475569;">Discount:</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">৳{{ number_format($sales->discount ?? 0, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; font-size: 14px; font-weight: 800; color: #4f46e5;">Grand Total:</td>
+                            <td style="padding: 8px 0; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; text-align: right; font-size: 14px; font-weight: 800; color: #4f46e5;">৳{{ number_format($sales->payble, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0; color: #475569;">Received Amount:</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">৳{{ number_format($sales->advanced_payment ?? 0, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0; font-weight: 800; color: #dc2626;">Total Due:</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 800; color: {{ ($sales->due_payment ?? 0) > 0 ? '#dc2626' : '#16a34a' }};">৳{{ number_format($sales->due_payment ?? 0, 2) }}</td>
+                        </tr>
+                    </table>
+                </div>
             </td>
         </tr>
     </table>
 
-    {{-- ═══════════════════════════════════════════
-         AMOUNT IN WORDS
-    ═══════════════════════════════════════════ --}}
-    <div class="in-words">
-        <strong>In Words:</strong>
+    <!-- In Words -->
+    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 16px; font-size: 12px; color: #334155; margin-bottom: 40px;">
+        <strong style="color: #4f46e5; margin-right: 6px;">Amount In Words:</strong>
         @php $totalAmount = $sales->bill ?? 0; @endphp
         {{ numberToWords($totalAmount) }} Taka Only
     </div>
 
-    {{-- ═══════════════════════════════════════════
-         SIGNATURES
-    ═══════════════════════════════════════════ --}}
-    <table class="signature-table" cellpadding="0" cellspacing="0">
+    <!-- Signatures -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 50px;">
         <tr>
-            <td>
-                <hr class="signature-line">
-                Customer Signature
+            <td width="50%" align="center" style="vertical-align: bottom;">
+                <div style="border-top: 1px solid #64748b; width: 180px; margin: 0 auto 6px auto;"></div>
+                <div style="font-size: 11px; font-weight: 600; color: #475569;">Customer Signature</div>
             </td>
-            <td>
-                <hr class="signature-line">
-                Authorized Signature
+            <td width="50%" align="center" style="vertical-align: bottom;">
+                <div style="border-top: 1px solid #64748b; width: 180px; margin: 0 auto 6px auto;"></div>
+                <div style="font-size: 11px; font-weight: 600; color: #475569;">Authorized Signature</div>
             </td>
         </tr>
     </table>

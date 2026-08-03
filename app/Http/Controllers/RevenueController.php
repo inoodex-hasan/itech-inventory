@@ -17,6 +17,16 @@ class RevenueController extends Controller
         return view('frontend.pages.revenue.index', compact('revenues'));
     }
 
+    public function downloadPdf()
+    {
+        ini_set('memory_limit', '512M');
+        $revenues = Revenue::orderByDesc('year')->orderByDesc('month')->get();
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.revenue', compact('revenues'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('Monthly_Revenue_Report_' . now()->format('Y_m_d_His') . '.pdf');
+    }
+
     public function generate()
     {
         $month = now()->month;
