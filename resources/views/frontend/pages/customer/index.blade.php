@@ -65,7 +65,11 @@
                 <h4 class="card-title fw-bold text-dark mb-1">Customer Directory</h4>
                 <p class="text-muted small mb-0">Manage customer records, contact information, and account status</p>
             </div>
-            <div class="list-btn">
+            <div class="list-btn d-flex align-items-center gap-2">
+                <a class="btn btn-outline-danger px-3 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" href="{{ route('customers.pdf') }}" target="_blank">
+                    <i class="fe fe-file-text fs-6"></i>
+                    <span>Export PDF</span>
+                </a>
                 <a class="btn btn-primary px-4 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" href="{{ route('customers.create') }}">
                     <i class="fe fe-plus-circle fs-6"></i>
                     <span>Add New Customer</span>

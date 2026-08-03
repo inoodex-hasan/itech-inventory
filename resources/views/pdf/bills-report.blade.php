@@ -10,7 +10,7 @@
     @endphp
     <style>
         @page {
-            background-image: url('{{ $toFileUrl('assets/invoice/invoice-bg.jpg') }}');
+            background-image: url('{{ $toFileUrl('assets/invoice/final_pad.png') }}');
             background-image-resize: 6;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -18,6 +18,7 @@
             font-family: Arial, sans-serif;
             font-size: 12px;
             color: #333;
+            background: url('{{ $toFileUrl('assets/invoice/final_pad.png') }}') no-repeat center top / 100% 100% fixed transparent !important;
         }
         .header-table { width: 100%; margin-bottom: 20px; }
         .header-table td { vertical-align: top; padding: 4px; }

@@ -19,36 +19,54 @@ class SalesController extends Controller
     public function __construct(private SaleService $saleService) {}
     public function index(Request $request)
     {
-        $query = Sale::with(['customer', 'client', 'salesBy']);
+        $query = Sale::with(['customer', 'client', 'salesPerson']);
 
-        // Filter by date range
+        // Filter by date range (from - to)
         if ($request->filled('from') && $request->filled('to')) {
             $from = date('Y-m-d 00:00:00', strtotime($request->from));
             $to = date('Y-m-d 23:59:59', strtotime($request->to));
             $query->whereBetween('sales.created_at', [$from, $to]);
         }
 
-        // Filter by order number
-        if ($request->search_by == 'order_no' && $request->filled('key')) {
-            $query->where('sales.order_no', 'like', '%' . $request->key . '%');
+        // Filter by Month (YYYY-MM)
+        if ($request->filled('month')) {
+            $monthDate = Carbon::parse($request->month);
+            $query->whereYear('sales.created_at', $monthDate->year)
+                  ->whereMonth('sales.created_at', $monthDate->month);
         }
 
-        // Filter by customer details
-        if (in_array($request->search_by, ['name', 'phone', 'email']) && $request->filled('key')) {
-            $query->whereHas('customer', function ($q) use ($request) {
-                $q->where($request->search_by, 'like', '%' . $request->key . '%');
+        // Filter by sale_type
+        if ($request->filled('sale_type') && $request->sale_type != 'all') {
+            $query->where('sales.sale_type', $request->sale_type);
+        }
+
+        // Filter by search keyword / order number
+        if ($request->filled('key')) {
+            $key = $request->key;
+            $query->where(function ($q) use ($key) {
+                $q->where('sales.order_no', 'like', '%' . $key . '%')
+                  ->orWhereHas('customer', function ($cq) use ($key) {
+                      $cq->where('name', 'like', '%' . $key . '%')
+                         ->orWhere('phone', 'like', '%' . $key . '%');
+                  })
+                  ->orWhereHas('client', function ($cq) use ($key) {
+                      $cq->where('name', 'like', '%' . $key . '%')
+                         ->orWhere('phone', 'like', '%' . $key . '%');
+                  });
             });
         }
 
-        $services = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
-
-        $users = lib_salesMan();
-        if ($request->search_for == 'pdf') {
-            // return view('pdf.sales',compact('services','request'));
+        // Export PDF of all matching sales records
+        if ($request->search_for == 'pdf' || $request->export == 'pdf') {
+            ini_set('memory_limit', '512M');
+            $services = $query->orderBy('id', 'desc')->get();
             $pdf = Pdf::loadView('pdf.sales', compact('services', 'request'))
                 ->setPaper('A4', 'portrait');
-            return $pdf->download('Sales.pdf');
+            return $pdf->stream('Sales_List_Report_' . now()->format('Y_m_d_His') . '.pdf');
         }
+
+        $services = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
+        $users = lib_salesMan();
 
 
         //Report
@@ -278,11 +296,17 @@ public function store(StoreSaleRequest $request)
 
     public function makeInvoice(Request $request, $serviceId)
     {
-        $sales = Sale::with(['returns.items.product', 'returns.processedBy'])->find($serviceId);
+        $sales = Sale::with(['customer', 'client', 'returns.items.product', 'returns.processedBy'])->find($serviceId);
         if (!$sales) abort(404);
 
-        $customer = Customer::where('id', $sales->customer_id)->first();
-        if (!$customer) abort(404);
+        $customer = $sales->sale_type == 'project' ? $sales->client : $sales->customer;
+        if (!$customer) {
+            $customer = (object) [
+                'name' => 'N/A',
+                'phone' => 'N/A',
+                'address' => 'N/A',
+            ];
+        }
 
         $items = SalesItem::join('products', 'products.id', 'sales_items.product_id')
             ->where('order_id',  $sales->id)
@@ -297,14 +321,18 @@ public function store(StoreSaleRequest $request)
 
     public function downloadInvoicePdf($id)
     {
-        $sales = Sale::with(['returns.items.product', 'returns.processedBy'])->find($id);
+        $sales = Sale::with(['customer', 'client', 'returns.items.product', 'returns.processedBy'])->find($id);
         if (!$sales) {
             abort(404);
         }
 
-        $customer = Customer::where('id', $sales->customer_id)->first();
+        $customer = $sales->sale_type == 'project' ? $sales->client : $sales->customer;
         if (!$customer) {
-            abort(404);
+            $customer = (object) [
+                'name' => 'N/A',
+                'phone' => 'N/A',
+                'address' => 'N/A',
+            ];
         }
 
         $items = SalesItem::join('products', 'products.id', 'sales_items.product_id')
@@ -315,10 +343,11 @@ public function store(StoreSaleRequest $request)
         $returns = $sales->returns->where('status', 'completed');
 
         try {
+            ini_set('memory_limit', '512M');
             $pdf = Pdf::loadView('frontend.pages.sales.invoice_pdf', compact('sales', 'items', 'customer', 'returns'))
                 ->setPaper('A4', 'portrait');
 
-            return $pdf->download(($sales->order_no ?? $sales->id) . '.pdf');
+            return $pdf->stream(($sales->order_no ?? $sales->id) . '.pdf');
         } catch (\Exception $e) {
             Log::error('Sales invoice PDF generation failed: ' . $e->getMessage(), [
                 'sale_id' => $id,

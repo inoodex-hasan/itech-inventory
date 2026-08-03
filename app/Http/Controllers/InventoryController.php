@@ -21,6 +21,16 @@ class InventoryController extends Controller
         return view('frontend.pages.inventory.index', compact('products','inventories'));
     }
 
+    public function downloadPdf()
+    {
+        ini_set('memory_limit', '512M');
+        $inventories = Inventory::with(['product.brand', 'product.category'])->latest()->get();
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.inventory', compact('inventories'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('Inventory_Stock_Report_' . now()->format('Y_m_d_His') . '.pdf');
+    }
+
     /**
      * Show the form for creating a new resource.
      */

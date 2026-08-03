@@ -21,6 +21,16 @@ class CustomerController extends Controller
         return view('frontend.pages.customer.index', compact('customers'));
     }
 
+    public function downloadPdf()
+    {
+        ini_set('memory_limit', '512M');
+        $customers = Customer::latest()->get();
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.customers', compact('customers'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('Customer_List_' . now()->format('Y_m_d_His') . '.pdf');
+    }
+
     /**
      * Show the form for creating a new resource.
      */
