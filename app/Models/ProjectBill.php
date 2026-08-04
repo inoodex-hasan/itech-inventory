@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProjectBill extends Model
 {
@@ -65,15 +64,15 @@ class ProjectBill extends Model
             'amount_in_words' => $this->convertToWords($this->total_amount),
         ];
 
-        $pdf = Pdf::loadView('pdf.bill', $data)
-            ->setPaper('A4', 'portrait')
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true,
-                'defaultFont' => 'helvetica',
-            ]);
+        $html = view('pdf.bill', $data)->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
 
-        return $pdf;
+        return $mpdf;
     }
 
     private function convertToWords($number)

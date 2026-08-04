@@ -10,7 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
 use App\Services\SaleService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Twilio\Rest\Client;
 
@@ -58,11 +57,16 @@ class SalesController extends Controller
 
         // Export PDF of all matching sales records
         if ($request->search_for == 'pdf' || $request->export == 'pdf') {
-            ini_set('memory_limit', '512M');
-            $services = $query->orderBy('id', 'desc')->get();
-            $pdf = Pdf::loadView('pdf.sales', compact('services', 'request'))
-                ->setPaper('A4', 'portrait');
-            return $pdf->stream('Sales_List_Report_' . now()->format('Y_m_d_His') . '.pdf');
+            $html = view('pdf.sales', compact('services', 'request'))->render();
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'default_font' => 'Helvetica',
+            ]);
+            $mpdf->WriteHTML($html);
+            return response($mpdf->Output('Sales_List_Report_' . now()->format('Y_m_d_His') . '.pdf', 'I'), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
         }
 
         $services = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
@@ -126,7 +130,7 @@ public function store(StoreSaleRequest $request)
     try {
         $sale = $this->saleService->createSale($request->validated());
 
-        return redirect()->route('sales.invoice', $sale->id)
+        return redirect()->route('sales.invoice.pdf', $sale->id)
             ->with('success', 'Sale created successfully! Invoice #' . $sale->order_no);
 
     } catch (\RuntimeException $e) {
@@ -344,10 +348,24 @@ public function store(StoreSaleRequest $request)
 
         try {
             ini_set('memory_limit', '512M');
-            $pdf = Pdf::loadView('frontend.pages.sales.invoice_pdf', compact('sales', 'items', 'customer', 'returns'))
-                ->setPaper('A4', 'portrait');
+            
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'margin_top' => 42,
+                'margin_bottom' => 15,
+                'margin_left' => 15,
+                'margin_right' => 15,
+                'default_font' => 'Helvetica',
+            ]);
 
-            return $pdf->stream(($sales->order_no ?? $sales->id) . '.pdf');
+            $html = view('frontend.pages.sales.invoice_pdf', compact('sales', 'items', 'customer', 'returns'))->render();
+            $mpdf->WriteHTML($html);
+
+            return response($mpdf->Output(($sales->order_no ?? $sales->id) . '.pdf', \Mpdf\Output\Destination::INLINE), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . ($sales->order_no ?? $sales->id) . '.pdf"',
+            ]);
         } catch (\Exception $e) {
             Log::error('Sales invoice PDF generation failed: ' . $e->getMessage(), [
                 'sale_id' => $id,
@@ -482,10 +500,16 @@ public function store(StoreSaleRequest $request)
 
         $salesReport = $salesQuery->orderBy('sales.created_at', 'desc')->get();
 
-        $pdf = Pdf::loadView('frontend.pages.report.sales.pdf', compact('salesReport', 'request'))
-            ->setPaper('A4', 'portrait');
-
-        return $pdf->download('sales-report.pdf');
+        $html = view('frontend.pages.report.sales.pdf', compact('salesReport', 'request'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
+        return response($mpdf->Output('sales-report.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function getSaleDetails($id)

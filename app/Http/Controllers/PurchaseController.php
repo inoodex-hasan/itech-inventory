@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StorePurchaseRequest;
 use App\Services\PurchaseService;
 use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class PurchaseController extends Controller
 {
@@ -246,9 +245,16 @@ class PurchaseController extends Controller
             'vendor' => $request->filled('vendor_id') ? Vendor::find($request->vendor_id)?->name : 'All Vendors',
         ];
 
-        $pdf = Pdf::loadView('frontend.pages.report.purchase.pdf', compact('purchases', 'filters'));
-
-        return $pdf->download('purchase-report-' . now()->format('Y-m-d') . '.pdf');
+        $html = view('frontend.pages.report.purchase.pdf', compact('purchases', 'filters'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
+        return response($mpdf->Output('purchase-report-' . now()->format('Y-m-d') . '.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     private function applyPurchaseReportFilters($query, Request $request)

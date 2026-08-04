@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\{Service, User, Vendor, Purchase};
 use App\Http\Controllers\Controller;
 use Validator;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class VendorController extends Controller
 {
@@ -117,10 +116,15 @@ class VendorController extends Controller
     public function downloadPdf()
     {
         $vendors = Vendor::all();
-
-        $pdf = Pdf::loadView('pdf.vendors', compact('vendors'))
-                ->setPaper('a4', 'portrait');
-
-        return $pdf->download('vendor-list.pdf');
+        $html = view('pdf.vendors', compact('vendors'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
+        return response($mpdf->Output('vendor-list.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }

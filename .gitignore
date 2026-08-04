@@ -22,6 +22,7 @@ yarn-error.log
 /public/build/
 
 # IDE & OS files
+.agents/
 .idea/
 .vscode/
 *.suo

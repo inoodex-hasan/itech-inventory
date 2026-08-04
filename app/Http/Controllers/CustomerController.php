@@ -25,10 +25,16 @@ class CustomerController extends Controller
     {
         ini_set('memory_limit', '512M');
         $customers = Customer::latest()->get();
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.customers', compact('customers'))
-            ->setPaper('A4', 'portrait');
-
-        return $pdf->stream('Customer_List_' . now()->format('Y_m_d_His') . '.pdf');
+        $html = view('pdf.customers', compact('customers'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
+        return response($mpdf->Output('Customer_List_' . now()->format('Y_m_d_His') . '.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     /**

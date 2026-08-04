@@ -188,7 +188,7 @@
                                     @endif
                                 </td>
                                 <td class="pe-4 text-end">
-                                    <a href="{{ route('revenues.export', $rev->id) }}" class="btn btn-sm btn-outline-danger rounded-2 px-3 shadow-none">
+                                    <a href="{{ route('revenues.export', $rev->id) }}" target="_blank" class="btn btn-sm btn-outline-danger rounded-2 px-3 shadow-none">
                                         <i class="fe fe-file-text me-1"></i>Export PDF
                                     </a>
                                 </td>
