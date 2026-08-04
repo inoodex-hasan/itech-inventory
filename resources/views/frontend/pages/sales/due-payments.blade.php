@@ -73,10 +73,14 @@
                 <h4 class="card-title fw-bold text-dark mb-1">Due Payments</h4>
                 <p class="text-muted small mb-0">Overview of outstanding customer dues for retail sales and project orders</p>
             </div>
-            <div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('due-payments.pdf') }}" target="_blank" class="btn btn-outline-danger px-3 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2">
+                    <i class="fe fe-file-text fs-6"></i>
+                    <span>Export PDF</span>
+                </a>
                 <a href="{{ route('sales.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm">
-                <i class="fa fa-arrow-left me-2"></i>    
-                Back to Sales
+                    <i class="fa fa-arrow-left me-2"></i>    
+                    Back to Sales
                 </a>
             </div>
         </div>

@@ -1,177 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Inventory Stock Report</title>
+    @php
+        $padPath = public_path('assets/invoice/final_pad.png');
+        $padBase64 = file_exists($padPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($padPath)) : '';
+    @endphp
     <style>
         @page {
-            margin: 140px 45px 80px 45px;
-            size: A4 portrait;
+            @if($padBase64)
+            background-image: url('{{ $padBase64 }}');
+            background-image-resize: 6;
+            @endif
+            margin-top: 45mm;
+            margin-bottom: 25mm;
+            margin-left: 15mm;
+            margin-right: 15mm;
         }
-        .pdf-bg-pad {
-            position: fixed;
-            top: -140px;
-            left: -45px;
-            width: 210mm;
-            height: 297mm;
-            z-index: -1000;
-        }
-        .pdf-bg-pad img {
-            width: 210mm;
-            height: 297mm;
-        }
-        body {
-            font-family: DejaVu Sans, Arial, sans-serif;
-            font-size: 10px;
-            color: #1e293b;
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: Helvetica, Arial, sans-serif;
         }
-        .header {
-            width: 100%;
-            margin-bottom: 12px;
-            border-bottom: 2px solid #4f46e5;
-            padding-bottom: 10px;
-        }
-        .company-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #4f46e5;
-        }
-        .report-title {
-            font-size: 14px;
-            font-weight: bold;
-            text-transform: uppercase;
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
             color: #0f172a;
+            line-height: 1.4;
+        }
+
+        .header-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
+
+        .report-title {
+            text-align: right;
+        }
+
+        .report-title h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .report-title p {
+            font-size: 12px;
+            color: #64748b;
             margin-top: 3px;
         }
-        .meta-info {
-            font-size: 9px;
-            color: #64748b;
-            margin-top: 4px;
+
+        .summary-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: #334155;
+            margin-bottom: 20px;
         }
 
-        /* Summary Table - Pixel-perfect alignment with Inventory Table */
-        table.summary-table {
+        .items-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        table.summary-table td {
-            background-color: #f8fafc;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 25px;
             border: 1px solid #cbd5e1;
-            padding: 8px 12px;
-            font-size: 10px;
-            color: #334155;
-            vertical-align: middle;
+            border-radius: 12px;
+            overflow: hidden;
         }
-        .summary-value {
-            font-weight: bold;
+
+        .items-table th {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 10px 12px;
             font-size: 11px;
-            color: #4f46e5;
-        }
-
-        /* Main Inventory Table */
-        table.inventory-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table.inventory-table th {
-            background-color: #f1f5f9;
-            color: #334155;
-            font-weight: bold;
-            font-size: 9px;
+            font-weight: 700;
             text-transform: uppercase;
-            border: 1px solid #cbd5e1;
-            padding: 7px 8px;
-            text-align: left;
-        }
-        table.inventory-table td {
-            border: 1px solid #e2e8f0;
-            padding: 6px 8px;
-            font-size: 9px;
-            vertical-align: top;
-        }
-        table.inventory-table tr:nth-child(even) {
-            background-color: #f8fafc;
+            letter-spacing: 0.5px;
         }
 
-        .text-left { text-align: left; }
-        .text-end { text-align: right; }
+        .items-table td {
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .text-right { text-align: right; }
         .text-center { text-align: center; }
         .fw-bold { font-weight: bold; }
-        
+
         .badge {
             display: inline-block;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 8px;
+            font-size: 9px;
             font-weight: bold;
             text-transform: uppercase;
         }
         .badge-success { background-color: #dcfce7; color: #15803d; }
         .badge-warning { background-color: #fef3c7; color: #b45309; }
         .badge-danger { background-color: #fee2e2; color: #b91c1c; }
-
-        .footer {
-            margin-top: 30px;
-            width: 100%;
-            font-size: 8px;
-            color: #94a3b8;
-            text-align: center;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 8px;
-        }
     </style>
 </head>
 <body>
-    <div class="pdf-bg-pad">
-        <img src="{{ public_path('assets/invoice/final_pad.png') }}" />
-    </div>
-
-    <div class="header">
-        <table width="100%">
-            <tr>
-                <td>
-                    <div class="company-name">Intelligent Technology</div>
-                    <div style="font-size: 9px; color: #475569;">Inventory &amp; Sales Management System</div>
-                </td>
-                <td class="text-end">
-                    <div class="report-title">Inventory Stock Report</div>
-                    <div class="meta-info">Generated on: {{ date('d M Y') }}</div>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Summary Section (Aligned pixel-perfectly with main table) -->
-    <table class="summary-table">
+    <table class="header-table" cellpadding="0" cellspacing="0">
         <tr>
-            <td width="25%" class="text-left">
-                <strong>Total Items:</strong> <span class="summary-value">{{ count($inventories) }}</span>
-            </td>
-            <td width="25%" class="text-center">
-                <strong>In Stock:</strong> <span style="color: #15803d; font-weight: bold; font-size: 11px;">{{ $inventories->where('current_stock', '>', 5)->count() }}</span>
-            </td>
-            <td width="25%" class="text-center">
-                <strong>Low Stock:</strong> <span style="color: #b45309; font-weight: bold; font-size: 11px;">{{ $inventories->where('current_stock', '<=', 5)->where('current_stock', '>', 0)->count() }}</span>
-            </td>
-            <td width="25%" class="text-end">
-                <strong>Out of Stock:</strong> <span style="color: #b91c1c; font-weight: bold; font-size: 11px;">{{ $inventories->where('current_stock', '<=', 0)->count() }}</span>
+            <td style="width:50%;"></td>
+            <td style="width:50%;" class="report-title">
+                <h1>INVENTORY STOCK REPORT</h1>
+                <p>Generated: {{ date('d M Y') }}</p>
             </td>
         </tr>
     </table>
 
+    <!-- Summary Card -->
+    <div class="summary-card">
+        <strong>Total Items:</strong> {{ count($inventories) }} &nbsp;|&nbsp;
+        <strong>In Stock:</strong> <span style="color: #15803d; font-weight: bold;">{{ $inventories->where('current_stock', '>', 5)->count() }}</span> &nbsp;|&nbsp;
+        <strong>Low Stock:</strong> <span style="color: #b45309; font-weight: bold;">{{ $inventories->where('current_stock', '<=', 5)->where('current_stock', '>', 0)->count() }}</span> &nbsp;|&nbsp;
+        <strong>Out of Stock:</strong> <span style="color: #b91c1c; font-weight: bold;">{{ $inventories->where('current_stock', '<=', 0)->count() }}</span>
+    </div>
+
     <!-- Main Data Table -->
-    <table class="inventory-table">
+    <table class="items-table" cellpadding="0" cellspacing="0">
         <thead>
             <tr>
-                <th width="5%" class="text-center">#</th>
-                <th width="35%">Product Name &amp; Model</th>
-                <th width="15%">Brand</th>
-                <th width="15%" class="text-center">Opening Stock</th>
-                <th width="15%" class="text-center">Current Stock</th>
-                <th width="15%" class="text-center">Stock Status</th>
+                <th style="width: 5%; text-align: center;">#</th>
+                <th style="width: 35%; text-align: left;">Product Name &amp; Model</th>
+                <th style="width: 15%; text-align: left;">Brand</th>
+                <th style="width: 15%; text-align: center;">Opening Stock</th>
+                <th style="width: 15%; text-align: center;">Current Stock</th>
+                <th style="width: 15%; text-align: center;">Stock Status</th>
             </tr>
         </thead>
         <tbody>
@@ -182,12 +150,12 @@
                     $brandName = $inv->product->brand->name ?? 'N/A';
                     $stock = $inv->current_stock ?? 0;
                 @endphp
-                <tr>
+                <tr style="background-color: {{ $loop->even ? '#f8fafc' : '#ffffff' }};">
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td class="fw-bold">
                         {{ $prodName }}
                         @if($prodModel)
-                            <div style="font-weight: normal; font-size: 8px; color: #64748b;">Model: {{ $prodModel }}</div>
+                            <div style="font-weight: normal; font-size: 10px; color: #64748b; margin-top: 2px;">Model: {{ $prodModel }}</div>
                         @endif
                     </td>
                     <td>{{ $brandName }}</td>
@@ -211,8 +179,18 @@
         </tbody>
     </table>
 
-    <div class="footer">
-        Intelligent Technology Inventory System &bull; Confidential Inventory Stock Report
-    </div>
+    <!-- Signature Block -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 50px;">
+        <tr>
+            <td width="100%" align="right" style="vertical-align: bottom;">
+                <table align="right" style="width: 180px; margin: 0 0 8px auto; border-collapse: collapse;">
+                    <tr>
+                        <td style="border-top: 1.5px solid #475569; height: 1px; font-size: 1px; line-height: 1px;">&nbsp;</td>
+                    </tr>
+                </table>
+                <div style="font-size: 11px; font-weight: 600; color: #475569; padding-right: 35px;">Authorized Signature</div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

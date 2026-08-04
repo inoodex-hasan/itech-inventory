@@ -655,6 +655,45 @@ public function duePayments()
     return view('frontend.pages.sales.due-payments', ['sales' => $allItems]);
 }
 
+public function duePaymentsPdf()
+{
+    $sales = Sale::with('customer')
+        ->where('sale_type', 'retail')
+        ->where('due_payment', '>', 0)
+        ->get();
+
+    $projects = Project::with('client')
+        ->where('due_payment', '>', 0)
+        ->get()
+        ->map(function ($project) {
+            $sale = new Sale();
+            $sale->id = $project->id;
+            $sale->order_no = 'PRJ-' . $project->id;
+            $sale->customer = null;
+            $sale->client = $project->client;
+            $sale->payble = $project->budget;
+            $sale->advanced_payment = $project->advanced_payment;
+            $sale->due_payment = $project->due_payment;
+            $sale->sale_type = 'project';
+            $sale->created_at = $project->created_at;
+            return $sale;
+        });
+
+    $allItems = $sales->merge($projects)->sortByDesc('created_at');
+
+    $html = view('pdf.due_payments', ['sales' => $allItems])->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
+
+    return response($mpdf->Output('Due_Payments_Report_' . now()->format('Y_m_d_His') . '.pdf', 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
+}
+
 
     // private function getPaymentStatus($advancedPayment, $payble)
     // {

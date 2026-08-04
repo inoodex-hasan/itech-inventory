@@ -1,258 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8" />
     <title>Challan {{ $challan->reference_number }}</title>
+    @php
+        $padPath = public_path('assets/invoice/final_pad.png');
+        $padBase64 = file_exists($padPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($padPath)) : '';
+    @endphp
     <style>
-        body {
-            font-family: "Montserrat", sans-serif;
-            font-size: 12px;
-            line-height: 1.3;
-            color: #000;
-            margin: 0;
-            padding: 20px;
-            background: url("{{ public_path('assets/invoice/final_pad.png') }}") no-repeat center top / 100% 100% fixed transparent !important;
-        }
-
         @page {
-            margin: 160px 45px 90px 45px;
-            size: A4 portrait;
+            @if($padBase64)
+            background-image: url('{{ $padBase64 }}');
+            background-image-resize: 6;
+            @endif
+            margin-top: 45mm;
+            margin-bottom: 25mm;
+            margin-left: 15mm;
+            margin-right: 15mm;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 15px auto 15px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Helvetica, Arial, sans-serif;
         }
 
-        header {
-            position: fixed;
-            top: -150px;
-            left: 0;
-            right: 0;
-            display: block;
-            height: 100px;
-            background: transparent;
-            padding: 15px 45px 30px;
-            padding-bottom: 30px;
-            font-size: 11px;
-            z-index: 10;
-        }
-
-        footer {
-            position: fixed;
-            bottom: -70px;
-            left: 0;
-            right: 0;
-            height: 50px;
-            padding: 10px 0;
-            border-top: 1px solid #999;
+        body {
+            font-family: Helvetica, Arial, sans-serif;
             font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            text-align: center;
-            align-items: center;
+            color: #0f172a;
+            line-height: 1.4;
         }
 
-        .logo {
-            max-width: 200px;
-        }
-
-        .logo img {
+        .header-table {
             width: 100%;
-            text-align: left;
-            opacity: 0.5;
-            margin-left: -60px;
-            margin-bottom: 50px !important;
-        }
-
-        .reference {
             margin-bottom: 20px;
-            font-weight: bold;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
         }
 
-        .to-section {
-            margin-bottom: 20px;
-        }
-
-        .to-section p {
-            margin: 3px 0;
-        }
-
-        .subject {
-            margin: 15px 0;
-            font-weight: bold;
-        }
-
-        .underline {
-            text-decoration: underline;
-        }
-
-        .challan-title {
-            text-align: center;
-            font-weight: bold;
-            text-decoration: underline;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
+        .ref-box {
             font-size: 11px;
+            color: #475569;
         }
 
-        table th {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
-            background-color: #f0f0f0;
-            font-weight: bold;
+        .report-title {
+            text-align: right;
         }
 
-        table td {
-            border: 1px solid #000;
-            padding: 8px;
+        .report-title h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .report-title p {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 3px;
+        }
+
+        .recipient-card {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .recipient-card td {
+            padding: 14px 18px;
             vertical-align: top;
         }
 
-        .product-description {
-            width: 67%;
-        }
-
-        .quantity {
-            width: 25%;
-            text-align: center;
-        }
-
-        .serial {
-            width: 8%;
-            text-align: center;
-        }
-
-        .closing {
-            margin: 20px 0;
-            text-align: justify;
-        }
-
-        .signature-section {
-            margin-top: 60px;
-            position: relative;
-        }
-
-        .signature-content {
-            float: left;
-            text-align: left;
-            width: 300px;
-        }
-
-        .signature-line {
-            border-top: 1px dashed #000;
-            width: 200px;
-        }
-
-        .contact-info {
-            margin-top: 10px;
-            font-size: 11px;
-        }
-
-        .product-specs {
-            margin-left: 10px;
-        }
-
-        .sil {
-            max-width: 130px;
-        }
-
-        .sil img {
+        .items-table {
             width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 25px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
         }
+
+        .items-table th {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-table td {
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: bold; }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="{{ public_path('logo.jpg') }}" alt="logo">
-        </div>
-    </header>
+    <!-- Top Reference & Header -->
+    <table class="header-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:50%; vertical-align: top;">
+                <div class="ref-box">
+                    <strong>Ref:</strong> {{ $challan->reference_number }}<br>
+                    <strong>Date:</strong> {{ $challan->challan_date ? \Carbon\Carbon::parse($challan->challan_date)->format('d M Y') : date('d M Y') }}
+                </div>
+            </td>
+            <td style="width:50%;" class="report-title">
+                <h1>DELIVERY CHALLAN</h1>
+                @if($challan->work_order_number)
+                    <p>Work Order: {{ $challan->work_order_number }}</p>
+                @endif
+            </td>
+        </tr>
+    </table>
 
-    <footer>
-        <div>Corporate Office: Jahanara Villa, House # 07 (3rd Floor), Road # 04, Mirpur-10 Circle, Dhaka-1216, Bangladesh.
-Cell: +88 01904400202, +88 01904400203</div>
-        <div>E-mail: info.itechbd@yahoo.com Web: www.itechbd.net</div>
-    </footer>
+    <!-- Recipient Info Card -->
+    <table class="recipient-card" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-bottom: 4px;">RECIPIENT / DELIVER TO</div>
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a;">{{ $recipient_organization ?? ($challan->client_name ?? 'N/A') }}</div>
+                <div style="font-size: 12px; color: #475569; margin-top: 2px;">{{ $recipient_designation ?? 'Director (IT)' }}</div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 2px;">{{ $recipient_address ?? ($challan->client_address ?? 'N/A') }}</div>
+                @if(!empty($attention_to))
+                    <div style="font-size: 11px; color: #4f46e5; margin-top: 4px; font-weight: 600;">Attention: {{ $attention_to }}</div>
+                @endif
+            </td>
+        </tr>
+    </table>
 
-    <div class="container">
-        <div class="reference">
-            <span style="float: left;">Ref: {{ $challan->reference_number }}</span>
-            <span style="float: right;">{{ $challan->challan_date->format('F d, Y') }}</span>
-            <div style="clear: both;"></div>
-        </div>
-
-        <div class="to-section">
-            <p>To,</p>
-            <p>{{ $recipient_designation ?? 'Director (IT)' }}</p>
-            <p>{{ $recipient_organization ?? ($challan->client_name ?? 'N/A') }}</p>
-            <p>{{ $recipient_address ?? ($challan->client_address ?? 'N/A') }}</p>
-            @if (!empty($attention_to))
-                <p>Attention: {{ $attention_to }}</p>
-            @endif
-        </div>
-
-        @if ($challan->work_order_number)
-            <div class="subject">
-                Work Order # {{ $challan->work_order_number }}
-            </div>
-        @endif
-
-        <div class="subject">
-            Sub: <span class="underline">{{ $subject ?? 'Delivery Challan' }}</span>
-        </div>
-
-        <div class="challan-title">DELIVERY CHALLAN</div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th class="serial">S/L</th>
-                    <th class="product-description">PRODUCT DESCRIPTION</th>
-                    <th class="quantity">QTY.</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($challan->challanItems as $item)
-                    <tr>
-                        <td class="serial">{{ $loop->iteration }}</td>
-                        <td class="product-description">
-                            <div class="product-specs">
-                                {!! nl2br(e($item->description)) !!}
-                            </div>
-                        </td>
-                        <td class="quantity">{{ number_format($item->quantity) }} {{ $item->unit ?? 'No' }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <div class="closing">
-            <p>We assure you that we provide our best service at all times.</p>
-            <p>Thank you once again.</p>
-        </div>
-
-        <div class="signature-section">
-            <div class="signature-content">
-                <div class="signature-line"></div>
-                <p><strong>For, Intelligent Technology</strong></p>
-            </div>
-            <div class="sil" style="float: right; text-align: center;">
-                <img src="{{ public_path('sil.png') }}" alt="sil">
-                <p style="margin-top: 5px;"><strong>Customer's Signature</strong></p>
-            </div>
-            <div style="clear: both;"></div>
+    <!-- Subject Letter Note -->
+    <div style="margin-bottom: 20px; font-size: 12px; color: #334155; line-height: 1.5;">
+        <strong style="color: #0f172a;">Subject:</strong> <strong style="color: #0f172a;">{{ $subject ?? 'Delivery Challan' }}</strong>
+        <div style="margin-top: 8px;">
+            We assure you that we provide our best service at all times. Please receive the items listed below:
         </div>
     </div>
+
+    <!-- Items Table -->
+    <table class="items-table" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th style="width: 8%; text-align: center;">#</th>
+                <th style="width: 72%; text-align: left;">Product / Item Description</th>
+                <th style="width: 20%; text-align: center;">Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($challan->challanItems as $index => $item)
+                <tr style="background-color: {{ $index % 2 == 1 ? '#f8fafc' : '#ffffff' }};">
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="fw-bold">{!! nl2br(e($item->description)) !!}</td>
+                    <td class="text-center fw-bold">{{ number_format($item->quantity) }} {{ $item->unit ?? 'No' }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="3" class="text-center" style="padding: 16px; color: #64748b;">No items found</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <!-- Signatures (Customer & Authorized) -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 60px;">
+        <tr>
+            <td width="50%" align="center" style="vertical-align: bottom;">
+                <table align="center" style="width: 180px; margin: 0 auto 8px auto; border-collapse: collapse;">
+                    <tr>
+                        <td style="border-top: 1.5px solid #475569; height: 1px; font-size: 1px; line-height: 1px;">&nbsp;</td>
+                    </tr>
+                </table>
+                <div style="font-size: 11px; font-weight: 600; color: #475569;">Customer's Signature</div>
+            </td>
+            <td width="50%" align="center" style="vertical-align: bottom;">
+                <table align="center" style="width: 180px; margin: 0 auto 8px auto; border-collapse: collapse;">
+                    <tr>
+                        <td style="border-top: 1.5px solid #475569; height: 1px; font-size: 1px; line-height: 1px;">&nbsp;</td>
+                    </tr>
+                </table>
+                <div style="font-size: 11px; font-weight: 600; color: #475569;">Authorized Signature</div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

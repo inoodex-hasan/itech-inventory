@@ -71,6 +71,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('/sales/payments/{saleId?}', [SalesController::class, 'payments'])->name('sales.payments');
     Route::get('sales/{id}/details', [SalesController::class, 'getSaleDetails'])->name('sales.details');
 
+    Route::get('service/pdf', [ServiceController::class, 'downloadPdf'])->name('service.pdf');
     Route::resource('service', ServiceController::class);
     Route::get('service/invoice/{id}', [ServiceController::class, 'makeInvoice'])->name('service.invoice');
     Route::get('complated/service', [ServiceController::class, 'complatedService'])->name('service.complated');
@@ -108,7 +109,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('/get-sales', [ChallanController::class, 'getSales'])->name('challans.get-sales');
     Route::get('/get-projects', [ChallanController::class, 'getProjects'])->name('challans.get-projects');
 
-    Route::get('/quotations/pdf-report', [QuotationController::class, 'reportPdf'])->name('quotations.pdf-report');
+    Route::get('/quotations/pdf', [QuotationController::class, 'reportPdf'])->name('quotations.pdf-report');
     Route::resource('quotations', QuotationController::class);
     Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
     Route::get('/quotations/{quotation}/preview', [QuotationController::class, 'preview'])->name('quotations.preview');
@@ -141,6 +142,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::post('/revenues/generate', [RevenueController::class, 'generate'])->name('revenues.generate');
     Route::get('/revenues/export/{id}', [RevenueController::class, 'export'])->name('revenues.export');
     Route::get('/due-payments', [SalesController::class, 'duePayments'])->name('due-payments.index');
+    Route::get('/due-payments/pdf', [SalesController::class, 'duePaymentsPdf'])->name('due-payments.pdf');
 
     Route::post('/sales/process-payment', [SalesController::class, 'processPayment'])->name('sales.process-payment');
     Route::post('/projects/process-payment', [ProjectController::class, 'processPayment'])->name('projects.process-payment');

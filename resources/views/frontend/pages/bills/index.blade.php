@@ -235,7 +235,7 @@
                                                 </a>
                                             </li>
                                             <li>
-                                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('bills.download', $bill->id) }}">
+                                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{{ route('bills.download', $bill->id) }}" target="_blank">
                                                     <i class="fe fe-download text-info"></i>
                                                     <span>Download PDF</span>
                                                 </a>

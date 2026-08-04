@@ -17,9 +17,50 @@ use App\Http\Controllers\Controller;
 
 class ServiceController extends Controller
 {
-        /**
-     * Display a listing of the resource.
-     */
+    public function downloadPdf(Request $request)
+    {
+        $services = Service::leftjoin('users', 'users.id', '=', 'services.repaired_by');
+
+        if ($request->from != "" && $request->to != "") {
+            $from = date('Y-m-d 00:00:00', strtotime($request->from));
+            $to = date('Y-m-d 23:59:59', strtotime($request->to));
+            $services = $services->whereBetween('services.created_at', [$from, $to]);
+        }
+
+        if ($request->service_type != "") {
+            if ($request->service_type == "paid") {
+                $services = $services->where('services.due_amount', '=', '0');
+            }
+            if ($request->service_type == "due") {
+                $services = $services->where('services.due_amount', '>', '0');
+            }
+        }
+
+        if ($request->serach_by != "" && $request->key != "") {
+            $services = $services->where('services.' . $request->serach_by, 'like', '%' . $request->key . '%');
+        }
+
+        $services = $services->where('services.status', '0')
+            ->select('services.*', 'users.name as repaired_by')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $services->load('product');
+        $users = lib_serviceMan();
+
+        $html = view('pdf.services', compact('services', 'users', 'request'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
+
+        return response($mpdf->Output('Services.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
     public function index(Request $request)
     {
 
@@ -326,14 +367,24 @@ class ServiceController extends Controller
 
         $items = collect([
             (object)[
-                'name' => $service->product_name ?? 'N/A',
+                'name' => $service->product_name ?? 'Service Job',
                 'qty' => 1,
-                'unit_price' => $service->total ?? 0,
+                'unit_price' => $service->bill ?? 0,
                 'total_price' => $service->bill ?? 0,
             ],
         ]);
 
-        return view('frontend.pages.service.invoice',compact('service','serviceMans','items'));
+        $html = view('pdf.service_invoice', compact('service', 'serviceMans', 'items'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
+
+        return response($mpdf->Output('Service_Invoice_' . ($service->service_no ?? $service->id) . '.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function complatedService(Request $request){

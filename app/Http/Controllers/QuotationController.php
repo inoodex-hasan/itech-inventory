@@ -287,8 +287,17 @@ public function preview(Quotation $quotation)
         'additional_enclosed' => $quotation->additional_enclosed ?? '',
     ];
     
-    $pdf = PDF::loadView('pdf.quotations', $data);
-    return $pdf->stream('quotation-' . $quotation->id . '.pdf');
+    $html = view('pdf.quotations', $data)->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
+
+    return response($mpdf->Output('Quotation_' . ($quotation->quotation_number ?? $quotation->id) . '.pdf', 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
 
 public function download(Quotation $quotation)
@@ -318,7 +327,14 @@ public function download(Quotation $quotation)
         'additional_enclosed' => $quotation->additional_enclosed ?? '',
     ];
     
-    $pdf = PDF::loadView('pdf.quotations', $data);
+    $html = view('pdf.quotations', $data)->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
+
     $fileRecipientName = $quotation->client_name ?? $quotation->client?->name ?? 'client';
     $clientSlug = Str::slug($fileRecipientName);
     $quotationDate = $quotation->quotation_date
@@ -326,7 +342,9 @@ public function download(Quotation $quotation)
         : now()->format('d-m-Y');
     $fileName = $clientSlug . '-' . $quotationDate . '.pdf';
 
-    return $pdf->download($fileName);
+    return response($mpdf->Output($fileName, 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 
 }
 

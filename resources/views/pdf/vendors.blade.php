@@ -1,331 +1,160 @@
- <!DOCTYPE html>
- <html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Vendor Directory Report</title>
+    @php
+        $padPath = public_path('assets/invoice/final_pad.png');
+        $padBase64 = file_exists($padPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($padPath)) : '';
+    @endphp
+    <style>
+        @page {
+            @if($padBase64)
+            background-image: url('{{ $padBase64 }}');
+            background-image-resize: 6;
+            @endif
+            margin-top: 45mm;
+            margin-bottom: 25mm;
+            margin-left: 15mm;
+            margin-right: 15mm;
+        }
 
- <head>
-     <meta charset="utf-8" />
-     <link rel="preconnect" href="https://fonts.googleapis.com" />
-     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-         rel="stylesheet" />
-     <title>Vendor List</title>
-     <style>
-         body {
-             font-family: "Montserrat", sans-serif;
-             font-size: 12px;
-             line-height: 1.3;
-             color: #000;
-             margin: 0;
-             padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Helvetica, Arial, sans-serif;
+        }
 
-             background: url("{{ public_path('assets/invoice/final_pad.png') }}") no-repeat center top / 100% 100% fixed transparent !important;
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #0f172a;
+            line-height: 1.4;
+        }
 
-         }
+        .header-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
 
-         @page {
-             margin: 160px 45px 100px 45px;
-             size: A4 portrait;
-         }
+        .report-title {
+            text-align: right;
+        }
 
+        .report-title h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
 
-         .container {
-             max-width: 800px;
-             margin: 15px auto 15px;
+        .report-title p {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 3px;
+        }
 
-         }
+        .summary-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: #334155;
+            margin-bottom: 20px;
+        }
 
-         header {
-             position: fixed;
-             top: -150px;
-             left: 0;
-             right: 0;
-             display: block;
-             height: 100px;
-             background: transparent;
-             padding: 15px 45px 30px;
-             padding-bottom: 30px;
-             font-size: 11px;
-             z-index: 10;
-         }
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 25px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+        }
 
-         footer {
-             position: fixed;
-             bottom: -70px;
-             left: 0;
-             right: 0;
-             height: 50px;
-             padding: 10px 0;
-             border-top: 1px solid #999;
-             font-size: 12px;
-             display: flex;
-             justify-content: space-between;
-             text-align: center;
-             align-items: center;
-         }
+        .items-table th {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-         .logo {
-             max-width: 200px;
-         }
+        .items-table td {
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
 
-         .logo img {
-             width: 100%;
-             text-align: left;
-             opacity: 0.5;
-             margin-left: -60px;
-             margin-bottom: 50px !important;
-         }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <table class="header-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:50%;"></td>
+            <td style="width:50%;" class="report-title">
+                <h1>VENDOR DIRECTORY</h1>
+                <p>Generated: {{ date('d M Y') }}</p>
+            </td>
+        </tr>
+    </table>
 
-         .reference {
+    <!-- Summary Card -->
+    <div class="summary-card">
+        <strong>Total Vendors:</strong> {{ count($vendors) }}
+    </div>
 
-             /* margin-top: 30px; */
-             margin-bottom: 20px;
-             font-weight: bold;
-             position: relative;
-         }
+    <!-- Main Data Table -->
+    <table class="items-table" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th style="width: 5%; text-align: center;">#</th>
+                <th style="width: 25%; text-align: left;">Vendor Name</th>
+                <th style="width: 18%; text-align: left;">Phone</th>
+                <th style="width: 25%; text-align: left;">Email</th>
+                <th style="width: 27%; text-align: left;">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($vendors as $index => $vendor)
+                <tr style="background-color: {{ $loop->even ? '#f8fafc' : '#ffffff' }};">
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="fw-bold">{{ $vendor->name }}</td>
+                    <td>{{ $vendor->phone ?? 'N/A' }}</td>
+                    <td>{{ $vendor->email ?? 'N/A' }}</td>
+                    <td>{{ $vendor->address ?? 'N/A' }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center" style="padding: 20px; color: #64748b;">No vendor records found.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 
-         .reference .ref-date {
-             position: absolute;
-             top: 0;
-             right: 0;
-         }
-
-         .to-section {
-             margin-bottom: 20px;
-         }
-
-         .to-section p {
-             margin: 3px 0;
-         }
-
-         .work-order {
-             margin: 15px 0;
-             font-weight: bold;
-         }
-
-         .subject {
-             margin: 15px 0;
-             font-weight: bold;
-         }
-
-         .underline {
-             text-decoration: underline;
-         }
-
-         .letter-body {
-             margin: 20px 0;
-             text-align: justify;
-         }
-
-         .bill-title {
-             text-align: center;
-             font-weight: bold;
-             text-decoration: underline;
-             margin: 20px 0;
-             font-size: 14px;
-         }
-
-         table {
-             width: 100%;
-             border-collapse: collapse;
-             margin: 20px 0;
-             font-size: 11px;
-         }
-
-         table th {
-             border: 1px solid #000;
-             padding: 8px;
-             text-align: center;
-             background-color: #f0f0f0;
-             font-weight: bold;
-         }
-
-         table td {
-             border: 1px solid #000;
-             padding: 8px;
-             vertical-align: top;
-         }
-
-         .product-description {
-             width: 55%;
-         }
-
-         .quantity,
-         .unit-price,
-         .total-price {
-             width: 15%;
-             text-align: center;
-         }
-
-         .total-row {
-             font-weight: bold;
-         }
-
-         .total-row td {
-             text-align: right;
-             padding-right: 20px;
-         }
-
-         .amount-in-words {
-             margin: 15px 0;
-             padding: 10px;
-             /* background-color: #f9f9f9; */
-             border: 1px solid #ddd;
-             font-style: italic;
-             text-align: center;
-             font-weight: bold;
-         }
-
-         .terms-title {
-             text-align: center;
-             font-weight: bold;
-             text-decoration: underline;
-             margin: 20px 0 10px 0;
-         }
-
-         .terms-table {
-             margin: 10px 0;
-         }
-
-         .terms-table td {
-             vertical-align: top;
-             padding: 5px 8px;
-         }
-
-         .terms-table td:first-child {
-             width: 30px;
-             font-weight: bold;
-         }
-
-         .bank-details {
-             margin: 10px 0;
-             padding: 15px;
-             /* background-color: #f5f5f5; */
-             /* border-left: 2px solid #333; */
-         }
-
-         .bank-details strong {
-             display: inline-block;
-             width: 180px;
-         }
-
-         .closing {
-             margin: 40px 0 0 0px;
-             text-align: justify;
-         }
-
-         .signature-section {
-             margin-top: 60px;
-             position: relative;
-         }
-
-         .signature-content {
-             float: left;
-             text-align: left;
-             width: 300px;
-         }
-
-         .signature-line {
-             border-top: 1px dashed #000;
-             width: 200px;
-             /* margin: 40px auto 5px auto; */
-         }
-
-         .contact-info {
-             margin-top: 10px;
-             font-size: 11px;
-         }
-
-         .brand-details {
-             margin-bottom: 3px;
-         }
-
-         .product-specs {
-             margin-left: 10px;
-         }
-
-         .sil {
-             max-width: 120px;
-         }
-
-         .sil img {
-             width: 100%;
-         }
-     </style>
- </head>
-
- <body>
-     <header>
-         <div class="logo">
-             <img src="{{ public_path('logo.jpg') }}" alt="logo">
-         </div>
-     </header>
-
-     <footer>
-         <div> Corporate Office: 187(3rd Floor), Green Road, Dhanmondi Dhaka-1205, Bangladesh. Cell: +88 01904400202,
-             +88 01904400203</div>
-
-         <div>E-mail: info.itechbd@yahoo.com Web: www.itechbd.net</div>
-     </footer>
-
-
-     <div class="container">
-
-         <div class="bill-title">Vendor List</div>
-
-         <table>
-             <thead>
-                 <tr>
-                     <th>S/L</th>
-                     <th>Vendor Name</th>
-                     <th>Phone</th>
-                     <th>Email</th>
-                     <th>Address</th>
-                 </tr>
-             </thead>
-             <tbody>
-                 @foreach ($vendors->sortBy('name') as $index => $vendors)
-                     <tr>
-                         <td>{{ $loop->iteration }}</td>
-                         <td>
-                             <div class="product-specs">
-                                 {{ $vendors->name }}
-                             </div>
-                         </td>
-                         <td>{{ $vendors->phone }} </td>
-                         <td>{{ $vendors->email }}</td>
-                         <td>{{ $vendors->address }}</td>
-                     </tr>
-                 @endforeach
-
-             </tbody>
-         </table>
-
-         {{-- <div class="signature-section">
-             <div class="signature-content">
-
-                 <div class="signature-line"></div>
-                 <p><strong>{{ $company['signatory_name'] ?? 'Engr. Shamsul Alam' }}</strong></p>
-                 <p>{{ $company['signatory_designation'] ?? 'Director (Technical)' }}</p>
-                 <p>For, <strong>{{ $company['name'] ?? 'Intelligent Technology' }}</strong></p>
-
-                 <div class="contact-info">
-                     @if (!empty($company['phone'] ?? null))
-                         <p>Cell: {{ $company['phone'] }}</p>
-                     @endif
-                     @if (!empty($company['email'] ?? null))
-                         <p>E-mail: {{ $company['email'] }}</p>
-                     @endif
-                     @if (!empty($company['website'] ?? null))
-                         <p>Web: {{ $company['website'] }}</p>
-                     @endif
-                 </div>
-             </div>
-             <div class="sil">
-                 <img src="{{ public_path('sil.png') }}" alt="logo">
-             </div>
-         </div> --}}
-
-     </div>
-
- </body>
-
- </html>
+    <!-- Signature Block -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 50px;">
+        <tr>
+            <td width="100%" align="right" style="vertical-align: bottom;">
+                <table align="right" style="width: 180px; margin: 0 0 8px auto; border-collapse: collapse;">
+                    <tr>
+                        <td style="border-top: 1.5px solid #475569; height: 1px; font-size: 1px; line-height: 1px;">&nbsp;</td>
+                    </tr>
+                </table>
+                <div style="font-size: 11px; font-weight: 600; color: #475569; padding-right: 35px;">Authorized Signature</div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

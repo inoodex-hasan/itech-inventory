@@ -426,17 +426,7 @@ Thanks, with assuring you our best services.
 Yours Sincerely,`;
 
                                 const defaultTerms =
-                                    `1. Intelligent Technology will promptly deliver the product from available stock or within 7 to 15 days upon order placement.
-2. Intelligent Technology will provide (01) one-year service warranty for printer; however, no warranty is provided for printer heads & any others spare parts. 
-    • Warranty doesn't acceptable against natural disaster, burn case for AC INPUT power fluctuation or any mechanical/Physical damage.
-    • Warranty doesn't acceptable of the product if "warranty void seal" removed or tempered.
-3. Accessories are not covered by any warranty.
-4. The printer and its accessories cannot be exchanged or replaced once used.
-5. The design of the card and lanyard must design must be approved by the relevant authority. Once printed, no modifications to the design will be allowed. 
-6. The payment for the services will be made through an account payee cheque/DD/pay order, payable to Intelligent Technology, along with a corresponding work order.
-7. This offer is made in Bangladesh Taka Only.
-8. Government VAT and TAX are not included in the prices. If necessary, please incorporate the applicable amount of TAX and VAT in accordance with government or organizational regulations.
-9. As you are experiencing, the cost of inconsistence supplies and raw materials is highly fluctuating and reflecting an increasing cost trend all along the supply chain. Price is increasing both freight and US$ to Taka conversion rate too. Validity of all quotation will be 15 days only.`;
+                                    `Intelligent Technology will promptly deliver the product from available stock or within 7 to 15 days upon order placement.`;
 
                                 // Initialize default content
                                 document.getElementById('body_content').value = defaultBodyContent;
