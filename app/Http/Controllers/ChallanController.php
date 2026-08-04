@@ -9,7 +9,6 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ChallanController extends Controller
 {
@@ -124,18 +123,26 @@ public function index(Request $request)
                 'subject' => $challan->subject ?? 'Delivery Challan',
             ];
 
-$pdf = Pdf::loadView('pdf.challan', $pdfData);
+    $html = view('pdf.challan', $pdfData)->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
     $fileRecipientName = $challan->sale?->customer?->name
-                ?? $challan->project?->client?->name
-                ?? $request->recipient_organization
-                ?? 'client';
-            $recipientSlug = Str::slug($fileRecipientName);
-            $challanDate = $challan->challan_date
-                ? Carbon::parse($challan->challan_date)->format('d-m-Y')
-                : now()->format('d-m-Y');
-            $fileName = $recipientSlug . '-' . $challanDate . '.pdf';
+        ?? $challan->project?->client?->name
+        ?? $request->recipient_organization
+        ?? 'client';
+    $recipientSlug = Str::slug($fileRecipientName);
+    $challanDate = $challan->challan_date
+        ? Carbon::parse($challan->challan_date)->format('d-m-Y')
+        : now()->format('d-m-Y');
+    $fileName = $recipientSlug . '-' . $challanDate . '.pdf';
 
-            return $pdf->download($fileName);
+    return response($mpdf->Output($fileName, 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 
         } catch (\Exception $e) {
             \Log::error('Challan creation error: ' . $e->getMessage());
@@ -190,8 +197,16 @@ public function preview($id)
         'subject' => $challan->subject ?? 'Delivery Challan',
     ];
 
-    $pdf = Pdf::loadView('pdf.challan', $pdfData);
-    return $pdf->stream('challan-' . $challan->id . '.pdf');
+    $html = view('pdf.challan', $pdfData)->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
+    return response($mpdf->Output('challan-' . $challan->id . '.pdf', 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
 
 public function download($id)
@@ -233,7 +248,13 @@ public function download($id)
         'subject' => $challan->subject ?? 'Delivery Challan',
     ];
 
-    $pdf = Pdf::loadView('pdf.challan', $pdfData);
+    $html = view('pdf.challan', $pdfData)->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
     $fileRecipientName = $recipientName ?? 'client';
     $recipientSlug = Str::slug($fileRecipientName);
     $challanDate = $challan->challan_date
@@ -241,7 +262,9 @@ public function download($id)
         : now()->format('d-m-Y');
     $fileName = $recipientSlug . '-' . $challanDate . '.pdf';
 
-    return $pdf->download($fileName);
+    return response($mpdf->Output($fileName, 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
     public function getSales()
     {
@@ -359,10 +382,16 @@ public function reportPdf(Request $request)
 
     $challans = $query->latest()->get();
 
-    $pdf = Pdf::loadView('pdf.challans-report', compact('challans', 'request'))
-        ->setPaper('A4', 'portrait');
-
-    return $pdf->download('challans-report.pdf');
+    $html = view('pdf.challans-report', compact('challans', 'request'))->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
+    return response($mpdf->Output('challans-report.pdf', 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
 
 public function destroy($id)

@@ -7,7 +7,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\{BankDetail, Bill, BillItem, Client, CompanyDetail, Customer, Project, Purchase, Sale, Vendor};
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class BillController extends Controller
 {
@@ -322,7 +321,6 @@ public function store(Request $request)
         'terms_conditions' => $billWithRelations->terms_conditions,
     ];
 
-    $pdf = Pdf::loadView('pdf.bill', $pdfData);
     $fileRecipientName = $billWithRelations->customer->name
         ?? $billWithRelations->client->name
         ?? $pdfClientName
@@ -567,8 +565,16 @@ public function preview($id)
         'terms_conditions' => $bill->terms_conditions,
     ];
 
-    $pdf = Pdf::loadView('pdf.bill', $pdfData);
-    return $pdf->stream('bill-' . $bill->bill_number . '.pdf');
+    $html = view('pdf.bill', $pdfData)->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
+    return response($mpdf->Output('bill-' . $bill->bill_number . '.pdf', 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
 
 public function download($id)
@@ -630,7 +636,13 @@ public function download($id)
         'terms_conditions' => $bill->terms_conditions,
     ];
 
-    $pdf = Pdf::loadView('pdf.bill', $pdfData);
+    $html = view('pdf.bill', $pdfData)->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
     $fileRecipientName = $bill->customer->name
         ?? $bill->client->name
         ?? $clientName
@@ -642,7 +654,9 @@ public function download($id)
         : now()->format('d-m-Y');
     $fileName = $clientSlug . '-' . $billDate . '.pdf';
 
-    return $pdf->download($fileName);
+    return response($mpdf->Output($fileName, 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
     public function updateStatus(Bill $bill, Request $request)
     {
@@ -753,10 +767,16 @@ public function reportPdf(Request $request)
 
     $bills = $query->latest()->get();
 
-    $pdf = Pdf::loadView('pdf.bills-report', compact('bills', 'request'))
-        ->setPaper('A4', 'portrait');
-
-    return $pdf->download('bills-report.pdf');
+    $html = view('pdf.bills-report', compact('bills', 'request'))->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
+    return response($mpdf->Output('bills-report.pdf', 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
 
 public function destroy($id)

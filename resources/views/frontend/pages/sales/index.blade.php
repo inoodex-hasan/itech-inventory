@@ -240,13 +240,6 @@
                                             @if ($service->sale_type == 'retail')
                                                 <li>
                                                     <a class="dropdown-item py-2 d-flex align-items-center gap-2" target="_blank"
-                                                        href="{{ route('sales.invoice', $service->id) }}">
-                                                        <i class="fe fe-eye text-primary"></i>
-                                                        <span>Preview Invoice</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item py-2 d-flex align-items-center gap-2"
                                                         href="{{ route('sales.invoice.pdf', $service->id) }}">
                                                         <i class="fe fe-download text-info"></i>
                                                         <span>Download PDF</span>

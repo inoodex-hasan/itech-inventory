@@ -6,7 +6,6 @@ use App\Http\Requests\StoreWarrantyClaimRequest;
 use App\Http\Requests\UpdateWarrantyClaimRequest;
 use App\Models\WarrantyClaim;
 use App\Services\WarrantyService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -139,9 +138,15 @@ class WarrantyController extends Controller
         $claim = WarrantyClaim::with(['sale.customer', 'salesItem', 'product', 'customer', 'receiver'])
             ->findOrFail($id);
 
-        $pdf = Pdf::loadView('pdf.warranty-receipt', compact('claim'))
-            ->setPaper('A4', 'portrait');
-
-        return $pdf->download("warranty-claim-{$claim->claim_no}.pdf");
+        $html = view('pdf.warranty-receipt', compact('claim'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
+        return response($mpdf->Output("warranty-claim-{$claim->claim_no}.pdf", 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }

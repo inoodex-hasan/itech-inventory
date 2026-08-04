@@ -13,7 +13,6 @@ use App\Models\Service;
 use App\Models\Admin\Category;
 use App\Models\Customer;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 
 class ServiceController extends Controller
@@ -55,8 +54,16 @@ class ServiceController extends Controller
 
         $users = lib_serviceMan();
         if($request->search_for == 'pdf'){
-            $pdf = Pdf::loadView('pdf.services', compact('services','users','request'));
-            return $pdf->download('Services.pdf');
+            $html = view('pdf.services', compact('services','users','request'))->render();
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'default_font' => 'Helvetica',
+            ]);
+            $mpdf->WriteHTML($html);
+            return response($mpdf->Output('Services.pdf', 'I'), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
         }
 
         return view('frontend.pages.service.index',compact('services','users','request'));
@@ -370,8 +377,16 @@ class ServiceController extends Controller
         $users = lib_serviceMan();
 
         if($request->search_for == 'pdf'){
-            $pdf = Pdf::loadView('pdf.services', compact('services','users','request'));
-            return $pdf->download('Services.pdf');
+            $html = view('pdf.services', compact('services','users','request'))->render();
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'default_font' => 'Helvetica',
+            ]);
+            $mpdf->WriteHTML($html);
+            return response($mpdf->Output('Services.pdf', 'I'), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
         }
         //Report
         $todaysRevenue = Service::whereDate('created_at', Carbon::today())->where('status','1')->sum('bill');
@@ -503,9 +518,16 @@ class ServiceController extends Controller
         $payments = $payments->get();
 
         if($request->search_for == 'pdf'){
-            $pdf = Pdf::loadView('pdf.service_payments', compact('payments', 'request', 'service'))
-                ->setPaper('A4', 'portrait');
-            return $pdf->download('service Payments.pdf');
+            $html = view('pdf.service_payments', compact('payments', 'request', 'service'))->render();
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'default_font' => 'Helvetica',
+            ]);
+            $mpdf->WriteHTML($html);
+            return response($mpdf->Output('service_Payments.pdf', 'I'), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
         }
 
         return view('frontend.pages.service.payments',compact('payments','request','service'));

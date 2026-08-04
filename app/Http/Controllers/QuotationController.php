@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class QuotationController extends Controller
 {
@@ -359,7 +358,13 @@ public function generatePDF(Quotation $quotation)
         'additional_enclosed' => $quotation->additional_enclosed ?? '',
     ];
 
-    $pdf = Pdf::loadView('pdf.quotations', $data);
+    $html = view('pdf.quotations', $data)->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
     $fileRecipientName = $quotation->client_name ?? $quotation->client?->name ?? 'client';
     $clientSlug = Str::slug($fileRecipientName);
     $quotationDate = $quotation->quotation_date
@@ -367,7 +372,9 @@ public function generatePDF(Quotation $quotation)
         : now()->format('d-m-Y');
     $fileName = $clientSlug . '-' . $quotationDate . '.pdf';
 
-    return $pdf->download($fileName);
+    return response($mpdf->Output($fileName, 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
     public function sendQuotation(Quotation $quotation)
     {
@@ -493,9 +500,15 @@ public function reportPdf(Request $request)
 
     $quotations = $query->latest()->get();
 
-    $pdf = Pdf::loadView('pdf.quotations-report', compact('quotations', 'request'))
-        ->setPaper('A4', 'portrait');
-
-    return $pdf->download('quotations-report.pdf');
+    $html = view('pdf.quotations-report', compact('quotations', 'request'))->render();
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'default_font' => 'Helvetica',
+    ]);
+    $mpdf->WriteHTML($html);
+    return response($mpdf->Output('quotations-report.pdf', 'I'), 200, [
+        'Content-Type' => 'application/pdf',
+    ]);
 }
 }

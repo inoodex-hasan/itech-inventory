@@ -14,7 +14,6 @@ use App\Models\DailyExpense;
 use App\Models\Salary;
 use Illuminate\Http\Request;
 use App\Mail\CreateSalesMail;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ExpenseCategory;
 use Illuminate\Support\Facades\Auth;
@@ -77,10 +76,16 @@ class ExpenseController extends Controller
 
         // PDF export shortcut
         if ($request->search_for === 'pdf') {
-              $pdf = Pdf::loadView('pdf.daily_expense', compact('dailyExpense', 'request', 'categories'))
-            ->setPaper('A4', 'portrait'); // Optional: change size/orientation
-
-            return $pdf->download('daily_expense.pdf');
+            $html = view('pdf.daily_expense', compact('dailyExpense', 'request', 'categories'))->render();
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'default_font' => 'Helvetica',
+            ]);
+            $mpdf->WriteHTML($html);
+            return response($mpdf->Output('daily_expense.pdf', 'I'), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
         }
 
         // Render index view

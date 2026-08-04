@@ -21,10 +21,16 @@ class RevenueController extends Controller
     {
         ini_set('memory_limit', '512M');
         $revenues = Revenue::orderByDesc('year')->orderByDesc('month')->get();
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.revenue', compact('revenues'))
-            ->setPaper('A4', 'portrait');
-
-        return $pdf->stream('Monthly_Revenue_Report_' . now()->format('Y_m_d_His') . '.pdf');
+        $html = view('pdf.revenue', compact('revenues'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
+        return response($mpdf->Output('Monthly_Revenue_Report_' . now()->format('Y_m_d_His') . '.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function generate()
@@ -54,12 +60,17 @@ class RevenueController extends Controller
      public function export($id)
     {
         $revenue = Revenue::findOrFail($id);
-
-        $pdf = PDF::loadView('frontend.pages.revenue.pdf', compact('revenue'))
-            ->setPaper('A4', 'portrait');
-
+        $html = view('frontend.pages.revenue.pdf', compact('revenue'))->render();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'Helvetica',
+        ]);
+        $mpdf->WriteHTML($html);
         $filename = "Revenue_Report_{$revenue->month_name}_{$revenue->year}.pdf";
 
-        return $pdf->download($filename);
+        return response($mpdf->Output($filename, 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }
