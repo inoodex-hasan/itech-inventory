@@ -222,6 +222,27 @@
             </div>
         </div>
 
+        <!-- PDF Print Options -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="fe fe-printer me-2 text-primary"></i>PDF Print &amp; Display Options</h6>
+                <div class="d-flex flex-wrap gap-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="show_signature" id="show_signature" value="1" {{ old('show_signature', true) ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold text-dark" for="show_signature">
+                            Include Authorized Signature
+                        </label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="show_seal" id="show_seal" value="1" {{ old('show_seal', true) ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold text-dark" for="show_seal">
+                            Include Company Seal (Sill)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Form Action Buttons -->
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-body p-4 d-flex justify-content-end gap-2">

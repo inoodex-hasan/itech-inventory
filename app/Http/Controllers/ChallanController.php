@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Challan;
 use App\Models\ChallanItem;
+use App\Models\CompanyDetail;
 use App\Models\Sale;
 use App\Models\Project;
 use Illuminate\Http\Request;
@@ -40,7 +41,8 @@ public function index(Request $request)
 
     public function create()
     {
-        return view('frontend.pages.challans.create');
+        $companyDetails = CompanyDetail::where('is_active', true)->get();
+        return view('frontend.pages.challans.create', compact('companyDetails'));
     }
 
     public function store(Request $request)
@@ -97,7 +99,9 @@ public function index(Request $request)
                 'signatory_designation' => $request->signatory_designation ?? 'Director (Technical)',
                 'company_phone' => $request->company_phone ?? '+880 XXXX-XXXXXX',
                 'company_email' => $request->company_email ?? 'info@intelligenttech.com',
-                'company_website' => $request->company_website ?? 'www.intelligenttech.com',
+                'company_website' => $request->company_website ?? 'www.itechbd.net',
+                'show_signature' => $request->has('show_signature') ? (bool)$request->show_signature : true,
+                'show_seal' => $request->has('show_seal') ? (bool)$request->show_seal : true,
             ]);
 
             // Add challan items
@@ -114,6 +118,10 @@ public function index(Request $request)
             // Load challan with relationships for PDF
             $challan->load('challanItems', 'sale.customer', 'project.client');
 
+            // Look up signature image from CompanyDetail
+            $signatoryName = $challan->signatory_name ?? 'Engr. Shamsul Alam';
+            $companyDetail = CompanyDetail::where('signatory_name', $signatoryName)->first();
+
             $pdfData = [
                 'challan' => $challan,
                 'recipient_organization' => $challan->recipient_organization ?? 'N/A',
@@ -121,6 +129,10 @@ public function index(Request $request)
                 'recipient_address' => $challan->recipient_address ?? 'N/A',
                 'attention_to' => $challan->attention_to ?? '',
                 'subject' => $challan->subject ?? 'Delivery Challan',
+                'show_signature' => $challan->show_signature ?? true,
+                'show_seal' => $challan->show_seal ?? true,
+                'signature_image' => $companyDetail->signature_image ?? null,
+                'seal_image' => $companyDetail->seal_image ?? null,
             ];
 
     $html = view('pdf.challan', $pdfData)->render();
@@ -188,6 +200,10 @@ public function preview($id)
         }
     }
 
+    // Look up signature image from CompanyDetail
+    $signatoryName = $challan->signatory_name ?? 'Engr. Shamsul Alam';
+    $companyDetail = CompanyDetail::where('signatory_name', $signatoryName)->first();
+
     $pdfData = [
         'challan' => $challan,
         'recipient_organization' => $recipientName ?? 'N/A',
@@ -195,6 +211,10 @@ public function preview($id)
         'recipient_address' => $recipientAddress ?? 'N/A',
         'attention_to' => $challan->attention_to ?? '',
         'subject' => $challan->subject ?? 'Delivery Challan',
+        'show_signature' => $challan->show_signature ?? true,
+        'show_seal' => $challan->show_seal ?? true,
+        'signature_image' => $companyDetail->signature_image ?? null,
+        'seal_image' => $companyDetail->seal_image ?? null,
     ];
 
     $html = view('pdf.challan', $pdfData)->render();
@@ -239,6 +259,10 @@ public function download($id)
         }
     }
 
+    // Look up signature image from CompanyDetail
+    $signatoryName = $challan->signatory_name ?? 'Engr. Shamsul Alam';
+    $companyDetail = CompanyDetail::where('signatory_name', $signatoryName)->first();
+
     $pdfData = [
         'challan' => $challan,
         'recipient_organization' => $recipientName ?? 'N/A',
@@ -246,6 +270,10 @@ public function download($id)
         'recipient_address' => $recipientAddress ?? 'N/A',
         'attention_to' => $challan->attention_to ?? '',
         'subject' => $challan->subject ?? 'Delivery Challan',
+        'show_signature' => $challan->show_signature ?? true,
+        'show_seal' => $challan->show_seal ?? true,
+        'signature_image' => $companyDetail->signature_image ?? null,
+        'seal_image' => $companyDetail->seal_image ?? null,
     ];
 
     $html = view('pdf.challan', $pdfData)->render();

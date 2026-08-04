@@ -13,6 +13,8 @@ class CompanyDetail extends Model
         'name',
         'signatory_name',
         'signatory_designation',
+        'signature_image',
+        'seal_image',
         'phone',
         'email',
         'website',

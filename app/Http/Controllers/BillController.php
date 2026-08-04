@@ -239,6 +239,8 @@ public function store(Request $request)
         'subject' => $request->subject,
         'attention_to' => $request->attention_to,
         'designation' => $request->designation,
+        'show_signature' => $request->has('show_signature') ? (bool)$request->show_signature : true,
+        'show_seal' => $request->has('show_seal') ? (bool)$request->show_seal : true,
     ];
 
     // Create the bill
@@ -309,6 +311,8 @@ public function store(Request $request)
             'name' => $billWithRelations->companyDetail->name,
             'signatory_name' => $billWithRelations->companyDetail->signatory_name,
             'signatory_designation' => $billWithRelations->companyDetail->signatory_designation,
+            'signature_image' => $billWithRelations->companyDetail->signature_image,
+            'seal_image' => $billWithRelations->companyDetail->seal_image,
             'phone' => $billWithRelations->companyDetail->phone,
             'email' => $billWithRelations->companyDetail->email,
             'website' => $billWithRelations->companyDetail->website,
@@ -553,6 +557,8 @@ public function preview($id)
             'name' => $bill->companyDetail->name ?? 'Intelligent Technology',
             'signatory_name' => $bill->companyDetail->signatory_name ?? 'Engr. Shamsul Alam',
             'signatory_designation' => $bill->companyDetail->signatory_designation ?? 'Director (Technical)',
+            'signature_image' => $bill->companyDetail->signature_image ?? null,
+            'seal_image' => $bill->companyDetail->seal_image ?? null,
             'phone' => $bill->companyDetail->phone ?? '+880 XXXX-XXXXXX',
             'email' => $bill->companyDetail->email ?? 'info@intelligenttech.com',
             'website' => $bill->companyDetail->website ?? 'www.intelligenttech.com',
@@ -563,6 +569,8 @@ public function preview($id)
         'recipient_address' => $clientAddress,
         'attention_to' => $bill->attention_to,
         'terms_conditions' => $bill->terms_conditions,
+        'show_signature' => $bill->show_signature ?? true,
+        'show_seal' => $bill->show_seal ?? true,
     ];
 
     $html = view('pdf.bill', $pdfData)->render();
@@ -624,6 +632,8 @@ public function download($id)
             'name' => $bill->companyDetail->name,
             'signatory_name' => $bill->companyDetail->signatory_name,
             'signatory_designation' => $bill->companyDetail->signatory_designation,
+            'signature_image' => $bill->companyDetail->signature_image,
+            'seal_image' => $bill->companyDetail->seal_image,
             'phone' => $bill->companyDetail->phone,
             'email' => $bill->companyDetail->email,
             'website' => $bill->companyDetail->website,
@@ -634,6 +644,8 @@ public function download($id)
         'recipient_address' => $clientAddress,      // Use determined address
         'attention_to' => $bill->attention_to,
         'terms_conditions' => $bill->terms_conditions,
+        'show_signature' => $bill->show_signature ?? true,
+        'show_seal' => $bill->show_seal ?? true,
     ];
 
     $html = view('pdf.bill', $pdfData)->render();

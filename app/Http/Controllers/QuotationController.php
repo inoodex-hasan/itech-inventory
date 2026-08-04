@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\Client;
+use App\Models\CompanyDetail;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -50,7 +51,8 @@ public function index(Request $request)
             $product->calculated_purchase_price = $price;
             return $product;
         });
-        return view('frontend.pages.quotations.create', compact('clients', 'products'));
+        $companyDetails = CompanyDetail::where('is_active', true)->get();
+        return view('frontend.pages.quotations.create', compact('clients', 'products', 'companyDetails'));
     }
 
 public function store(Request $request)
@@ -116,6 +118,8 @@ public function store(Request $request)
             'discount_amount' => $discountAmount,
             'total_amount' => $totalAmount,
             'status' => 'draft',
+            'show_signature' => $request->has('show_signature') ? (bool)$request->show_signature : true,
+            'show_seal' => $request->has('show_seal') ? (bool)$request->show_seal : true,
         ]);
 
         // Create quotation items
@@ -165,7 +169,8 @@ public function store(Request $request)
         });
         $quotation->load('items');
         
-        return view('frontend.pages.quotations.edit', compact('quotation', 'clients', 'products'));
+        $companyDetails = CompanyDetail::where('is_active', true)->get();
+        return view('frontend.pages.quotations.edit', compact('quotation', 'clients', 'products', 'companyDetails'));
     }
 
     public function update(Request $request, Quotation $quotation)
@@ -237,6 +242,8 @@ public function store(Request $request)
                 'sub_total' => $subTotal,
                 'discount_amount' => $discountAmount,
                 'total_amount' => $totalAmount,
+                'show_signature' => $request->has('show_signature') ? (bool)$request->show_signature : true,
+                'show_seal' => $request->has('show_seal') ? (bool)$request->show_seal : true,
             ]);
 
             // Create new items
@@ -266,6 +273,10 @@ public function preview(Quotation $quotation)
     $quotation->load(['client', 'items.product.brand']);
     $amount_in_words = $this->convertNumberToWords($quotation->total_amount). ' Taka Only';
     
+    // Look up signature image from CompanyDetail
+    $signatoryName = $quotation->signatory_name ?? '';
+    $companyDetail = CompanyDetail::where('signatory_name', $signatoryName)->first();
+
     $data = [
         'quotation' => $quotation,
         'amount_in_words' => $amount_in_words,
@@ -278,13 +289,27 @@ public function preview(Quotation $quotation)
         'body_content' => $quotation->body_content ?? '',
         'terms_conditions' => $quotation->terms_conditions ?? '',
         'subject' => $quotation->subject ?? '',
-        'company_name' => $quotation->company_name ?? '',
-        'signatory_name' => $quotation->signatory_name ?? '',
-        'signatory_designation' => $quotation->signatory_designation ?? '',
-        'company_phone' => $quotation->company_phone ?? '',
-        'company_email' => $quotation->company_email ?? '',
-        'company_website' => $quotation->company_website ?? '',
+        'company_name' => $quotation->company_name ?? 'N/A',
+        'signatory_name' => $quotation->signatory_name ?? 'N/A',
+        'signatory_designation' => $quotation->signatory_designation ?? 'N/A',
+        'company_phone' => $quotation->company_phone ?? 'N/A',
+        'company_email' => $quotation->company_email ?? 'N/A',
+        'company_website' => $quotation->company_website ?? 'N/A',
+        'company' => [
+            'name' => $quotation->company_name ?? 'N/A',
+            'signatory_name' => $quotation->signatory_name ?? 'N/A',
+            'signatory_designation' => $quotation->signatory_designation ?? 'N/A',
+            'phone' => $quotation->company_phone ?? 'N/A',
+            'email' => $quotation->company_email ?? 'N/A',
+            'website' => $quotation->company_website ?? 'N/A',
+            'signature_image' => $companyDetail->signature_image ?? null,
+            'seal_image' => $companyDetail->seal_image ?? null,
+        ],
         'additional_enclosed' => $quotation->additional_enclosed ?? '',
+        'show_signature' => $quotation->show_signature ?? true,
+        'show_seal' => $quotation->show_seal ?? true,
+        'signature_image' => $companyDetail->signature_image ?? null,
+        'seal_image' => $companyDetail->seal_image ?? null,
     ];
     
     $html = view('pdf.quotations', $data)->render();
@@ -305,6 +330,10 @@ public function download(Quotation $quotation)
     $quotation->load(['client', 'items.product.brand']);
     $amount_in_words = $this->convertNumberToWords($quotation->total_amount). ' Taka Only';
     
+    // Look up signature image from CompanyDetail
+    $signatoryName = $quotation->signatory_name ?? '';
+    $companyDetail = CompanyDetail::where('signatory_name', $signatoryName)->first();
+
     // Prepare data from database
     $data = [
         'quotation' => $quotation,
@@ -324,7 +353,21 @@ public function download(Quotation $quotation)
         'company_phone' => $quotation->company_phone ?? '',
         'company_email' => $quotation->company_email ?? '',
         'company_website' => $quotation->company_website ?? '',
+        'company' => [
+            'name' => $quotation->company_name ?? 'Intelligent Technology',
+            'signatory_name' => $quotation->signatory_name ?? 'Engr. Shamsul Alam',
+            'signatory_designation' => $quotation->signatory_designation ?? 'Director (Technical)',
+            'phone' => $quotation->company_phone ?? '',
+            'email' => $quotation->company_email ?? '',
+            'website' => $quotation->company_website ?? '',
+            'signature_image' => $companyDetail->signature_image ?? null,
+            'seal_image' => $companyDetail->seal_image ?? null,
+        ],
         'additional_enclosed' => $quotation->additional_enclosed ?? '',
+        'show_signature' => $quotation->show_signature ?? true,
+        'show_seal' => $quotation->show_seal ?? true,
+        'signature_image' => $companyDetail->signature_image ?? null,
+        'seal_image' => $companyDetail->seal_image ?? null,
     ];
     
     $html = view('pdf.quotations', $data)->render();

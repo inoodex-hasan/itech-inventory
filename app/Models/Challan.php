@@ -31,10 +31,14 @@ class Challan extends Model
         'company_phone',
         'company_email',
         'company_website',
+        'show_signature',
+        'show_seal',
     ];
 
     protected $casts = [
         'challan_date' => 'date',
+        'show_signature' => 'boolean',
+        'show_seal' => 'boolean',
     ];
 
     public function challanItems()
