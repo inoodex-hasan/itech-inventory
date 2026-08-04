@@ -13,8 +13,8 @@
             background-image: url('{{ $padBase64 }}');
             background-image-resize: 6;
             @endif
-            margin-top: 42mm;
-            margin-bottom: 15mm;
+            margin-top: 45mm;
+            margin-bottom: 25mm;
             margin-left: 15mm;
             margin-right: 15mm;
         }

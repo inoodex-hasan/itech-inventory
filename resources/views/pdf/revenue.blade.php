@@ -13,8 +13,8 @@
             background-image: url('{{ $padBase64 }}');
             background-image-resize: 6;
             @endif
-            margin-top: 42mm;
-            margin-bottom: 15mm;
+            margin-top: 45mm;
+            margin-bottom: 25mm;
             margin-left: 15mm;
             margin-right: 15mm;
         }
@@ -105,7 +105,7 @@
             <td style="width:50%;"></td>
             <td style="width:50%;" class="report-title">
                 <h1>REVENUE REPORT</h1>
-                <p>Generated: {{ date('d M Y, h:i A') }}</p>
+                <p>Generated: {{ date('d M Y') }}</p>
             </td>
         </tr>
     </table>

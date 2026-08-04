@@ -77,7 +77,7 @@
                     — To: {{ \Carbon\Carbon::parse($request->to)->format('d M, Y') }}
                 </p>
             @endif
-            <p style="font-size:11px;">Generated: {{ now()->format('d M, Y g:i A') }}</p>
+            <p style="font-size:11px;">Generated: {{ now()->format('d M Y') }}</p>
         </div>
 
         <div class="divider"></div>

@@ -66,8 +66,9 @@
                 <p class="text-muted small mb-0">Manage suppliers, vendor contacts, procurement, and billing status</p>
             </div>
             <div class="list-btn d-flex align-items-center gap-2">
-                <a class="btn btn-outline-secondary px-3 py-2 rounded-3" href="{{ route('vendors.pdf') }}">
-                    PDF Report
+                <a class="btn btn-outline-danger px-3 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" href="{{ route('vendors.pdf') }}" target="_blank">
+                    <i class="fe fe-file-text fs-6"></i>
+                    <span>PDF Report</span>
                 </a>
                 <a class="btn btn-primary px-4 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" href="{{ route('vendors.create') }}">
                     <i class="fe fe-plus-circle fs-6"></i>

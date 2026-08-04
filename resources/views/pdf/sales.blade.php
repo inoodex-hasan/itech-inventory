@@ -122,7 +122,7 @@
                 </td>
                 <td class="text-end">
                     <div class="report-title">Sales Summary Report</div>
-                    <div class="filter-info">Generated on: {{ date('d M Y, h:i A') }}</div>
+                    <div class="filter-info">Generated on: {{ date('d M Y') }}</div>
                     @if(request('from') && request('to'))
                         <div class="filter-info">Date Range: {{ date('d M Y', strtotime(request('from'))) }} — {{ date('d M Y', strtotime(request('to'))) }}</div>
                     @elseif(request('month'))
@@ -186,7 +186,7 @@
             </tr>
             <tr>
                 <td><strong>Total Sales Revenue:</strong></td>
-                <td class="text-end fw-bold" style="color: #4f46e5; font-size: 11px;">৳{{ number_format($totalSalesAmount, 2) }}</td>
+                <td class="text-end fw-bold" style="color: #4f46e5; font-size: 11px;">{{ number_format($totalSalesAmount, 2) }}</td>
             </tr>
         </table>
     </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Service List Report</title>
+    <title>Due Payments Report</title>
     @php
         $padPath = public_path('assets/invoice/final_pad.png');
         $padBase64 = file_exists($padPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($padPath)) : '';
@@ -57,14 +57,14 @@
             margin-top: 3px;
         }
 
-        .filter-info {
-            font-size: 11px;
-            color: #475569;
-            margin-bottom: 20px;
-            padding: 10px 14px;
+        .summary-card {
             background: #f8fafc;
             border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: #334155;
+            margin-bottom: 20px;
         }
 
         .items-table {
@@ -80,33 +80,34 @@
         .items-table th {
             background-color: #1e293b;
             color: #ffffff;
-            padding: 10px 10px;
-            font-size: 10px;
+            padding: 10px 12px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .items-table td {
-            padding: 9px 10px;
-            font-size: 11px;
-            color: #334155;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .summary-card {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 12px 16px;
+            padding: 10px 12px;
             font-size: 12px;
             color: #334155;
-            margin-bottom: 30px;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .fw-bold { font-weight: bold; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-retail { background-color: #e0e7ff; color: #3730a3; }
+        .badge-project { background-color: #fef3c7; color: #92400e; }
     </style>
 </head>
 <body>
@@ -114,23 +115,18 @@
         <tr>
             <td style="width:50%;"></td>
             <td style="width:50%;" class="report-title">
-                <h1>SERVICE LIST REPORT</h1>
+                <h1>DUE PAYMENTS REPORT</h1>
                 <p>Generated: {{ date('d M Y') }}</p>
             </td>
         </tr>
     </table>
 
-    <div class="filter-info">
-        @if ($request->from && $request->to)
-            <strong>Date Range:</strong> {{ $request->from }} to {{ $request->to }} &nbsp;|&nbsp;
-        @endif
-        @if ($request->service_type)
-            <strong>Payment Status:</strong> {{ ucfirst($request->service_type) }} &nbsp;|&nbsp;
-        @endif
-        @if ($request->serach_by && $request->key)
-            <strong>Search ({{ ucfirst($request->serach_by) }}):</strong> {{ $request->key }} &nbsp;|&nbsp;
-        @endif
-        <strong>Total Records:</strong> {{ count($services) }}
+    <!-- Summary Card -->
+    <div class="summary-card">
+        <strong>Total Outstanding Orders:</strong> {{ count($sales) }} &nbsp;|&nbsp;
+        <strong>Total Payable:</strong> <span style="color: #4f46e5; font-weight: bold;">{{ number_format($sales->sum('payble'), 2) }}</span> &nbsp;|&nbsp;
+        <strong>Total Paid:</strong> <span style="color: #16a34a; font-weight: bold;">{{ number_format($sales->sum('advanced_payment'), 2) }}</span> &nbsp;|&nbsp;
+        <strong>Total Dues Outstanding:</strong> <span style="color: #dc2626; font-weight: bold;">{{ number_format($sales->sum('due_payment'), 2) }}</span>
     </div>
 
     <!-- Main Data Table -->
@@ -139,43 +135,42 @@
             <tr>
                 <th style="width: 5%; text-align: center;">#</th>
                 <th style="width: 12%; text-align: left;">Date</th>
-                <th style="width: 24%; text-align: left;">Customer</th>
-                <th style="width: 15%; text-align: left;">Phone</th>
-                <th style="width: 11%; text-align: right;">Bill (Tk)</th>
-                <th style="width: 11%; text-align: right;">Paid (Tk)</th>
-                <th style="width: 11%; text-align: right;">Due (Tk)</th>
-                <th style="width: 11%; text-align: left;">Repaired By</th>
+                <th style="width: 16%; text-align: left;">Order No</th>
+                <th style="width: 12%; text-align: center;">Type</th>
+                <th style="width: 25%; text-align: left;">Customer / Client</th>
+                <th style="width: 10%; text-align: right;">Payable</th>
+                <th style="width: 10%; text-align: right;">Paid</th>
+                <th style="width: 10%; text-align: right;">Due</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($services as $index => $service)
+            @forelse($sales as $index => $item)
+                @php
+                    $customerName = $item->sale_type == 'project' 
+                        ? ($item->client->name ?? 'N/A') 
+                        : ($item->customer->name ?? 'N/A');
+                @endphp
                 <tr style="background-color: {{ $loop->even ? '#f8fafc' : '#ffffff' }};">
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $service->status == '0' ? ($service->created_at ? $service->created_at->format('d-m-Y') : 'N/A') : $service->complated_date }}</td>
-                    <td class="fw-bold">{{ $service->name }}</td>
-                    <td>{{ $service->phone ?? 'N/A' }}</td>
-                    <td class="text-right fw-bold">{{ number_format($service->bill ?? 0, 2) }}</td>
-                    <td class="text-right" style="color: #16a34a;">{{ number_format($service->paid_amount ?? 0, 2) }}</td>
-                    <td class="text-right" style="color: {{ ($service->due_amount ?? 0) > 0 ? '#dc2626' : '#16a34a' }}; font-weight: bold;">
-                        {{ number_format($service->due_amount ?? 0, 2) }}
+                    <td>{{ $item->created_at ? $item->created_at->format('d-m-Y') : 'N/A' }}</td>
+                    <td class="fw-bold">{{ $item->order_no }}</td>
+                    <td class="text-center">
+                        <span class="badge {{ $item->sale_type == 'project' ? 'badge-project' : 'badge-retail' }}">
+                            {{ ucfirst($item->sale_type) }}
+                        </span>
                     </td>
-                    <td>{{ $service->repaired_by ?? 'N/A' }}</td>
+                    <td class="fw-bold">{{ $customerName }}</td>
+                    <td class="text-right">{{ number_format($item->payble ?? 0, 2) }}</td>
+                    <td class="text-right" style="color: #16a34a;">{{ number_format($item->advanced_payment ?? 0, 2) }}</td>
+                    <td class="text-right fw-bold" style="color: #dc2626;">{{ number_format($item->due_payment ?? 0, 2) }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center" style="padding: 20px; color: #64748b;">No service records found.</td>
+                    <td colspan="8" class="text-center" style="padding: 20px; color: #64748b;">No due payment records found.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
-
-    <!-- Summary Box -->
-    <div class="summary-card">
-        <strong style="margin-right: 15px;">Total Services: {{ count($services) }}</strong> &nbsp;|&nbsp;
-        <strong style="color: #4f46e5; margin-right: 15px;">Total Billing: {{ number_format($services->sum('bill'), 2) }} Tk</strong> &nbsp;|&nbsp;
-        <strong style="color: #16a34a; margin-right: 15px;">Total Paid: {{ number_format($services->sum('paid_amount'), 2) }} Tk</strong> &nbsp;|&nbsp;
-        <strong style="color: #dc2626;">Total Dues: {{ number_format($services->sum('due_amount'), 2) }} Tk</strong>
-    </div>
 
     <!-- Signature Block -->
     <table style="width: 100%; border-collapse: collapse; margin-top: 50px;">

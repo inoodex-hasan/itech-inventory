@@ -14,9 +14,6 @@
                 <a href="{{ route('quotations.index') }}" class="btn btn-outline-secondary px-4 py-2 rounded-3 shadow-sm me-2">
                     <i class="fa fa-arrow-left me-2"></i>Back to Quotations
                 </a>
-                <a href="{{ route('quotations.pdf', $quotation->id) }}" class="btn btn-primary px-4 py-2 rounded-3 shadow-sm" target="_blank">
-                    <i class="fe fe-download me-2"></i>Download PDF
-                </a>
             </div>
         </div>
     </div>
