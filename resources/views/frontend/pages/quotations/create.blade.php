@@ -290,66 +290,83 @@ Yours Sincerely,</textarea>
                                 </div>
                             </div>
 
-                            <!-- Sales Person Details Section -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h5 class="border-bottom pb-2 mb-3">Company & Signatory Details</h5>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Company Name *</label>
-                                        <input type="text" class="form-control" name="company_name"
-                                            value="Intelligent Technology" required>
+                            <!-- Company & Signatory Details Section (Half-Width Card) -->
+                            <div class="row mb-4 g-3">
+                                <div class="col-md-6 col-12">
+                                    <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+                                        <div class="card-body p-4">
+                                            <h6 class="fw-bold text-dark mb-3"><i class="fe fe-briefcase me-2 text-primary"></i>Company Signatory Details</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label small text-secondary fw-semibold mb-1">Select Signatory Profile <span class="text-danger">*</span></label>
+                                                <select class="form-select border-light-subtle" id="company_signatory_select" required>
+                                                    <option value="">Select Signatory Profile</option>
+                                                    @foreach ($companyDetails as $company)
+                                                        <option value="{{ $company->id }}" 
+                                                            data-name="{{ $company->name }}"
+                                                            data-signatory="{{ $company->signatory_name }}"
+                                                            data-designation="{{ $company->signatory_designation }}"
+                                                            data-phone="{{ $company->phone }}"
+                                                            data-email="{{ $company->email }}"
+                                                            data-website="{{ $company->website }}"
+                                                            {{ $company->is_default ? 'selected' : '' }}>
+                                                            {{ $company->name }} — {{ $company->signatory_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="p-3 bg-light rounded-3 border small" id="company-details-preview">
+                                                <div class="mb-1"><strong>Company:</strong> <span id="preview-company-name">-</span></div>
+                                                <div class="mb-1"><strong>Signatory:</strong> <span id="preview-signatory-name">-</span></div>
+                                                <div class="mb-1"><strong>Designation:</strong> <span id="preview-signatory-designation">-</span></div>
+                                                <div><strong>Phone:</strong> <span id="preview-company-phone">-</span></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Signatory Name *</label>
-                                        <input type="text" class="form-control" name="signatory_name"
-                                            value="Engr. Shamsul Alam" required>
+                                <div class="col-md-6 col-12">
+                                    <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+                                        <div class="card-body p-4">
+                                            <h6 class="fw-bold text-dark mb-3"><i class="fe fe-file-text me-2 text-primary"></i>Additional Documents</h6>
+                                            <div class="mb-0">
+                                                <label class="form-label small text-secondary fw-semibold mb-1">Additional Enclosed Documents</label>
+                                                <textarea class="form-control border-light-subtle" name="additional_enclosed" id="additional_enclosed" rows="4"
+                                                    placeholder="Add any additional enclosed documents here..."> Enclosed:
+1) Price Quotation.
+2) Summary.
+3) Terms & Conditions.</textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Signatory Designation *</label>
-                                        <input type="text" class="form-control" name="signatory_designation"
-                                            value="Director (Technical)" required>
-                                    </div>
-                                </div>
+                                <!-- Hidden fields to store company data for form submission -->
+                                <input type="hidden" name="company_name" id="hidden_company_name">
+                                <input type="hidden" name="signatory_name" id="hidden_signatory_name">
+                                <input type="hidden" name="signatory_designation" id="hidden_signatory_designation">
+                                <input type="hidden" name="company_phone" id="hidden_company_phone">
+                                <input type="hidden" name="company_email" id="hidden_company_email">
+                                <input type="hidden" name="company_website" id="hidden_company_website">
+                            </div>
 
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Phone</label>
-                                        <input type="text" class="form-control" name="company_phone"
-                                            value="+880 1904400202">
+                            <!-- PDF Print Options -->
+                            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                                <div class="card-body p-4">
+                                    <h6 class="fw-bold text-dark mb-3"><i class="fe fe-printer me-2 text-primary"></i>PDF Print &amp; Display Options</h6>
+                                    <div class="d-flex flex-wrap gap-4">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="show_signature" id="show_signature" value="1" {{ old('show_signature', true) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-semibold text-dark" for="show_signature">
+                                                Include Authorized Signature
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="show_seal" id="show_seal" value="1" {{ old('show_seal', true) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-semibold text-dark" for="show_seal">
+                                                Include Company Seal (Sill)
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" name="company_email"
-                                            value="info@intelligenttech.com">
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Website</label>
-                                        <input type="text" class="form-control" name="company_website"
-                                            value="www.intelligenttech.com">
-                                    </div>
-                                </div>
-                                <div class="mt-2">
-                                    <label class="form-label">Additional Enclosed Documents</label>
-                                    <textarea class="form-control" name="additional_enclosed" id="additional_enclosed" rows="5"
-                                        placeholder="Add any additional enclosed documents here..."> Enclosed:
-                                                1)	Price Quotation.
-                                                2)	Summary.
-                                                3)	Terms & Conditions.</textarea>
                                 </div>
                             </div>
 
@@ -401,6 +418,44 @@ Yours Sincerely,</textarea>
                                     document.getElementById('client_email').value = '';
                                 }
                             });
+
+                            // Company Signatory Selection Handler
+                            const companySignatorySelect = document.getElementById('company_signatory_select');
+                            if (companySignatorySelect) {
+                                function autoFillCompanySignatory() {
+                                    const selectedOption = companySignatorySelect.options[companySignatorySelect.selectedIndex];
+                                    if (selectedOption && selectedOption.value) {
+                                        const compName = selectedOption.getAttribute('data-name') || '';
+                                        const sigName = selectedOption.getAttribute('data-signatory') || '';
+                                        const sigDesig = selectedOption.getAttribute('data-designation') || '';
+                                        const compPhone = selectedOption.getAttribute('data-phone') || '';
+                                        const compEmail = selectedOption.getAttribute('data-email') || '';
+                                        const compWebsite = selectedOption.getAttribute('data-website') || '';
+
+                                        document.getElementById('hidden_company_name').value = compName;
+                                        document.getElementById('hidden_signatory_name').value = sigName;
+                                        document.getElementById('hidden_signatory_designation').value = sigDesig;
+                                        document.getElementById('hidden_company_phone').value = compPhone;
+                                        document.getElementById('hidden_company_email').value = compEmail;
+                                        document.getElementById('hidden_company_website').value = compWebsite;
+
+                                        // Update live preview block
+                                        document.getElementById('preview-company-name').textContent = compName || '-';
+                                        document.getElementById('preview-signatory-name').textContent = sigName || '-';
+                                        document.getElementById('preview-signatory-designation').textContent = sigDesig || '-';
+                                        document.getElementById('preview-company-phone').textContent = compPhone || '-';
+                                    } else {
+                                        document.getElementById('preview-company-name').textContent = '-';
+                                        document.getElementById('preview-signatory-name').textContent = '-';
+                                        document.getElementById('preview-signatory-designation').textContent = '-';
+                                        document.getElementById('preview-company-phone').textContent = '-';
+                                    }
+                                }
+                                companySignatorySelect.addEventListener('change', autoFillCompanySignatory);
+                                if (companySignatorySelect.value) {
+                                    autoFillCompanySignatory();
+                                }
+                            }
                             document.addEventListener('DOMContentLoaded', function() {
                                 console.log('Script loaded - initializing quotation form');
 

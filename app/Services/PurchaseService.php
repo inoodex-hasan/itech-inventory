@@ -52,6 +52,36 @@ class PurchaseService
                 'Stock added via purchase #' . $purchase->id
             );
 
+            // 4. Auto-post double-entry journal voucher for Purchase
+            try {
+                $invAcc = \App\Models\ChartOfAccount::where('account_code', '1140')->first();
+                $cashAcc = \App\Models\ChartOfAccount::where('account_code', '1110')->first();
+                $apAcc = \App\Models\ChartOfAccount::where('account_code', '2110')->first();
+
+                if ($invAcc && ($cashAcc || $apAcc)) {
+                    $items = [];
+                    $total = (float) $purchase->total_price;
+                    $paid = (float) $purchase->payment;
+                    $due = (float) $purchase->due;
+
+                    $items[] = ['account_id' => $invAcc->id, 'debit' => $total, 'credit' => 0.00, 'description' => 'Inventory procurement item #' . $purchase->product_id];
+                    if ($paid > 0 && $cashAcc) {
+                        $items[] = ['account_id' => $cashAcc->id, 'debit' => 0.00, 'credit' => $paid, 'description' => 'Cash/Bank payment to vendor #' . $purchase->vendor_id];
+                    }
+                    if ($due > 0 && $apAcc) {
+                        $items[] = ['account_id' => $apAcc->id, 'debit' => 0.00, 'credit' => $due, 'description' => 'Accounts payable due to vendor #' . $purchase->vendor_id];
+                    }
+
+                    postJournalEntry([
+                        'entry_date' => date('Y-m-d'),
+                        'reference_type' => 'purchase',
+                        'reference_id' => $purchase->id,
+                        'description' => 'Procurement #' . $purchase->id . ' — Product #' . $purchase->product_id . ' (Qty: ' . $purchase->quantity . ')',
+                        'items' => $items
+                    ]);
+                }
+            } catch (\Throwable $e) {}
+
             return $purchase;
         });
     }

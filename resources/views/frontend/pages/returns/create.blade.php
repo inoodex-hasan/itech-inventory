@@ -25,7 +25,18 @@
         <!-- Section 1: Sale Order Selection -->
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-body p-4">
-                <h6 class="fw-bold text-dark mb-3"><i class="fe fe-shopping-cart me-2 text-primary"></i>Sale & Customer Selection</h6>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold text-dark mb-0"><i class="fe fe-shopping-cart me-2 text-primary"></i>Sale & Customer Selection</h6>
+                    <span class="badge bg-light text-secondary border small px-2 py-1"><i class="fas fa-barcode text-primary me-1"></i> Scanner Ready</span>
+                </div>
+
+                <!-- Barcode / Serial Quick Scanner for Returns -->
+                <div class="p-2 px-3 bg-light rounded-3 border mb-3 d-flex align-items-center gap-2">
+                    <i class="fas fa-barcode text-primary fs-5"></i>
+                    <div class="flex-grow-1">
+                        <input type="text" id="return_barcode_scanner" class="form-control form-control-sm border-0 bg-transparent shadow-none" placeholder="Scan Unit Serial Number or Product Barcode to Auto-Select Sale Order..." autocomplete="off">
+                    </div>
+                </div>
 
                 <div class="row g-3">
                     <div class="col-lg-6 col-md-6 col-12">
@@ -288,6 +299,45 @@
         const saleSelect = document.getElementById('saleSelect');
         if (saleSelect && saleSelect.value) {
             handleSaleChange(saleSelect.value);
+        }
+
+        // Return Barcode / Serial Scanner
+        const returnScanner = document.getElementById('return_barcode_scanner');
+        if (returnScanner) {
+            returnScanner.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const code = this.value.trim();
+                    if (!code) return;
+
+                    fetch(`{{ route('products.barcode_lookup') }}?code=${encodeURIComponent(code)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success && data.sale && data.sale.invoice_no) {
+                                // Find sale in select dropdown by invoice_no
+                                let found = false;
+                                for (let opt of saleSelect.options) {
+                                    if (opt.text.includes(data.sale.invoice_no)) {
+                                        $(saleSelect).val(opt.value).trigger('change');
+                                        handleSaleChange(opt.value);
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found) {
+                                    returnScanner.value = '';
+                                } else {
+                                    alert(`Sale invoice [${data.sale.invoice_no}] found for Serial [${code}], but not listed in pending sales.`);
+                                }
+                            } else if (data.success && data.type === 'product') {
+                                alert(`Product [${data.product.name}] found. Please select the customer's sale order below.`);
+                            } else {
+                                alert(data.message || `No sold unit found with serial/barcode [${code}].`);
+                            }
+                        })
+                        .catch(() => alert('Error scanning return barcode.'));
+                }
+            });
         }
     });
 </script>

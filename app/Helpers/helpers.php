@@ -220,3 +220,179 @@ if (!function_exists('attendanceStatus')) {
         ];
     }
 }
+
+// ==========================================
+// DOUBLE-ENTRY ACCOUNTING & BOOKKEEPING HELPERS
+// ==========================================
+
+if (!function_exists('getActiveFiscalYear')) {
+    /**
+     * Get the current active fiscal year or throw an exception.
+     */
+    function getActiveFiscalYear()
+    {
+        $fiscalYear = \App\Models\FiscalYear::active()->first();
+
+        if (!$fiscalYear) {
+            $currentYear = date('Y');
+            $fiscalYear = \App\Models\FiscalYear::firstOrCreate(
+                ['year_name' => "{$currentYear}-" . ($currentYear + 1)],
+                [
+                    'start_date' => "{$currentYear}-01-01",
+                    'end_date' => "{$currentYear}-12-31",
+                    'is_active' => true,
+                    'is_closed' => false,
+                ]
+            );
+        }
+
+        return $fiscalYear;
+    }
+}
+
+if (!function_exists('postJournalEntry')) {
+    /**
+     * Atomically create and post a balanced journal voucher.
+     *
+     * @param array $data [
+     *     'journal_no' => (optional),
+     *     'entry_date' => (Y-m-d),
+     *     'reference_type' => (sale, purchase, service, project, expense, salary, return, manual, contra, opening_balance),
+     *     'reference_id' => (optional ID),
+     *     'description' => (narration string),
+     *     'status' => ('posted'|'approved'),
+     *     'created_by' => (user ID),
+     *     'items' => [
+     *         ['account_id' => 1, 'debit' => 100.00, 'credit' => 0.00, 'description' => '...'],
+     *         ['account_id' => 2, 'debit' => 0.00, 'credit' => 100.00, 'description' => '...'],
+     *     ]
+     * ]
+     * @return \App\Models\JournalEntry
+     * @throws \Exception
+     */
+    function postJournalEntry(array $data): \App\Models\JournalEntry
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+            $entryDate = $data['entry_date'] ?? date('Y-m-d');
+            $fiscalYear = getActiveFiscalYear();
+
+            // Validate fiscal year date range
+            if (!$fiscalYear->containsDate($entryDate)) {
+                // Auto-fallback or warn
+            }
+
+            if (empty($data['items']) || !is_array($data['items'])) {
+                throw new \InvalidArgumentException('Journal entry must contain line items.');
+            }
+
+            $totalDebit = 0.00;
+            $totalCredit = 0.00;
+
+            foreach ($data['items'] as $item) {
+                $totalDebit += (float) ($item['debit'] ?? 0.00);
+                $totalCredit += (float) ($item['credit'] ?? 0.00);
+            }
+
+            // Verify double-entry balancing equilibrium (Debit == Credit)
+            if (abs($totalDebit - $totalCredit) > 0.001) {
+                throw new \DomainException("Unbalanced Journal Voucher! Total Debit: {$totalDebit} does not equal Total Credit: {$totalCredit}");
+            }
+
+            $journalNo = $data['journal_no'] ?? \App\Models\JournalEntry::generateJournalNo($entryDate);
+
+            $journalEntry = \App\Models\JournalEntry::create([
+                'journal_no' => $journalNo,
+                'entry_date' => $entryDate,
+                'fiscal_year_id' => $fiscalYear->id,
+                'reference_type' => $data['reference_type'] ?? 'manual',
+                'reference_id' => $data['reference_id'] ?? null,
+                'description' => $data['description'] ?? null,
+                'total_debit' => $totalDebit,
+                'total_credit' => $totalCredit,
+                'status' => $data['status'] ?? 'approved',
+                'created_by' => $data['created_by'] ?? \Illuminate\Support\Facades\Auth::id() ?? 1,
+                'approved_by' => ($data['status'] ?? 'approved') === 'approved' ? (\Illuminate\Support\Facades\Auth::id() ?? 1) : null,
+                'approved_at' => ($data['status'] ?? 'approved') === 'approved' ? now() : null,
+            ]);
+
+            foreach ($data['items'] as $item) {
+                $debit = (float) ($item['debit'] ?? 0.00);
+                $credit = (float) ($item['credit'] ?? 0.00);
+
+                if ($debit > 0 || $credit > 0) {
+                    \App\Models\JournalEntryItem::create([
+                        'journal_entry_id' => $journalEntry->id,
+                        'account_id' => $item['account_id'],
+                        'debit' => $debit,
+                        'credit' => $credit,
+                        'description' => $item['description'] ?? null,
+                    ]);
+                }
+            }
+
+            return $journalEntry;
+        });
+    }
+}
+
+if (!function_exists('getAccountBalance')) {
+    /**
+     * Get real-time running balance for an account code or ID.
+     */
+    function getAccountBalance(int|string $accountIdentifier, ?string $asOfDate = null): float
+    {
+        $account = is_numeric($accountIdentifier)
+            ? \App\Models\ChartOfAccount::find($accountIdentifier)
+            : \App\Models\ChartOfAccount::where('account_code', $accountIdentifier)->first();
+
+        if (!$account) {
+            return 0.00;
+        }
+
+        return $account->calculateBalance($asOfDate);
+    }
+}
+
+if (!function_exists('reverseJournalEntry')) {
+    /**
+     * Post a full Storno reversal voucher for an existing journal entry.
+     */
+    function reverseJournalEntry(int $journalEntryId, string $reversalReason): \App\Models\JournalEntry
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($journalEntryId, $reversalReason) {
+            $original = \App\Models\JournalEntry::with('items')->findOrFail($journalEntryId);
+
+            if ($original->status === 'reversed') {
+                throw new \DomainException("Journal Entry #{$original->journal_no} is already reversed.");
+            }
+
+            $reversalItems = [];
+            foreach ($original->items as $item) {
+                // Flip debit and credit
+                $reversalItems[] = [
+                    'account_id' => $item->account_id,
+                    'debit' => $item->credit,
+                    'credit' => $item->debit,
+                    'description' => "Reversal: " . ($item->description ?? $original->description),
+                ];
+            }
+
+            $reversalVoucher = postJournalEntry([
+                'entry_date' => date('Y-m-d'),
+                'reference_type' => 'manual',
+                'description' => "Reversal of {$original->journal_no}. Reason: {$reversalReason}",
+                'status' => 'approved',
+                'created_by' => \Illuminate\Support\Facades\Auth::id() ?? 1,
+                'items' => $reversalItems,
+            ]);
+
+            $original->update([
+                'status' => 'reversed',
+                'reversed_entry_id' => $reversalVoucher->id,
+            ]);
+
+            return $reversalVoucher;
+        });
+    }
+}
+

@@ -65,6 +65,30 @@ class FrontendController extends Controller
                 $projectChartCosts[] = (float)$p->costs->sum('amount');
             }
 
+            // Accounting & Financial Balances
+            $today = date('Y-m-d');
+            $liquidCash = getAccountBalance('1110', $today);
+            $receivables = getAccountBalance('1130', $today);
+            $inventoryValuation = getAccountBalance('1140', $today);
+            $payables = getAccountBalance('2110', $today);
+
+            $bankAccountParent = \App\Models\ChartOfAccount::where('account_code', '1120')->first();
+            $bankBalance = 0.00;
+            $bankAccounts = collect();
+            if ($bankAccountParent) {
+                $bankAccounts = \App\Models\ChartOfAccount::where('parent_id', $bankAccountParent->id)->get();
+                if ($bankAccounts->count() > 0) {
+                    foreach ($bankAccounts as $b) {
+                        $b->balance = $b->calculateBalance($today);
+                        $bankBalance += $b->balance;
+                    }
+                } else {
+                    $bankBalance = $bankAccountParent->calculateBalance($today);
+                }
+            }
+
+            $recentJournalEntries = \App\Models\JournalEntry::with('creator')->latest('entry_date')->latest('id')->take(5)->get();
+
             return [
                 'todaysSalesRevenue'     => Sale::whereDate('created_at', Carbon::today())->sum('payble'),
                 'thisWeeksSalesRevenue'  => Sale::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payble'),
@@ -95,10 +119,19 @@ class FrontendController extends Controller
                 'projectChartNames'     => $projectChartNames,
                 'projectChartBudgets'   => $projectChartBudgets,
                 'projectChartCosts'     => $projectChartCosts,
+
+                // Financial Accounting Metrics
+                'liquidCash'            => $liquidCash,
+                'bankBalance'           => $bankBalance,
+                'receivables'           => $receivables,
+                'payables'              => $payables,
+                'inventoryValuation'    => $inventoryValuation,
+                'bankAccounts'          => $bankAccounts,
+                'recentJournalEntries'  => $recentJournalEntries,
             ];
         });
 
-        return view('frontend.pages.index', $stats);
+        return view('frontend.pages.dashboard', $stats);
     }
 
     public function productDetails($id)

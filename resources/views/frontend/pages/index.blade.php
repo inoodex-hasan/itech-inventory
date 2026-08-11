@@ -145,6 +145,132 @@
     </div>
     <!-- /Top Quick Metrics Bar -->
 
+    <!-- Accounting & Financial Balances (Double-Entry Live Health) -->
+    @if(auth()->check() && auth()->user()->hasRole(['Super Admin', 'Admin', 'admin']))
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-dark mb-0"><i class="fe fe-shield me-2 text-primary"></i>Financial & Accounting Health</h5>
+            <div class="d-flex gap-2">
+                <a href="{{ route('chart-of-accounts.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                    <i class="fe fe-folder me-1"></i> Chart of Accounts
+                </a>
+                <a href="{{ route('journal-entries.create') }}" class="btn btn-sm btn-primary rounded-pill px-3">
+                    <i class="fe fe-plus me-1"></i> New Voucher
+                </a>
+                <a href="{{ route('trial-balance.index') }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                    <i class="fe fe-check-square me-1"></i> Trial Balance
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <!-- Liquid Cash in Hand -->
+            <div class="col-xl-3 col-md-6 col-12">
+                <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0 border-start border-4 border-success">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="avatar avatar-lg bg-success-light text-success rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="fe fe-dollar-sign fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted fw-normal mb-1">Cash in Hand (1110)</h6>
+                            <h4 class="mb-0 fw-bold text-dark">৳{{ number_format($liquidCash ?? 0, 2) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Bank Balances -->
+            <div class="col-xl-3 col-md-6 col-12">
+                <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0 border-start border-4 border-info">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="avatar avatar-lg bg-info-light text-info rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="fe fe-credit-card fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted fw-normal mb-1">Total Bank Balance</h6>
+                            <h4 class="mb-0 fw-bold text-dark">৳{{ number_format($bankBalance ?? 0, 2) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounts Receivable -->
+            <div class="col-xl-3 col-md-6 col-12">
+                <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0 border-start border-4 border-warning">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="avatar avatar-lg bg-warning-light text-warning rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="fe fe-user-check fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted fw-normal mb-1">Receivables (AR - 1130)</h6>
+                            <h4 class="mb-0 fw-bold text-dark">৳{{ number_format($receivables ?? 0, 2) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounts Payable -->
+            <div class="col-xl-3 col-md-6 col-12">
+                <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0 border-start border-4 border-danger">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="avatar avatar-lg bg-danger-light text-danger rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="fe fe-truck fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted fw-normal mb-1">Payables (AP - 2110)</h6>
+                            <h4 class="mb-0 fw-bold text-dark">৳{{ number_format($payables ?? 0, 2) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-info-light text-info rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-layers fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Total Projects</h6>
+                        <h4 class="mb-0 fw-bold text-dark">{{ number_format($totalProjects ?? 0) }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-success-light text-success rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-user-check fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Total Employees</h6>
+                        <h4 class="mb-0 fw-bold text-dark">{{ number_format($totalEmployees ?? 0) }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="card stat-card bg-white shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar avatar-lg bg-warning-light text-warning rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fe fe-package fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Products Catalog</h6>
+                        <h4 class="mb-0 fw-bold text-dark">{{ number_format($totalProducts ?? 0) }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Top Quick Metrics Bar -->
+
     <!-- Sales Overview Section -->
     <div class="mb-4">
         <h5 class="fw-bold text-dark mb-3"><i class="fe fe-trending-up me-2 text-success"></i>Sales Revenues</h5>
@@ -485,6 +611,86 @@
             </div>
         </div>
     </div>
+
+    <!-- Accounting: Recent Journal Vouchers & Connected Bank Accounts -->
+    @if(auth()->check() && auth()->user()->hasRole(['Super Admin', 'Admin', 'admin']))
+    <div class="row g-3 mb-4">
+        <!-- Recent Journal Vouchers -->
+        <div class="col-xl-8 col-12 d-flex">
+            <div class="card border-0 shadow-sm rounded-3 flex-fill">
+                <div class="card-header bg-white py-3 border-bottom border-light d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold text-dark mb-0"><i class="fe fe-file-text me-2 text-primary"></i>Recent Journal Vouchers</h6>
+                    <a href="{{ route('journal-entries.index') }}" class="btn btn-sm btn-outline-primary rounded-2 px-3">View All Vouchers</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom align-middle mb-0">
+                            <thead class="bg-light text-secondary fs-7 text-uppercase">
+                                <tr>
+                                    <th class="ps-3">Voucher #</th>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Total Debit/Credit</th>
+                                    <th>Status</th>
+                                    <th class="pe-3 text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border-top-0">
+                                @forelse ($recentJournalEntries ?? [] as $entry)
+                                    <tr>
+                                        <td class="ps-3 fw-bold text-primary">{{ $entry->journal_number }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($entry->entry_date)->format('M d, Y') }}</td>
+                                        <td class="text-truncate" style="max-width: 200px;">{{ $entry->description ?? 'N/A' }}</td>
+                                        <td class="fw-bold text-dark">৳{{ number_format($entry->total_debit, 2) }}</td>
+                                        <td>
+                                            <span class="badge {{ $entry->status == 'posted' ? 'badge-soft-success' : 'badge-soft-warning' }} px-2 py-1 rounded-pill">
+                                                {{ ucfirst($entry->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="pe-3 text-end">
+                                            <a href="{{ route('journal-entries.show', $entry->id) }}" class="btn btn-sm btn-outline-secondary rounded-2 px-2 py-1">
+                                                <i class="fe fe-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted small">No journal vouchers posted yet</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connected Bank Accounts -->
+        <div class="col-xl-4 col-12 d-flex">
+            <div class="card border-0 shadow-sm rounded-3 flex-fill">
+                <div class="card-header bg-white py-3 border-bottom border-light d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold text-dark mb-0"><i class="fe fe-credit-card me-2 text-info"></i>Bank Account Balances</h6>
+                    <a href="{{ route('chart-of-accounts.index') }}" class="btn btn-sm btn-outline-info rounded-2 px-2 py-1">COA</a>
+                </div>
+                <div class="card-body p-3">
+                    @forelse($bankAccounts ?? [] as $bank)
+                        <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-light rounded-3">
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark fs-7">{{ $bank->account_name }}</h6>
+                                <span class="text-muted small">Code: {{ $bank->account_code }}</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold text-success d-block">৳{{ number_format($bank->balance, 2) }}</span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-4 text-muted small">No sub-bank accounts registered</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
 <script>

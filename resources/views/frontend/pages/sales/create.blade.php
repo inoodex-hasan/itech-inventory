@@ -83,13 +83,33 @@
         <!-- Section 2: Cart Items & Product Builder -->
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-body p-4">
-                <h6 class="fw-bold text-dark mb-3"><i class="fe fe-shopping-cart me-2 text-primary"></i>Add Items to Cart</h6>
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                    <h6 class="fw-bold text-dark mb-0"><i class="fe fe-shopping-cart me-2 text-primary"></i>Add Items to Cart</h6>
+                    <span class="badge bg-light text-secondary border px-3 py-2"><i class="fas fa-barcode text-primary me-1"></i> Barcode & Serial Scanner Ready</span>
+                </div>
 
-                <!-- Product Add Builder Card -->
+                <!-- Instant Barcode / Serial Scanner Input -->
+                <div class="p-3 bg-white rounded-3 mb-4 border shadow-sm" style="border-left: 4px solid #7638ff !important;">
+                    <div class="row align-items-center g-2">
+                        <div class="col-auto text-primary">
+                            <i class="fas fa-barcode fs-3"></i>
+                        </div>
+                        <div class="col">
+                            <label class="form-label small fw-bold text-secondary mb-1">Scan Product Barcode or Unit Serial Number:</label>
+                            <input type="text" id="sales_barcode_scanner" class="form-control form-control-lg border-light-subtle font-monospace" placeholder="Scan Barcode / Serial Number with scanner gun and press Enter..." autocomplete="off" autofocus>
+                        </div>
+                        <div class="col-auto align-self-end">
+                            <button type="button" onclick="triggerManualScan()" class="btn btn-primary btn-lg px-4 rounded-3"><i class="fas fa-search me-1"></i>Scan / Verify</button>
+                        </div>
+                    </div>
+                    <div id="scan-feedback-alert" class="mt-2 small d-none"></div>
+                </div>
+
+                <!-- Manual Product Add Builder Card -->
                 <div class="p-3 bg-light rounded-3 mb-4 border" id="form-group-item1">
                     <div class="row g-3 align-items-end">
                         <div class="col-lg-4 col-md-6 col-12">
-                            <label class="form-label small text-secondary fw-semibold mb-1">Select Product <span class="text-danger">*</span></label>
+                            <label class="form-label small text-secondary fw-semibold mb-1">Select Product (Manual) <span class="text-danger">*</span></label>
                             <select onchange="selectProduct(1)" id="product1" class="form-select select2 border-light-subtle">
                                 <option value="">Select Product</option>
                                 @foreach ($products as $product)
@@ -97,8 +117,10 @@
                                         data-name="{{ $product->name }}{{ $product->model ? '('.$product->model.')' : '' }}"
                                         data-stock="{{ $product->inventory->current_stock ?? 0 }}"
                                         data-price="{{ $product->latestPurchase->unit_price ?? 0 }}"
-                                        data-warranty="{{ $product->warranty ?? 0 }}">
-                                        {{ $product->name }} {{ $product->model ? '('.$product->model.')' : '' }}
+                                        data-warranty="{{ $product->warranty ?? 0 }}"
+                                        data-is-serialized="{{ $product->is_serialized }}"
+                                        data-barcode="{{ $product->barcode }}">
+                                        {{ $product->name }} {{ $product->model ? '('.$product->model.')' : '' }} {{ $product->barcode ? '['.$product->barcode.']' : '' }}
                                     </option>
                                 @endforeach
                             </select>
@@ -147,7 +169,7 @@
                     <table class="table table-hover align-middle mb-0" id="cartItemsTable">
                         <thead class="bg-light text-secondary fs-7 text-uppercase">
                             <tr>
-                                <th style="width: 40%;">Product Name</th>
+                                <th style="width: 40%;">Product & Serial Number(s)</th>
                                 <th style="width: 20%;">Unit Price</th>
                                 <th style="width: 15%;">Quantity</th>
                                 <th style="width: 20%;">Total Price</th>
@@ -222,6 +244,197 @@
 @push('scripts')
 <script>
 var itemNumber = 2;
+window.activeCartSerials = []; // Tracks all serial numbers currently added to cart
+
+function playBeep(success = true) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        if (success) {
+            osc.frequency.setValueAtTime(800, ctx.currentTime);
+            osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.2);
+        } else {
+            osc.frequency.setValueAtTime(300, ctx.currentTime);
+            osc.frequency.setValueAtTime(200, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+        }
+    } catch(e) {}
+}
+
+function showScanAlert(message, isSuccess = true) {
+    const alertBox = document.getElementById('scan-feedback-alert');
+    if (!alertBox) return;
+    alertBox.className = `mt-2 small alert ${isSuccess ? 'alert-success' : 'alert-danger'} py-2 px-3 mb-0 rounded-3 d-flex align-items-center gap-2`;
+    alertBox.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i> <span>${message}</span>`;
+    alertBox.classList.remove('d-none');
+    setTimeout(() => {
+        alertBox.classList.add('d-none');
+    }, 4000);
+}
+
+function triggerManualScan() {
+    const input = document.getElementById('sales_barcode_scanner');
+    if (input && input.value.trim()) {
+        handleBarcodeScan(input.value.trim());
+    }
+}
+
+function handleBarcodeScan(code) {
+    const scannerInput = document.getElementById('sales_barcode_scanner');
+    
+    fetch(`{{ route('products.barcode_lookup') }}?code=${encodeURIComponent(code)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                playBeep(false);
+                showScanAlert(data.message || `No item found for [${code}]`, false);
+                if (scannerInput) scannerInput.select();
+                return;
+            }
+
+            const p = data.product;
+
+            // Scenario 1: Scanned a Specific Serial Number
+            if (data.type === 'serial') {
+                if (data.status !== 'available') {
+                    playBeep(false);
+                    showScanAlert(`Cannot sell Serial [${data.serial_number}] — Status is already ${data.status.toUpperCase()}!`, false);
+                    if (scannerInput) scannerInput.select();
+                    return;
+                }
+
+                if (window.activeCartSerials.includes(data.serial_number)) {
+                    playBeep(false);
+                    showScanAlert(`Serial [${data.serial_number}] is already added in the cart!`, false);
+                    if (scannerInput) scannerInput.select();
+                    return;
+                }
+
+                // Add to active serials
+                window.activeCartSerials.push(data.serial_number);
+                addProductToCart(p, 1, p.selling_price, data.serial_number);
+                playBeep(true);
+                showScanAlert(`Verified & Added: ${p.name} (SN: ${data.serial_number})`, true);
+                if (scannerInput) {
+                    scannerInput.value = '';
+                    scannerInput.focus();
+                }
+            } 
+            // Scenario 2: Scanned a Product Barcode
+            else {
+                if (p.is_serialized) {
+                    playBeep(false);
+                    showScanAlert(`Product [${p.name}] is Serialized. Please scan the unit serial barcode on the box!`, false);
+                    if (scannerInput) scannerInput.select();
+                } else {
+                    if (p.stock <= 0) {
+                        playBeep(false);
+                        showScanAlert(`Product [${p.name}] is OUT OF STOCK!`, false);
+                        if (scannerInput) scannerInput.select();
+                        return;
+                    }
+                    addProductToCart(p, 1, p.selling_price, null);
+                    playBeep(true);
+                    showScanAlert(`Added: ${p.name}`, true);
+                    if (scannerInput) {
+                        scannerInput.value = '';
+                        scannerInput.focus();
+                    }
+                }
+            }
+        })
+        .catch(err => {
+            playBeep(false);
+            showScanAlert('Network error while looking up barcode.', false);
+        });
+}
+
+function addProductToCart(product, qty = 1, price = 0, serialNumber = null) {
+    const existingRow = document.querySelector(`.group-item.item${product.id}`);
+    
+    if (existingRow) {
+        const itemNum = existingRow.dataset.itemnumber;
+        const qtyInput = document.getElementById('qty' + itemNum);
+        
+        if (serialNumber) {
+            // Append serial tag
+            const serialContainer = document.getElementById('serial_tags_' + itemNum);
+            if (serialContainer) {
+                const tag = document.createElement('span');
+                tag.className = 'badge bg-light text-dark border px-2 py-1 font-monospace fs-7 me-1 mb-1 d-inline-flex align-items-center gap-1';
+                tag.innerHTML = `<i class="fas fa-barcode text-info"></i> ${serialNumber} <input type="hidden" name="item_serials[${product.id}][]" value="${serialNumber}">`;
+                serialContainer.appendChild(tag);
+            }
+        }
+
+        if (qtyInput) {
+            qtyInput.value = parseInt(qtyInput.value || 0) + parseInt(qty);
+        }
+    } else {
+        const unitPrice = (parseFloat(price) || 0).toFixed(2);
+        const rowTotal = (parseFloat(unitPrice) * parseFloat(qty)).toFixed(2);
+        const serialTagHtml = serialNumber ? `
+            <div id="serial_tags_${itemNumber}" class="mt-1 d-flex flex-wrap">
+                <span class="badge bg-light text-dark border px-2 py-1 font-monospace fs-7 me-1 mb-1 d-inline-flex align-items-center gap-1">
+                    <i class="fas fa-barcode text-info"></i> ${serialNumber}
+                    <input type="hidden" name="item_serials[${product.id}][]" value="${serialNumber}">
+                </span>
+            </div>
+        ` : `<div id="serial_tags_${itemNumber}" class="mt-1 d-flex flex-wrap"></div>`;
+
+        const html = `
+            <tr class="item${product.id} group-item" data-itemnumber="${itemNumber}" id="form-group-item${itemNumber}">
+                <td>
+                    <input type="hidden" name="product[]" value="${product.id}">
+                    <span class="fw-bold text-dark d-block">${product.name} ${product.model ? '('+product.model+')' : ''}</span>
+                    ${serialTagHtml}
+                </td>
+                <td>
+                    <input onchange="calculateTotal()" type="number" step="0.01" name="unit_price[]" id="unit_price${itemNumber}" class="form-control border-light-subtle unit-price" value="${unitPrice}">
+                </td>
+                <td>
+                    <input onchange="calculateTotal()" type="number" name="qty[]" id="qty${itemNumber}" class="qty${product.id} form-control border-light-subtle qty" min="1" value="${qty}">
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="total" id="total${itemNumber}" class="form-control border-light-subtle bg-light total" readonly value="${rowTotal}">
+                </td>
+                <td class="text-end">
+                    <button onclick="removeItem(${itemNumber}, ${product.id})" type="button" class="btn btn-outline-danger btn-sm px-3 rounded-2" title="Remove Item">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        $('#item_container').append(html);
+        itemNumber++;
+    }
+
+    toggleSummarySection();
+    calculateTotal();
+}
+
+function removeItem(item, productId) {
+    // Remove tracked serials for this row
+    const serialInputs = document.querySelectorAll(`#form-group-item${item} input[name="item_serials[${productId}][]"]`);
+    serialInputs.forEach(input => {
+        const idx = window.activeCartSerials.indexOf(input.value);
+        if (idx !== -1) window.activeCartSerials.splice(idx, 1);
+    });
+
+    document.getElementById('form-group-item' + item)?.remove();
+    toggleSummarySection();
+    calculateTotal();
+}
 
 function reloadAfterSubmit() {
     setTimeout(function() {
@@ -268,7 +481,8 @@ function addItem() {
         return;
     }
 
-    let selectedName = document.getElementById('product1').options[document.getElementById('product1').selectedIndex].text;
+    let selectedOption = document.getElementById('product1').options[document.getElementById('product1').selectedIndex];
+    let selectedName = selectedOption.text;
     const price = document.getElementById('unit_price1').value;
 
     if (price.trim() === "") {
@@ -287,51 +501,11 @@ function addItem() {
         return;
     }
 
-    var eles = document.getElementsByClassName('item' + product);
-    if (eles.length) {
-        var qEles = document.getElementsByClassName('qty' + product);
-        if (qEles.length) {
-            var old_qty = qEles[0].value;
-            qEles[0].value = parseInt(old_qty) + parseInt(qty);
-        }
-        toggleSummarySection();
-    } else {
-        const rowTotal = (parseFloat(price) || 0) * (parseFloat(qty) || 0);
-
-        var html = `
-            <tr class="item${product} group-item" data-itemnumber="${itemNumber}" id="form-group-item${itemNumber}">
-                <td>
-                    <input type="hidden" name="product[]" value="${product}">
-                    <span class="fw-bold text-dark d-block">${selectedName}</span>
-                </td>
-                <td>
-                    <input onchange="calculateTotal()" type="number" step="0.01" name="unit_price[]" id="unit_price${itemNumber}" class="form-control border-light-subtle unit-price" value="${price}">
-                </td>
-                <td>
-                    <input onchange="calculateTotal()" type="number" name="qty[]" id="qty${itemNumber}" class="qty${product} form-control border-light-subtle qty" min="1" value="${qty}">
-                </td>
-                <td>
-                    <input type="number" step="0.01" name="total" id="total${itemNumber}" class="form-control border-light-subtle bg-light total" readonly value="${rowTotal.toFixed(2)}">
-                </td>
-                <td class="text-end">
-                    <button onclick="removeItem(${itemNumber})" type="button" class="btn btn-outline-danger btn-sm px-3 rounded-2" title="Remove Item">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-        $('#item_container').append(html);
-        toggleSummarySection();
-        itemNumber++;
-    }
-
-    calculateTotal();
-}
-
-function removeItem(item) {
-    document.getElementById('form-group-item' + item).remove();
-    toggleSummarySection();
-    calculateTotal();
+    addProductToCart({
+        id: product,
+        name: selectedName,
+        model: ''
+    }, qty, price, null);
 }
 
 function toggleSummarySection() {
@@ -381,6 +555,19 @@ function calculateTotal() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const scannerInput = document.getElementById('sales_barcode_scanner');
+    if (scannerInput) {
+        scannerInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const code = this.value.trim();
+                if (code) {
+                    handleBarcodeScan(code);
+                }
+            }
+        });
+    }
+
     const newClientRadio = document.getElementById('newClient');
     const existingClientRadio = document.getElementById('existingClient');
     const newClientForm = document.getElementById('newClientForm');
@@ -401,9 +588,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    newClientRadio.addEventListener('change', toggleClientForms);
-    existingClientRadio.addEventListener('change', toggleClientForms);
-    toggleClientForms();
+    if (newClientRadio && existingClientRadio) {
+        newClientRadio.addEventListener('change', toggleClientForms);
+        existingClientRadio.addEventListener('change', toggleClientForms);
+        toggleClientForms();
+    }
 
     document.getElementById('advancedPayment')?.addEventListener('input', calculateTotal);
     $('#unit_price1, #qty1').on('input change', function() {

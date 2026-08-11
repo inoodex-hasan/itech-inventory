@@ -18,6 +18,7 @@ class UpdateProductRequest extends FormRequest
             'category_id'      => 'nullable|exists:categories,id',
             'name'             => 'required|string|max:255',
             'model_name'       => 'required|string|max:255',
+            'barcode'          => 'nullable|string|max:100|unique:products,barcode,' . ($this->product->id ?? $this->route('product')?->id ?? $this->route('product')),
             'warranty'         => 'nullable|integer|min:0',
             'status'           => 'required|boolean',
             'is_serialized'    => 'nullable|boolean',

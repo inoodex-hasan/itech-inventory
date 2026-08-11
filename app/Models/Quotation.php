@@ -33,7 +33,9 @@ class Quotation extends Model
         'sub_total',
         'discount_amount',
         'total_amount',
-        'status'
+        'status',
+        'show_signature',
+        'show_seal',
     ];
 
     protected $casts = [
@@ -42,6 +44,8 @@ class Quotation extends Model
         'sub_total' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'show_signature' => 'boolean',
+        'show_seal' => 'boolean',
     ];
 
     public function client(): BelongsTo

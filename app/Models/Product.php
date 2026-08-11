@@ -22,6 +22,7 @@ class Product extends Model
         'category_id',
         'brand_id',
         'model',
+        'barcode',
         'photos',
         'status',
         'warranty',
@@ -31,6 +32,23 @@ class Product extends Model
     public function serials()
     {
         return $this->hasMany(ProductSerial::class);
+    }
+
+    public function availableSerials()
+    {
+        return $this->hasMany(ProductSerial::class)->where('status', 'available');
+    }
+
+    /**
+     * Generate unique SKU/Barcode for products without a vendor barcode
+     */
+    public static function generateBarcode(): string
+    {
+        do {
+            $code = 'ITP-' . strtoupper(substr(uniqid(), -6));
+        } while (self::where('barcode', $code)->exists());
+
+        return $code;
     }
     public function latestPurchase()
     {

@@ -20,7 +20,7 @@ class CompanyDetailController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'signatory_name' => 'required|string|max:255',
             'signatory_designation' => 'required|string|max:255',
@@ -30,14 +30,28 @@ class CompanyDetailController extends Controller
             'address' => 'nullable|string',
             'is_default' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
+            'signature_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
+            'seal_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
         ]);
 
+        if ($request->hasFile('signature_image')) {
+            $imageName = time() . '_sig_' . uniqid() . '.' . $request->file('signature_image')->getClientOriginalExtension();
+            $request->file('signature_image')->move(public_path('uploads/signatures'), $imageName);
+            $data['signature_image'] = 'uploads/signatures/' . $imageName;
+        }
+
+        if ($request->hasFile('seal_image')) {
+            $sealName = time() . '_seal_' . uniqid() . '.' . $request->file('seal_image')->getClientOriginalExtension();
+            $request->file('seal_image')->move(public_path('uploads/seals'), $sealName);
+            $data['seal_image'] = 'uploads/seals/' . $sealName;
+        }
+
         // If setting as default, remove default from others
-        if ($request->is_default) {
+        if (!empty($data['is_default'])) {
             CompanyDetail::where('is_default', true)->update(['is_default' => false]);
         }
 
-        CompanyDetail::create($request->all());
+        CompanyDetail::create($data);
 
         return redirect()->route('company-details.index')
             ->with('success', 'Company details created successfully.');
@@ -50,7 +64,7 @@ class CompanyDetailController extends Controller
 
     public function update(Request $request, CompanyDetail $companyDetail)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'signatory_name' => 'required|string|max:255',
             'signatory_designation' => 'required|string|max:255',
@@ -60,14 +74,34 @@ class CompanyDetailController extends Controller
             'address' => 'nullable|string',
             'is_default' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
+            'signature_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
+            'seal_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
         ]);
 
+        if ($request->hasFile('signature_image')) {
+            if ($companyDetail->signature_image && file_exists(public_path($companyDetail->signature_image))) {
+                @unlink(public_path($companyDetail->signature_image));
+            }
+            $imageName = time() . '_sig_' . uniqid() . '.' . $request->file('signature_image')->getClientOriginalExtension();
+            $request->file('signature_image')->move(public_path('uploads/signatures'), $imageName);
+            $data['signature_image'] = 'uploads/signatures/' . $imageName;
+        }
+
+        if ($request->hasFile('seal_image')) {
+            if ($companyDetail->seal_image && file_exists(public_path($companyDetail->seal_image))) {
+                @unlink(public_path($companyDetail->seal_image));
+            }
+            $sealName = time() . '_seal_' . uniqid() . '.' . $request->file('seal_image')->getClientOriginalExtension();
+            $request->file('seal_image')->move(public_path('uploads/seals'), $sealName);
+            $data['seal_image'] = 'uploads/seals/' . $sealName;
+        }
+
         // If setting as default, remove default from others
-        if ($request->is_default) {
+        if (!empty($data['is_default'])) {
             CompanyDetail::where('is_default', true)->where('id', '!=', $companyDetail->id)->update(['is_default' => false]);
         }
 
-        $companyDetail->update($request->all());
+        $companyDetail->update($data);
 
         return redirect()->route('company-details.index')
             ->with('success', 'Company details updated successfully.');
