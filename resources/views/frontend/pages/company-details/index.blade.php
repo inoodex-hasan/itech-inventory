@@ -169,7 +169,7 @@
                             <th>Contact Info</th>
                             <th>Status</th>
                             <th>Default</th>
-                            <th class="text-end pe-4">Action</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">
@@ -293,7 +293,7 @@
                 <h5 class="modal-title fw-bold text-dark">Add Company Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('company-details.store') }}" method="POST">
+            <form action="{{ route('company-details.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body p-4">
                     <div class="row g-3">
@@ -308,6 +308,14 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Signatory Designation <span class="text-danger">*</span></label>
                             <input type="text" name="signatory_designation" class="form-control" placeholder="e.g. Managing Director" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Signatory Signature Image</label>
+                            <input type="file" name="signature_image" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Company Seal Image</label>
+                            <input type="file" name="seal_image" class="form-control" accept="image/*">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Phone Number</label>
@@ -361,7 +369,7 @@
                 <h5 class="modal-title fw-bold text-dark">Edit Company Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('company-details.update', $company->id) }}" method="POST">
+            <form action="{{ route('company-details.update', $company->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="modal-body p-4">
@@ -377,6 +385,24 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Signatory Designation <span class="text-danger">*</span></label>
                             <input type="text" name="signatory_designation" class="form-control" value="{{ old('signatory_designation', $company->signatory_designation) }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Signatory Signature Image</label>
+                            <input type="file" name="signature_image" class="form-control" accept="image/*">
+                            @if ($company->signature_image)
+                                <div class="mt-1">
+                                    <img src="{{ asset($company->signature_image) }}" style="max-height: 35px;" alt="Signature Preview">
+                                </div>
+                            @endif
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Company Seal Image</label>
+                            <input type="file" name="seal_image" class="form-control" accept="image/*">
+                            @if ($company->seal_image)
+                                <div class="mt-1">
+                                    <img src="{{ asset($company->seal_image) }}" style="max-height: 35px;" alt="Seal Preview">
+                                </div>
+                            @endif
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-secondary">Phone Number</label>

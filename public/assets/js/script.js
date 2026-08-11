@@ -312,6 +312,26 @@ Version      : 1.0
 			$slimScrolls.height(rHeight);
 			$('.sidebar .slimScrollDiv').height(rHeight);
 		});
+
+		// Auto-scroll sidebar to active menu item
+		function scrollToActiveMenuItem() {
+			var $active = $('#sidebar .sidebar-inner a.active, #sidebar a.active').first();
+			if ($active.length > 0) {
+				var $sidebarInner = $('#sidebar .sidebar-inner');
+				if ($sidebarInner.length > 0) {
+					var activeTop = $active.offset().top;
+					var sidebarTop = $sidebarInner.offset().top;
+					var currentScroll = $sidebarInner.scrollTop();
+					var targetScroll = Math.max(0, (activeTop - sidebarTop + currentScroll) - ($sidebarInner.height() / 2) + ($active.outerHeight() / 2));
+					
+					$sidebarInner.slimScroll({ scrollTo: targetScroll + 'px' });
+					$sidebarInner.scrollTop(targetScroll);
+				}
+			}
+		}
+
+		setTimeout(scrollToActiveMenuItem, 100);
+		setTimeout(scrollToActiveMenuItem, 300);
 	}
 	
 	// Password Show

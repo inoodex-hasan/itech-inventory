@@ -36,7 +36,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with('brand', 'category');
+        $query = Product::with(['brand', 'category', 'inventory', 'latestPurchase', 'availableSerials']);
 
         // Filter by search term
         if ($request->filled('search')) {
@@ -91,41 +91,35 @@ class ProductController extends Controller
      */
 
     public function store(StoreProductRequest $request)
-{
-    $validated = $request->validate([
-        'brand_id' => 'required|exists:brands,id',
-        'category_id' => 'nullable|exists:categories,id',
-        'name' => 'required|string|max:255',
-        'model_name' => 'required|string|max:255',
-        'warranty' => 'nullable|integer',
-        'status' => 'required|boolean',
-        'is_serialized' => 'nullable|boolean',
-        'photos' => 'nullable|array',
-        'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
-    ]);
+    {
+        $validated = $request->validated();
 
-    // Handle photo uploads
-    $photoPaths = [];
-    if ($request->hasFile('photos')) {
-        foreach ($request->file('photos') as $photo) {
-            $path = $photo->store('products', 'public');
-            $photoPaths[] = $path;
+        // Handle photo uploads
+        $photoPaths = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store('products', 'public');
+                $photoPaths[] = $path;
+            }
         }
+
+        $barcode = !empty($validated['barcode']) ? trim($validated['barcode']) : Product::generateBarcode();
+
+        $product = Product::create([
+            'brand_id'      => $validated['brand_id'],
+            'category_id'   => $validated['category_id'] ?? null,
+            'name'          => $validated['name'],
+            'model'         => $validated['model_name'],
+            'barcode'       => $barcode,
+            'warranty'      => $validated['warranty'] ?? 0,
+            'status'        => $validated['status'],
+            'is_serialized' => $request->has('is_serialized') ? 1 : 0,
+            'photos'        => !empty($photoPaths) ? $photoPaths : null,
+        ]);
+
+        return redirect()->route('products.index')->with('success', 'Product created successfully with Barcode: ' . $product->barcode);
     }
 
-    $product = Product::create([
-        'brand_id' => $validated['brand_id'],
-        'category_id' => $validated['category_id'] ?? null,
-        'name' => $validated['name'],
-        'model' => $validated['model_name'],
-        'warranty' => $validated['warranty'] ?? 0,
-        'status' => $validated['status'],
-        'is_serialized' => $request->has('is_serialized') ? 1 : 0,
-        'photos' => !empty($photoPaths) ? $photoPaths : null,
-    ]);
-
-    return redirect()->route('products.index')->with('success', 'Product created successfully.');
-}
     /**
      * Display the specified resource.
      */
@@ -157,63 +151,136 @@ class ProductController extends Controller
         return view('admin.pages.product.edit', compact('categories', 'product', 'id', 'subCategories','brands'));
     }
 
-   
-public function update(UpdateProductRequest $request, Product $product)
-{
-    $validated = $request->validate([
-        'brand_id' => 'required|exists:brands,id',
-        'category_id' => 'nullable|exists:categories,id',
-        'name' => 'required|string|max:255',
-        'model_name' => 'required|string|max:255',
-        'warranty' => 'nullable|integer',
-        'status' => 'required|boolean',
-        'is_serialized' => 'nullable|boolean',
-        'photos' => 'nullable|array',
-        'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        'remaining_photos' => 'nullable|string', // JSON string of remaining photos
-    ]);
+    public function update(UpdateProductRequest $request, Product $product)
+    {
+        $validated = $request->validated();
 
-    // Get remaining photos from hidden input
-    $remainingPhotos = [];
-    if ($request->remaining_photos) {
-        $remainingPhotos = json_decode($request->remaining_photos, true) ?? [];
-    }
-
-    // Find deleted photos and remove them from storage
-    $originalPhotos = $product->photos ?? [];
-    $deletedPhotos = array_diff($originalPhotos, $remainingPhotos);
-    
-    foreach ($deletedPhotos as $deletedPhoto) {
-        if (Storage::disk('public')->exists($deletedPhoto)) {
-            Storage::disk('public')->delete($deletedPhoto);
+        // Get remaining photos from hidden input
+        $remainingPhotos = [];
+        if ($request->remaining_photos) {
+            $remainingPhotos = json_decode($request->remaining_photos, true) ?? [];
         }
-    }
 
-    // Handle new photo uploads
-    $newPhotoPaths = [];
-    if ($request->hasFile('photos')) {
-        foreach ($request->file('photos') as $photo) {
-            $path = $photo->store('products', 'public');
-            $newPhotoPaths[] = $path;
+        // Find deleted photos and remove them from storage
+        $originalPhotos = $product->photos ?? [];
+        $deletedPhotos = array_diff($originalPhotos, $remainingPhotos);
+        
+        foreach ($deletedPhotos as $deletedPhoto) {
+            if (Storage::disk('public')->exists($deletedPhoto)) {
+                Storage::disk('public')->delete($deletedPhoto);
+            }
         }
+
+        // Handle new photo uploads
+        $newPhotoPaths = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store('products', 'public');
+                $newPhotoPaths[] = $path;
+            }
+        }
+
+        // Merge remaining and new photos
+        $allPhotos = array_merge($remainingPhotos, $newPhotoPaths);
+
+        $barcode = !empty($validated['barcode']) ? trim($validated['barcode']) : ($product->barcode ?? Product::generateBarcode());
+
+        $product->update([
+            'brand_id'      => $validated['brand_id'],
+            'category_id'   => $validated['category_id'] ?? $product->category_id,
+            'name'          => $validated['name'],
+            'model'         => $validated['model_name'],
+            'barcode'       => $barcode,
+            'warranty'      => $validated['warranty'] ?? 0,
+            'status'        => $validated['status'],
+            'is_serialized' => $request->has('is_serialized') ? 1 : 0,
+            'photos'        => !empty($allPhotos) ? $allPhotos : null,
+        ]);
+
+        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 
-    // Merge remaining and new photos
-    $allPhotos = array_merge($remainingPhotos, $newPhotoPaths);
+    /**
+     * Universal Barcode / Serial Scanner Lookup API Endpoint
+     */
+    public function barcodeLookup(Request $request)
+    {
+        $code = trim($request->query('code', ''));
 
-    $product->update([
-        'brand_id' => $validated['brand_id'],
-        'category_id' => $validated['category_id'] ?? $product->category_id,
-        'name' => $validated['name'],
-        'model' => $validated['model_name'],
-        'warranty' => $validated['warranty'] ?? 0,
-        'status' => $validated['status'],
-        'is_serialized' => $request->has('is_serialized') ? 1 : 0,
-        'photos' => !empty($allPhotos) ? $allPhotos : null,
-    ]);
+        if (!$code) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide a barcode or serial number.'
+            ], 400);
+        }
 
-    return redirect()->route('products.index')->with('success', 'Product updated successfully.');
-}
+        // 1. Check if it matches a Product Serial Number
+        $serial = \App\Models\ProductSerial::with(['product.brand', 'product.category', 'product.inventory', 'product.latestPurchase', 'salesItem.sale.customer'])
+            ->where('serial_number', $code)
+            ->first();
+
+        if ($serial) {
+            $product = $serial->product;
+            return response()->json([
+                'success' => true,
+                'type' => 'serial',
+                'status' => $serial->status, // available, sold, damaged, returned
+                'serial_number' => $serial->serial_number,
+                'product' => [
+                    'id'             => $product->id,
+                    'name'           => $product->name,
+                    'model'          => $product->model,
+                    'brand'          => $product->brand->name ?? '',
+                    'category'       => $product->category->name ?? '',
+                    'barcode'        => $product->barcode,
+                    'warranty_days'  => $product->warranty ?? 0,
+                    'stock'          => $product->inventory->current_stock ?? 0,
+                    'purchase_price' => $product->latestPurchase->unit_price ?? 0,
+                    'selling_price'  => $product->latestPurchase->unit_price ?? 0,
+                    'is_serialized'  => 1,
+                ],
+                'sale' => $serial->salesItem ? [
+                    'invoice_no'    => $serial->salesItem->sale->order_no ?? '',
+                    'sale_date'     => $serial->salesItem->sale->created_at?->format('Y-m-d') ?? '',
+                    'customer_name' => $serial->salesItem->sale->customer->name ?? '',
+                    'customer_phone'=> $serial->salesItem->sale->customer->phone ?? '',
+                ] : null
+            ]);
+        }
+
+        // 2. Check if it matches a Product Vendor Barcode or Model
+        $product = Product::with(['brand', 'category', 'inventory', 'latestPurchase', 'availableSerials'])
+            ->where('barcode', $code)
+            ->orWhere('model', $code)
+            ->first();
+
+        if ($product) {
+            return response()->json([
+                'success' => true,
+                'type' => 'product',
+                'status' => 'available',
+                'product' => [
+                    'id'                => $product->id,
+                    'name'              => $product->name,
+                    'model'             => $product->model,
+                    'brand'             => $product->brand->name ?? '',
+                    'category'          => $product->category->name ?? '',
+                    'barcode'           => $product->barcode,
+                    'warranty_days'     => $product->warranty ?? 0,
+                    'stock'             => $product->inventory->current_stock ?? 0,
+                    'purchase_price'    => $product->latestPurchase->unit_price ?? 0,
+                    'selling_price'     => $product->latestPurchase->unit_price ?? 0,
+                    'is_serialized'     => $product->is_serialized ? 1 : 0,
+                    'available_serials' => $product->availableSerials->pluck('serial_number'),
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => "No product or serial found matching [{$code}]."
+        ], 404);
+    }
 
     /**
      * Remove the specified resource from storage.

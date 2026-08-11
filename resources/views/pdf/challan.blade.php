@@ -175,26 +175,49 @@
         </tbody>
     </table>
 
-    <!-- Signatures (Customer & Authorized) -->
-    <table style="width: 100%; border-collapse: collapse; margin-top: 60px;">
-        <tr>
-            <td width="50%" align="center" style="vertical-align: bottom;">
-                <table align="center" style="width: 180px; margin: 0 auto 8px auto; border-collapse: collapse;">
-                    <tr>
-                        <td style="border-top: 1.5px solid #475569; height: 1px; font-size: 1px; line-height: 1px;">&nbsp;</td>
-                    </tr>
-                </table>
-                <div style="font-size: 11px; font-weight: 600; color: #475569;">Customer's Signature</div>
-            </td>
-            <td width="50%" align="center" style="vertical-align: bottom;">
-                <table align="center" style="width: 180px; margin: 0 auto 8px auto; border-collapse: collapse;">
-                    <tr>
-                        <td style="border-top: 1.5px solid #475569; height: 1px; font-size: 1px; line-height: 1px;">&nbsp;</td>
-                    </tr>
-                </table>
-                <div style="font-size: 11px; font-weight: 600; color: #475569;">Authorized Signature</div>
-            </td>
-        </tr>
-    </table>
+    <!-- Signatures & Seal (Customer & Authorized) -->
+    @if(!isset($show_signature) || $show_signature || !isset($show_seal) || $show_seal)
+        <table style="width: 100%; border-collapse: collapse; margin-top: 60px;">
+            <tr>
+                <td width="33%" align="center" style="vertical-align: bottom;">
+                    <table align="center" style="width: 160px; margin: 0 auto 8px auto; border-collapse: collapse;">
+                        <tr>
+                            <td style="border-top: 1.5px solid #475569; height: 1px; font-size: 1px; line-height: 1px;">&nbsp;</td>
+                        </tr>
+                    </table>
+                    <div style="font-size: 11px; font-weight: 600; color: #475569;">Customer's Signature</div>
+                </td>
+                <td width="34%" align="center" style="vertical-align: bottom;">
+                    @if(!isset($show_seal) || $show_seal)
+                        @php
+                            $sealImg = $seal_image ?? null;
+                            $sealSrc = ($sealImg && file_exists(public_path($sealImg))) ? public_path($sealImg) : (file_exists(public_path('sil.png')) ? public_path('sil.png') : null);
+                        @endphp
+                        @if($sealSrc)
+                            <img src="{{ $sealSrc }}" style="max-height: 75px;" alt="Company Seal">
+                        @endif
+                    @endif
+                </td>
+                <td width="33%" align="center" style="vertical-align: bottom;">
+                    @if(!isset($show_signature) || $show_signature)
+                        @if(!empty($signature_image) && file_exists(public_path($signature_image)))
+                            <div style="text-align: center; margin-bottom: 4px;">
+                                <img src="{{ public_path($signature_image) }}" style="max-height: 50px;" alt="Signature">
+                            </div>
+                        @endif
+                        <div style="display: inline-block; text-align: center;">
+                            <div style="font-size: 12px; font-weight: 700; color: #0f172a;">
+                                <span style="border-top: 1.5px solid #475569; padding-top: 4px; display: inline-block;">
+                                    {{ $challan->signatory_name ?? 'N/A' }}
+                                </span>
+                            </div>
+                            <div style="font-size: 11px; color: #475569; margin-top: 2px;">{{ $challan->signatory_designation ?? 'N/A' }}</div>
+                            <div style="font-size: 11px; font-weight: 600; color: #1e293b; margin-top: 2px;">{{ $challan->company_name ?? 'N/A' }}</div>
+                        </div>
+                    @endif
+                </td>
+            </tr>
+        </table>
+    @endif
 </body>
 </html>

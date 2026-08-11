@@ -277,20 +277,44 @@
         </tr>
     </table>
 
-    <!-- Signature Block -->
-    <table style="width: 100%; border-collapse: collapse; margin-top: 40px;">
-        <tr>
-            <td width="100%" align="right" style="vertical-align: bottom;">
-                <table align="right" style="width: 220px; margin: 0 0 8px auto; border-collapse: collapse;">
-                    <tr>
-                        <td style="border-top: 1.5px solid #475569; height: 1px; font-size: 1px; line-height: 1px;">&nbsp;</td>
-                    </tr>
-                </table>
-                <div style="font-size: 12px; font-weight: 700; color: #0f172a; padding-right: 20px;">{{ $company['signatory_name'] ?? 'Engr. Shamsul Alam' }}</div>
-                <div style="font-size: 11px; color: #475569; padding-right: 20px;">{{ $company['signatory_designation'] ?? 'Director (Technical)' }}</div>
-                <div style="font-size: 11px; font-weight: 600; color: #1e293b; padding-right: 20px; margin-top: 2px;">{{ $company['name'] ?? 'Intelligent Technology' }}</div>
-            </td>
-        </tr>
-    </table>
+    <!-- Signature & Seal Block -->
+    @if(!isset($show_signature) || $show_signature || !isset($show_seal) || $show_seal)
+        <table style="width: 100%; border-collapse: collapse; margin-top: 40px;">
+            <tr>
+                <td width="50%" align="left" style="vertical-align: bottom;">
+                    @if(!isset($show_seal) || $show_seal)
+                        @php
+                            $sealImg = $company['seal_image'] ?? null;
+                            $sealSrc = ($sealImg && file_exists(public_path($sealImg))) ? public_path($sealImg) : (file_exists(public_path('sil.png')) ? public_path('sil.png') : null);
+                        @endphp
+                        @if($sealSrc)
+                            <img src="{{ $sealSrc }}" style="max-height: 80px;" alt="Company Seal">
+                        @endif
+                    @endif
+                </td>
+                <td width="50%" align="right" style="vertical-align: bottom;">
+                    @if(!isset($show_signature) || $show_signature)
+                        @php
+                            $sigImg = $company['signature_image'] ?? null;
+                        @endphp
+                        @if($sigImg && file_exists(public_path($sigImg)))
+                            <div style="text-align: right; margin-bottom: 4px;">
+                                <img src="{{ public_path($sigImg) }}" style="max-height: 50px;" alt="Signature">
+                            </div>
+                        @endif
+                        <div style="display: inline-block; text-align: left;">
+                            <div style="font-size: 12px; font-weight: 700; color: #0f172a;">
+                                <span style="border-top: 1.5px solid #475569; padding-top: 4px; display: inline-block;">
+                                    {{ $company['signatory_name'] ?? 'N/A' }}
+                                </span>
+                            </div>
+                            <div style="font-size: 11px; color: #475569; margin-top: 2px;">{{ $company['signatory_designation'] ?? 'N/A' }}</div>
+                            <div style="font-size: 11px; font-weight: 600; color: #1e293b; margin-top: 2px;">{{ $company['name'] ?? 'N/A' }}</div>
+                        </div>
+                    @endif
+                </td>
+            </tr>
+        </table>
+    @endif
 </body>
 </html>

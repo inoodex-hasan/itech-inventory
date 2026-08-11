@@ -12,13 +12,15 @@ class Bill extends Model
         'project_id', 'purchase_id', 'work_order_number', 'bill_date',
         'subtotal', 'total_amount', 'amount_in_words', 'status', 'notes',  
         'bank_detail_id', 'company_detail_id', 'terms_conditions', 'subject',
-        'attention_to', 'designation', 'type',
+        'attention_to', 'designation', 'type', 'show_signature', 'show_seal',
     ];
 
     protected $casts = [
         'bill_date' => 'date',
         'subtotal' => 'decimal:2',
-        'total_amount' => 'decimal:2'
+        'total_amount' => 'decimal:2',
+        'show_signature' => 'boolean',
+        'show_seal' => 'boolean',
     ];
 
     public function client(): BelongsTo

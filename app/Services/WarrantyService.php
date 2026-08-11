@@ -37,18 +37,32 @@ class WarrantyService
     {
         $search = trim($search);
 
+        // Find sale items by serial number, order_no, customer, or product barcode
+        $serialMatches = \App\Models\ProductSerial::where('serial_number', $search)
+            ->whereNotNull('sales_item_id')
+            ->pluck('sales_item_id');
+
         return SalesItem::with(['sale.customer', 'product'])
-            ->whereHas('sale', function ($query) use ($search) {
-                $query->where('order_no', 'LIKE', "%{$search}%")
-                    ->orWhereHas('customer', function ($q) use ($search) {
-                        $q->where('phone', 'LIKE', "%{$search}%")
-                          ->orWhere('name', 'LIKE', "%{$search}%");
-                    });
+            ->where(function ($q) use ($search, $serialMatches) {
+                if ($serialMatches->isNotEmpty()) {
+                    $q->whereIn('id', $serialMatches);
+                } else {
+                    $q->whereHas('sale', function ($query) use ($search) {
+                        $query->where('order_no', 'LIKE', "%{$search}%")
+                            ->orWhereHas('customer', function ($cq) use ($search) {
+                                $cq->where('phone', 'LIKE', "%{$search}%")
+                                  ->orWhere('name', 'LIKE', "%{$search}%");
+                            });
+                    })
+                    ->orWhereHas('product', function ($pq) use ($search) {
+                        $pq->where('barcode', $search);
+                    })
+                    ->orWhere('id', $search);
+                }
             })
-            ->orWhere('id', $search)
             ->latest()
             ->get()
-            ->map(function ($item) {
+            ->map(function ($item) use ($search) {
                 $saleDate = Carbon::parse($item->sale?->created_at ?? now());
                 $warrantyDays = (int) ($item->warranty ?? 0);
                 $expiryDate = $saleDate->copy()->addDays($warrantyDays);
@@ -58,6 +72,11 @@ class WarrantyService
                 $item->warranty_expiry_date = $expiryDate->toDateString();
                 $item->warranty_days_remaining = (int) ceil($daysRemaining);
                 $item->is_expired = $expiryDate->isPast();
+
+                // If searched by serial, attach matched serial
+                if (\App\Models\ProductSerial::where('serial_number', $search)->where('sales_item_id', $item->id)->exists()) {
+                    $item->matched_serial = $search;
+                }
 
                 return $item;
             });

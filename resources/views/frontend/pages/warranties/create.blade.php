@@ -40,19 +40,23 @@
     <!-- Lookup Section Card -->
     <div class="card border-0 shadow-sm rounded-3 mb-4">
         <div class="card-body p-4">
-            <div class="form-section-title">
-                Step 1: Search Sold Item by Invoice # or Customer Phone
+            <div class="form-section-title d-flex justify-content-between align-items-center">
+                <span>Step 1: Scan Serial Barcode or Search by Invoice # / Customer Phone</span>
+                <span class="badge bg-light text-secondary border small px-2 py-1"><i class="fas fa-barcode text-primary me-1"></i> Scanner Ready</span>
             </div>
 
             <form action="{{ route('warranties.create') }}" method="GET" class="row g-3 align-items-center">
                 <div class="col-md-9">
-                    <input type="text" name="search" value="{{ request('search') }}"
-                        class="form-control form-control-lg" required
-                        placeholder="Enter Invoice Number (e.g. INV-1002) or Customer Phone Number...">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fas fa-barcode text-primary"></i></span>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            class="form-control form-control-lg border-start-0 font-monospace" required autofocus
+                            placeholder="Scan Unit Serial Barcode, Product Barcode, Invoice # (e.g. INV-1002), or Phone...">
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 shadow-sm">
-                        Lookup Item
+                        <i class="fas fa-search me-1"></i> Verify Warranty
                     </button>
                 </div>
             </form>

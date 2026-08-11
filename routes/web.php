@@ -10,7 +10,10 @@ use App\Http\Controllers\{
     RevenueController, RoleController, PermissionController,
     SalaryController, SalesController, ServiceController,
     TaDaController, UserController, VendorController, BankDetailController,
-    CompanyDetailController, PaymentController, ReturnController, WarrantyController
+    CompanyDetailController, PaymentController, ReturnController, WarrantyController,
+    ChartOfAccountController, JournalEntryController, LedgerController,
+    TrialBalanceController, FinancialStatementController, ContraEntryController,
+    ReconciliationController, FiscalYearController
 };
 
 use Illuminate\Support\Facades\{Auth, Route};
@@ -46,6 +49,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
 
     // === Products, Inventory, Purchases, Sales, Services, etc. ===
     Route::resource('brands', BrandController::class);
+    Route::get('/products/barcode-lookup', [ProductController::class, 'barcodeLookup'])->name('products.barcode_lookup');
     Route::resource('products', ProductController::class);
     Route::get('/inventory/pdf', [InventoryController::class, 'downloadPdf'])->name('inventory.pdf');
     Route::resource('inventory', InventoryController::class);
@@ -163,4 +167,51 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
         Route::patch('product-returns/{id}/approve', [ReturnController::class, 'approve'])->name('returns.approve');
         Route::patch('product-returns/{id}/complete', [ReturnController::class, 'complete'])->name('returns.complete');
         Route::patch('product-returns/{id}/reject', [ReturnController::class, 'reject'])->name('returns.reject');
+
+        // =========================================================================
+        // DOUBLE-ENTRY ACCOUNTS & BOOKKEEPING (SUPER ADMIN)
+        // =========================================================================
+        Route::prefix('accounts')->group(function () {
+            // Redirect legacy accounts dashboard to Main Unified Dashboard
+            Route::get('dashboard', function () {
+                return redirect('/');
+            })->name('accounts.dashboard');
+
+            // Chart of Accounts
+            Route::resource('chart-of-accounts', ChartOfAccountController::class);
+
+            // Journal Entries & Vouchers
+            Route::get('journal-entries/{journalEntry}/pdf', [JournalEntryController::class, 'downloadPdf'])->name('journal-entries.pdf');
+            Route::post('journal-entries/{journalEntry}/reverse', [JournalEntryController::class, 'reverse'])->name('journal-entries.reverse');
+            Route::resource('journal-entries', JournalEntryController::class)->except(['edit', 'update', 'destroy']);
+
+            // General Ledger
+            Route::get('ledger', [LedgerController::class, 'index'])->name('ledger.index');
+            Route::get('ledger/pdf', [LedgerController::class, 'downloadPdf'])->name('ledger.pdf');
+
+            // Trial Balance
+            Route::get('trial-balance', [TrialBalanceController::class, 'index'])->name('trial-balance.index');
+            Route::get('trial-balance/pdf', [TrialBalanceController::class, 'downloadPdf'])->name('trial-balance.pdf');
+
+            // Financial Statements & Reports
+            Route::get('reports/profit-loss', [FinancialStatementController::class, 'profitLoss'])->name('reports.profit-loss');
+            Route::get('reports/profit-loss/pdf', [FinancialStatementController::class, 'profitLossPdf'])->name('reports.profit-loss.pdf');
+            Route::get('reports/balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('reports.balance-sheet');
+            Route::get('reports/balance-sheet/pdf', [FinancialStatementController::class, 'balanceSheetPdf'])->name('reports.balance-sheet.pdf');
+            Route::get('reports/cash-flow', [FinancialStatementController::class, 'cashFlow'])->name('reports.cash-flow');
+
+            // Contra Entries (Transfers)
+            Route::resource('contra-entries', ContraEntryController::class)->only(['index', 'create', 'store']);
+
+            // Bank Reconciliation
+            Route::get('reconciliation', [ReconciliationController::class, 'index'])->name('reconciliation.index');
+            Route::post('reconciliation', [ReconciliationController::class, 'store'])->name('reconciliation.store');
+
+            // Fiscal Years & Year-End Close
+            Route::get('fiscal-years', [FiscalYearController::class, 'index'])->name('fiscal-years.index');
+            Route::post('fiscal-years', [FiscalYearController::class, 'store'])->name('fiscal-years.store');
+            Route::post('fiscal-years/{fiscalYear}/set-active', [FiscalYearController::class, 'setActive'])->name('fiscal-years.set-active');
+            Route::post('fiscal-years/{fiscalYear}/close', [FiscalYearController::class, 'closeYear'])->name('fiscal-years.close');
+        });
 });
+

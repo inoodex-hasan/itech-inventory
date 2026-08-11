@@ -189,6 +189,43 @@
                     </li>
                 @endif
 
+                <!-- Double-Entry Accounting & Bookkeeping -->
+                @if(auth()->check() && auth()->user()->hasRole(['Super Admin', 'Admin', 'admin']))
+                    <li class="menu-title"><span>Accounting & Bookkeeping</span></li>
+                    <li>
+                        <a href="{{ route('chart-of-accounts.index') }}" class="{{ request()->routeIs('chart-of-accounts.*') ? 'active' : '' }}">
+                            <i class="fe fe-folder"></i> <span>Chart of Accounts</span>
+                        </a>
+                        <a href="{{ route('journal-entries.index') }}" class="{{ request()->routeIs('journal-entries.*') ? 'active' : '' }}">
+                            <i class="fe fe-file-text"></i> <span>Journal Vouchers</span>
+                        </a>
+                        <a href="{{ route('ledger.index') }}" class="{{ request()->routeIs('ledger.*') ? 'active' : '' }}">
+                            <i class="fe fe-book"></i> <span>General Ledger</span>
+                        </a>
+                        <a href="{{ route('trial-balance.index') }}" class="{{ request()->routeIs('trial-balance.*') ? 'active' : '' }}">
+                            <i class="fe fe-check-square"></i> <span>Trial Balance</span>
+                        </a>
+                        <a href="{{ route('reports.profit-loss') }}" class="{{ request()->routeIs('reports.profit-loss*') ? 'active' : '' }}">
+                            <i class="fe fe-trending-up"></i> <span>Profit & Loss (P&L)</span>
+                        </a>
+                        <a href="{{ route('reports.balance-sheet') }}" class="{{ request()->routeIs('reports.balance-sheet*') ? 'active' : '' }}">
+                            <i class="fe fe-bar-chart-2"></i> <span>Balance Sheet</span>
+                        </a>
+                        <a href="{{ route('reports.cash-flow') }}" class="{{ request()->routeIs('reports.cash-flow*') ? 'active' : '' }}">
+                            <i class="fe fe-dollar-sign"></i> <span>Cash Flow Statement</span>
+                        </a>
+                        <a href="{{ route('contra-entries.index') }}" class="{{ request()->routeIs('contra-entries.*') ? 'active' : '' }}">
+                            <i class="fe fe-repeat"></i> <span>Contra Transfers</span>
+                        </a>
+                        <a href="{{ route('reconciliation.index') }}" class="{{ request()->routeIs('reconciliation.*') ? 'active' : '' }}">
+                            <i class="fe fe-check-circle"></i> <span>Bank Reconciliation</span>
+                        </a>
+                        <a href="{{ route('fiscal-years.index') }}" class="{{ request()->routeIs('fiscal-years.*') ? 'active' : '' }}">
+                            <i class="fe fe-calendar"></i> <span>Fiscal Years & Closing</span>
+                        </a>
+                    </li>
+                @endif
+
                 <!-- 13. Employee Portal -->
                 @if(auth()->check() && (auth()->user()->hasRole(['Employee', 'employee']) || auth()->user()->employee))
                     <li class="menu-title"><span>Employee Portal</span></li>
@@ -258,21 +295,35 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    setTimeout(function() {
-        const activeLink = document.querySelector('#sidebar .sidebar-inner a.active') || document.querySelector('#sidebar a.active');
+    function scrollToActiveSidebar() {
+        var activeLink = document.querySelector('#sidebar .sidebar-inner a.active') || document.querySelector('#sidebar a.active');
         if (activeLink) {
-            activeLink.scrollIntoView({ block: 'center', inline: 'nearest' });
+            var sidebarInner = document.querySelector('#sidebar .sidebar-inner');
+            if (sidebarInner) {
+                var activeRect = activeLink.getBoundingClientRect();
+                var sidebarRect = sidebarInner.getBoundingClientRect();
+                var currentScroll = sidebarInner.scrollTop;
+                var targetScroll = Math.max(0, (activeRect.top - sidebarRect.top + currentScroll) - (sidebarInner.clientHeight / 2) + (activeLink.clientHeight / 2));
+                
+                if (window.jQuery && typeof jQuery.fn.slimScroll !== 'undefined') {
+                    jQuery('#sidebar .sidebar-inner').slimScroll({ scrollTo: targetScroll + 'px' });
+                }
+                sidebarInner.scrollTop = targetScroll;
+            }
             
             // Expand parent submenu if nested
-            const parentSubmenu = activeLink.closest('li.submenu');
+            var parentSubmenu = activeLink.closest('li.submenu');
             if (parentSubmenu) {
                 parentSubmenu.classList.add('active');
-                const subUl = parentSubmenu.querySelector('ul');
+                var subUl = parentSubmenu.querySelector('ul');
                 if (subUl) {
                     subUl.style.display = 'block';
                 }
             }
         }
-    }, 100);
+    }
+
+    setTimeout(scrollToActiveSidebar, 100);
+    setTimeout(scrollToActiveSidebar, 350);
 });
 </script>

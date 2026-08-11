@@ -174,6 +174,18 @@ class ProductReturn extends Model
                 'current_stock' => $item->quantity
             ]);
         }
+
+        // If specific serial numbers are linked to the sale item, restore them
+        if ($item->sales_item_id) {
+            $newStatus = ($item->condition === 'good') ? 'available' : 'damaged';
+            \App\Models\ProductSerial::where('sales_item_id', $item->sales_item_id)
+                ->where('status', 'sold')
+                ->limit($item->quantity)
+                ->update([
+                    'status' => $newStatus,
+                    'sales_item_id' => null, // detach from sold sale item
+                ]);
+        }
     }
 
     // Reject return
